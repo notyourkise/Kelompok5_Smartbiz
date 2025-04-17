@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const pool = require('../db');
 
 router.get('/list', (req, res) => {
   res.send('Daftar kamar kos berhasil diambil');
