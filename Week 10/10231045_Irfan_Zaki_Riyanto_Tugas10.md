@@ -59,7 +59,7 @@ Pada pekan ke-10, tim **SmartBizAdmin** telah menyelesaikan perancangan dan impl
 ## 🖼️ Screenshots / Demo  
 
 ### 📎 **Skema Database:**  
-![Skema Database](./image/skemadb.png)  
+![Skema Database](./Image/skemadb.png)  
 Gambar di atas menunjukkan skema database **SmartBizAdmin**, yang terdiri dari 10 tabel utama:
 
 - **Tabel user**  
