@@ -79,31 +79,31 @@ Gambar di atas menunjukkan skema database **SmartBizAdmin**, yang terdiri dari 1
 ---
 
 ### 📎 **Struktur Backend:**  
-![Struktur Backend](./image/strbackend.png)  
+![Struktur Backend](./Image/strbackend.png)  
 
 
 ---
 
 ### 📎 **Struktur Frontend:**  
-![Struktur Frontend](./image/strfrontend.png)  
+![Struktur Frontend](./Image/strfrontend.png)  
 Struktur frontend dasar menggunakan React + Vite.
 
 ---
 
 ### 📎 **Tampilan Frontend:**  
-![Tampilan Frontend](./image/frontend-tampilan.png)  
+![Tampilan Frontend](./Image/frontend-tampilan.png)  
 Halaman awal dari sistem **SmartBizAdmin** yang berhasil dirender menggunakan React + Vite.
 
 ---
 
 ### 📎 **Koneksi Database (`db.js`):**  
-![Koneksi DB](./image/db.png)  
+![Koneksi DB](./Image/db.png)  
 `db.js` digunakan untuk mengatur koneksi backend ke PostgreSQL menggunakan modul `pg` dengan `pool` yang bisa digunakan oleh semua route.
 
 ---
 
 ### 📎 **Implementasi Struktur Database (ERD):**  
-![ERD](./image/dbSA.jpg)  
+![ERD](./Image/dbSA.jpg)  
 Gambar ini menunjukkan hubungan antar tabel utama seperti `users`, `transactions`, `inventory`, `menu_items`, `orders`, `bookings`, hingga `rooms`.
 
 ---
@@ -111,24 +111,24 @@ Gambar ini menunjukkan hubungan antar tabel utama seperti `users`, `transactions
 ### 📎 **REST API Skeleton:**  
 
 - **Endpoint Coffee Shop:**  
-  ![API CoffeeShop](./image/csAPI.png) 
+  ![API CoffeeShop](./Image/csAPI.png) 
   Difungsikan untuk Client dalam mengirim request ke server lewat endpoint API. kemudian Server memproses permintaan (bisa ambil data dari database, proses logic, dll). Dan terakhir Server mengirim response kembali ke client
 
 - **Endpoint Inventaris:**  
-  ![API Inventaris](./image/invAPI.png)
+  ![API Inventaris](./Image/invAPI.png)
   API yang digunakan untuk mengelola data inventaris barang pada suatu sistem kost dan juga coffee shop  
 
 - **Endpoint Kos:**  
-  ![API Kos](./image/kosAPI.png)
+  ![API Kos](./Image/kosAPI.png)
   Sekumpulan endpoint yang digunakan untuk mengelola data tempat kost dalam aplikasi—baik untuk pemilik kost.  
 
 - **Endpoint Keuangan:**  
-  ![API Keuangan](./image/uangAPI.png)
+  ![API Keuangan](./Image/uangAPI.png)
   API yang digunakan untuk mengelola data transaksi dan aktivitas keuangan dalam sistem coffee shop
   
 
 - **Endpoint Autentikasi:**  
-  ![API Auth](./image/authAPI.png)
+  ![API Auth](./Image/authAPI.png)
   API yang mengatur proses login, register, dan pengamanan akses pengguna. Ini adalah “gerbang masuk” ke sistem, biar hanya user yang terdaftar dan valid yang bisa akses fitur tertentu.
   
 
