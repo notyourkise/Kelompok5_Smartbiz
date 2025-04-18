@@ -1,206 +1,138 @@
-### **\# 🚀 Laporan Progres Mingguan \- \*\*SmartBizAdmin\*\***  
+# 🚀 Laporan Progres Mingguan - **SmartBizAdmin**
 
-### **\*\*👥 Kelompok\*\*: A5**  
+## 👥 Kelompok: A5  
+## 🤝 Mitra: Kost Al-Fitri D’Carjoe  
+## 📅 Pekan ke-: 10  
+## 🗓️ Tanggal: 18/04/2025  
 
-### **\*\*🤝 Mitra\*\*: Kost Al-Fitri D’Carjoe**
+---
 
-### **\*\*📅 Pekan ke-\*\*: 10**  
+## ✨ Progress Summary  
+Pada pekan ke-10, tim **SmartBizAdmin** telah menyelesaikan perancangan dan implementasi awal backend untuk sistem Smartbiz Admin, termasuk desain dan setup database PostgreSQL serta pembuatan REST API skeleton. Struktur frontend dasar juga telah disiapkan.
 
-### **\*\*🗓️ Tanggal\*\*: 18/04/2025**  
+---
 
-### 
+## ✅ Accomplished Tasks  
+- 🗂️ Merancang skema database Smartbiz Admin  
+- 🧩 Mengimplementasikan struktur database di PostgreSQL  
+- 🗃️ Menyiapkan struktur folder backend  
+- 🔌 Menambahkan koneksi database melalui file `db.js`  
+- 🔁 Membuat REST API skeleton dengan Express.js (endpoint dasar untuk login, register, keuangan, kos, coffee shop, dan inventaris)  
+- 🎨 Menyiapkan struktur frontend dasar dengan React + Vite  
 
-### **\---**
+---
 
-### 
+## ⚠️ Challenges & 💡 Solutions  
 
-### **\#\# ✨ Progress Summary**  
+- **🔍 Challenge 1**: Penyesuaian struktur folder dan routing backend  
+  **✅ Solution**: Menyesuaikan struktur folder agar modular dan sesuai standar Express, serta membuat `index.js` yang mengimpor dan menjalankan semua route secara konsisten.
 
-### **Pada pekan ke-10, tim \*\*SmartBizAdmin\*\* telah menyelesaikan perancangan dan implementasi awal backend untuk sistem Smartbiz Admin, termasuk desain dan setup database PostgreSQL serta pembuatan REST API skeleton. Struktur frontend dasar juga telah disiapkan**
+- **📌 Challenge 2**: Koneksi ke database PostgreSQL  
+  **✅ Solution**: Membuat file `db.js` yang menggunakan modul `pg` untuk membuat koneksi pool yang dapat digunakan oleh seluruh route.
 
-### 
+---
 
-### **\---**
+## 📅 Next Week Plan  
+- 🗺️ Implementasi sistem autentikasi (login/register)  
+- 🛠️ Implementasi fitur inti #1 (sesuai kebutuhan mitra)  
+- 🔌 Integrasi frontend-backend untuk fitur yang sudah ada  
+- 📽️ Demo progress ke mitra  
 
-### 
+---
 
-### **\#\# ✅ Accomplished Tasks**  
+## 👨‍💻 Contributions  
 
-### **\- 🗂️ Merancang skema database Smartbiz Admin**
+- **🧑‍🎨 Muhammad Fikri Haikal Ariadma / 10231063**  
+  → Membuat struktur folder frontend, merancang skema database, mengimplementasikan struktur database  
 
-### **\- 🧩 Mengimplementasikan struktur database di PostgreSQL**
+- **🧑‍💻 Irfan Zaki Riyanto / 10230145**  
+  → Menyusun struktur backend, membuat koneksi database, menambahkan routing dasar, merancang skema database, menyusun laporan md  
 
-### **\- 🗃️ Menyiapkan struktur folder backend**
+- **👩‍🎨 Micka Mayulia Utama / 10231053**  
+  → Merancang skema database, menyusun laporan md  
 
-### **\- 🔌 Menambahkan koneksi database melalui file db.js**
+- **👩‍💼 Ika Agustin Wulandari / 10231041**  
+  → Merancang skema database  
 
-### **\- 🔁  Membuat REST API skeleton dengan Express.js (endpoint dasar untuk login, register, keuangan, kos, coffee shop, dan inventaris)**
+---
 
-\- **🎨 Menyiapkan struktur frontend dasar dengan React \+ Vite**
+## 🖼️ Screenshots / Demo  
 
-### **\---**
+### 📎 **Skema Database:**  
+![Skema Database](./image/skemadb.png)  
+Gambar di atas menunjukkan skema database **SmartBizAdmin**, yang terdiri dari 10 tabel utama:
 
-### 
-
-### **\#\# ⚠️ Challenges & 💡 Solutions**  
-
-### **\- \*\*🔍 Challenge 1\*\*: Penyesuaian struktur folder dan routing backend**
-
-###   **\- \*\*✅ Solution\*\*:  Menyesuaikan struktur folder agar modular dan sesuai standar Express, serta membuat file index.js yang mengimpor dan menjalankan semua route secara konsisten.**
-
-### 
-
-### **\- \*\*📌 Challenge 2\*\*: Koneksi ke database PostgreSQL**
-
-###   **\- \*\*✅ Solution\*\*: Membuat file db.js yang menggunakan modul pg untuk membuat koneksi pool yang dapat digunakan oleh seluruh route.**
-
-### 
-
-### **\---**
-
-### 
-
-### 
-
-### **\#\# 📅 Next Week Plan**  
-
-### **\- 🗺️ Implementasi sistem autentikasi (login/register)**
-
-### **\- 🛠️ Implementasi fitur inti \#1 (sesuai kebutuhan mitra)**
-
-### **\- 🔌 Integrasi frontend-backend untuk fitur yang sudah ada**
-
-### **\- 📽️ Demo progress ke mitra** 
-
-###   
-
-### **\---**
-
-### 
-
-### **\#\# 👨‍💻 Contributions**  
-
-### **\- \*\*🧑‍🎨 Muhammad Fikri Haikal Ariadma / 10231063\*\***  
-
-###   **→ Membuat struktur folder frontend, merancang skema database, mengimplementasikan struktur database**
-
-### 
-
-### **\- \*\*🧑‍💻 Irfan Zaki Riyanto / 10230145\*\***  
-
-###   **→  Menyusun struktur backend, membuat koneksi database, menambahkan routing dasar, merancang skema database, menyusun laporan md**
-
-### 
-
-### **\- \*\*👩‍🎨 Micka Mayulia Utama / 10231053\*\***  
-
-###   **→ Merancang skema database, menyusun laporan md**	
-
-### 
-
-### **\- \*\*👩‍💼 Ika Agustin Wulandari / 10231041\*\***  
-
-###   **→ Merancang skema database**
-
-### 
-
-### **\---**
-
-### 
-
-### 
-
-### **\#\# 🖼️ Screenshots / Demo**  
-
-### **📎 \*\*Skema Database\*\*:**
-
-### **\!\[\](./image/skemadb.png)**
-
-### **Gambar diatas merupakan skema database dari smartbiz admin, yang dimana ada 10 tabel yang akan dijabarkan sebagai berikut:**
-
-- ### **Tabel user**
-
-  - **Memiliki relasi 1:N pada `tabel cart`, `tabel orders`, `tabel booking`, `tabel transaction`, `tabel inventory transaction`, `tabel order items`**
-
-- ### **Tabel cart**
-
-- ### **Tabel menu items**
-
-  - **Memiliki relasi  1:N pada `tabel order items`**
-
-- ### **Tabel order items**
-
-- **Tabel orders**  
-- **Tabel booking**  
+- **Tabel user**  
+  - Memiliki relasi 1:N ke `cart`, `orders`, `booking`, `transaction`, `inventory transaction`, dan `order items`
+- **Tabel cart**
+- **Tabel menu_items**  
+  - Memiliki relasi 1:N ke `order items`
+- **Tabel order items**
+- **Tabel orders**
+- **Tabel booking**
 - **Tabel rooms**  
-  - **Memiliki relasi 1:N pada `tabel booking`**  
-- **Tabel transaction**  
-- **Tabel inventory transaction**  
-- **Tabel inventory**  
-  - **Memiliki relasi 1:N pada `tabel inventory transactions`**
+  - Memiliki relasi 1:N ke `booking`
+- **Tabel transaction**
+- **Tabel inventory**
+- **Tabel inventory transaction**
 
-### **📎 \*\*Membuat struktur backend \*\*:**
+---
 
-### **\!\[\](./image/strbackend.png)**
+### 📎 **Struktur Backend:**  
+![Struktur Backend](./image/strbackend.png)  
 
-**backend/**  
-**├── node\_modules/**  
-**├── routes/**  
-**│   ├── auth.js**  
-**│   ├── coffeeeShop.js**  
-**│   ├── inventaris.js**  
-**│   ├── keuangan.js**  
-**│   └── kos.js**  
-**├── db.js**  
-**├── inde.js**  
-**├── package-lock.json**  
-**└── package.json**
 
-**Ini merupakan struktur folder dari backend pada sistem \*\*SmartBizAdmin\*\***
+---
 
-### **📎 \*\*Membuat struktur frontend \*\*:**
+### 📎 **Struktur Frontend:**  
+![Struktur Frontend](./image/strfrontend.png)  
+Struktur frontend dasar menggunakan React + Vite.
 
-### **\!\[\](./image/strfrontend.png)**
+---
 
-**Ini merupakan struktur folder dari backend pada sistem \*\*SmartBizAdmin\*\***
+### 📎 **Tampilan Frontend:**  
+![Tampilan Frontend](./image/frontend-tampilan.png)  
+Halaman awal dari sistem **SmartBizAdmin** yang berhasil dirender menggunakan React + Vite.
 
-### **📎 \*\*Tampilan Frontend \*\*:**
+---
 
-### **\!\[\](./image/frontend-tampilan.png)**
+### 📎 **Koneksi Database (`db.js`):**  
+![Koneksi DB](./image/db.png)  
+`db.js` digunakan untuk mengatur koneksi backend ke PostgreSQL menggunakan modul `pg` dengan `pool` yang bisa digunakan oleh semua route.
 
-### **Ini merupakan tampilan react+vite pada halaman website, yang berhasil dijalankan untuk sistem \*\*SmartBizAdmin\*\***
+---
 
-### **📎 \*\*Menambahkan koneksi database melalui file db.js\*\*:**
+### 📎 **Implementasi Struktur Database (ERD):**  
+![ERD](./image/dbSA.jpg)  
+Gambar ini menunjukkan hubungan antar tabel utama seperti `users`, `transactions`, `inventory`, `menu_items`, `orders`, `bookings`, hingga `rooms`.
 
-### **\!\[\](./image/db.png)**
+---
 
-**File db.js berfungsi untuk mengatur koneksi backend ke database PostgreSQL menggunakan modul pg. Di dalamnya dibuat objek pool dari class Pool dengan parameter konfigurasi seperti user, host, database, password, dan port. Nilai-nilai ini menyesuaikan dengan informasi login dan nama database lokal yang digunakan, dalam hal ini Smartbiz-Admin. Objek pool tersebut diekspor agar dapat digunakan di file lain dalam folder routes, sehingga setiap endpoint dapat langsung mengakses database tanpa harus membuat koneksi baru berulang kali.**
+### 📎 **REST API Skeleton:**  
 
-### **📎 \*\*Mengimplementasikan struktur database\*\*:**
+- **Endpoint Coffee Shop:**  
+  ![API CoffeeShop](./image/csAPI.png) 
+  Difungsikan untuk Client dalam mengirim request ke server lewat endpoint API. kemudian Server memproses permintaan (bisa ambil data dari database, proses logic, dll). Dan terakhir Server mengirim response kembali ke client
 
-### **\!\[\](./image/dbSA.jpg)**
+- **Endpoint Inventaris:**  
+  ![API Inventaris](./image/invAPI.png)
+  API yang digunakan untuk mengelola data inventaris barang pada suatu sistem kost dan juga coffee shop  
 
-**Pada tahap implementasi backend, tim juga telah mengintegrasikan struktur database nyata berdasarkan skema relasional yang telah dirancang sebelumnya. Gambar ERD tersebut menunjukkan hubungan antar tabel utama seperti users, transactions, inventory, menu\_items, orders, bookings, hingga rooms yang merepresentasikan fitur-fitur utama dari sistem manajemen kos dan coffee shop. Tabel seperti transactions, inventory\_transactions, dan orders menjadi basis penyimpanan data keuangan, pergerakan barang, dan pemesanan menu, yang seluruhnya akan diakses dan dimanipulasi melalui endpoint REST API seperti yang terdapat pada file keuangan.js. Dengan struktur database ini, API dapat berfungsi dengan optimal dalam mengelola data secara terstruktur dan terintegrasi, memungkinkan sistem SmartBizAdmin untuk memberikan fitur yang lengkap dan efisien kepada admin.**
+- **Endpoint Kos:**  
+  ![API Kos](./image/kosAPI.png)
+  Sekumpulan endpoint yang digunakan untuk mengelola data tempat kost dalam aplikasi—baik untuk pemilik kost.  
 
-### **📎 \*\*Membuat REST API skeleton\*\*:**
+- **Endpoint Keuangan:**  
+  ![API Keuangan](./image/uangAPI.png)
+  API yang digunakan untuk mengelola data transaksi dan aktivitas keuangan dalam sistem coffee shop
+  
 
-### **\!\[\](./image/csAPI.png)**
+- **Endpoint Autentikasi:**  
+  ![API Auth](./image/authAPI.png)
+  API yang mengatur proses login, register, dan pengamanan akses pengguna. Ini adalah “gerbang masuk” ke sistem, biar hanya user yang terdaftar dan valid yang bisa akses fitur tertentu.
+  
 
-**Difungsikan untuk Client dalam mengirim request ke server lewat endpoint API. kemudian Server memproses permintaan (bisa ambil data dari database, proses logic, dll). Dan terakhir Server mengirim response kembali ke client (biasanya dalam**
+---
 
-### **\!\[\](./image/invAPI.png)**
 
-**API yang digunakan untuk mengelola data inventaris barang pada suatu sistem kost dan juga coffee shop**
-
-### **\!\[\](./image/kosAPI.png)**
-
-**sekumpulan endpoint yang digunakan untuk mengelola data tempat kost dalam aplikasi—baik untuk pemilik kost.**
-
-### **\!\[\](./image/uangAPI.png)** 
-
-**API yang digunakan untuk mengelola data transaksi dan aktivitas keuangan dalam sistem coffee shop**
-
-### **\!\[\](./image/authAPI.png)**
-
-**API yang mengatur proses login, register, dan pengamanan akses pengguna. Ini adalah “gerbang masuk” ke sistem, biar hanya user yang terdaftar dan valid yang bisa akses fitur tertentu.**
 
