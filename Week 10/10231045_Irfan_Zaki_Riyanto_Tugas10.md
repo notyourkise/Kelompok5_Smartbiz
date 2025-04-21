@@ -1,6 +1,11 @@
 # 🚀 Laporan Progres Mingguan - **SmartBizAdmin**
 
-## 👥 Kelompok: A5  
+## 👥 Kelompok: 5
+- **Muhammad Fikri Haikal Ariadma / 10231063**  
+- **Irfan Zaki Riyanto / 10230145** 
+- **Micka Mayulia Utama / 10231053**  
+- **Ika Agustin Wulandari / 10231041**  
+  
 ## 🤝 Mitra: Kost Al-Fitri D’Carjoe  
 ## 📅 Pekan ke-: 10  
 ## 🗓️ Tanggal: 18/04/2025  
