@@ -1,14 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db');
+const keuanganController = require('../controllers/keuanganControllers');
 
-router.get('/', (req, res) => {
-  res.send('Data keuangan berhasil diambil');
-});
-
-router.post('/', (req, res) => {
-  const { type, amount } = req.body;
-  res.send(`Data keuangan (${type}, ${amount}) berhasil ditambahkan`);
-});
+// Endpoint keuangan
+router.get('/detail', keuanganController.getAllTransactionsDetail);
+router.post('/detail', keuanganController.createTransactionDetail);
 
 module.exports = router;
