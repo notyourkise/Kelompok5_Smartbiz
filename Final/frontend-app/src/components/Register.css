@@ -1,0 +1,130 @@
+/* src/components/Register.css */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.register-wrapper {
+  height: 100vh;
+  width: 100vw;
+  background: #ba832b;  /* Warna latar belakang kuning */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(10px); /* Efek blur */
+}
+
+.register-card {
+  display: flex;
+  width: 850px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.register-left, .register-right {
+  flex: 1;
+  padding: 40px;
+}
+
+.register-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.register-left h2 {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 26px;
+  color: #333;
+}
+
+.register-left .sub {
+  margin-bottom: 25px;
+  font-size: 14px;
+  color: #888;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.input-icon {
+  position: relative;
+}
+
+.input-icon input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 50px;  /* Mengubah radius corner menjadi 50px */
+  outline: none;
+  background-color: #f8f8f8;  /* Latar belakang lebih terang */
+  font-size: 16px;  /* Menyesuaikan ukuran font */
+  padding-left: 40px;  /* Memberikan ruang untuk ikon */
+}
+
+.input-icon svg { 
+  position: absolute;
+  left: 12px;
+  color: #888; /* Warna ikon */
+  font-size: 18px;
+}
+
+button {
+  background-color: #f5a623;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 50px;  /* Mengubah radius corner tombol menjadi 50px */
+  font-weight: bold;
+  width: 70%;  /* Membuat tombol lebih pendek dari inputan */
+  cursor: pointer;
+  transition: 0.3s;
+  margin: 20px auto 0; /* Agar tombol berada di tengah dan sedikit lebih ke kanan */
+  display: block;
+}
+
+button:hover {
+  background-color: #e69500;
+}
+
+.forgot-link {
+  display: block;
+  margin-top: 15px;
+  font-size: 13px;
+  color: #5a4fff;
+  text-align: center;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+.register-right {
+  background-color: #fff3e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.register-right img {
+  width: 250px; /* Memperbesar logo */
+  height: auto;
+}

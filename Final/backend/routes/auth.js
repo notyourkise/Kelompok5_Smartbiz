@@ -1,15 +1,72 @@
-const express = require('express');
-const router = express.Router();
-const pool = require('../db');
+// routes/auth.js
 
-router.post('/login', (req, res) => {
-  const { username } = req.body;
-  res.send(`Login berhasil untuk user: ${username}`);
+const express = require('express');
+const bcrypt = require('bcrypt');
+const router = express.Router();
+const pool = require('../config/db');
+const jwt = require('jsonwebtoken'); // Import JWT untuk menghasilkan token
+
+// Endpoint untuk registrasi
+router.post('/register', async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).send('Username dan password harus diisi');
+  }
+
+  try {
+    // Hash password sebelum disimpan ke database
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Simpan username dan hashed password ke database
+    await pool.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword]);
+
+    res.status(201).send(`User ${username} berhasil didaftarkan`); // Use 201 Created status
+  } catch (err) {
+    console.error('Error saat registrasi:', err); // Log the actual error to the console
+
+    // Check for specific MySQL duplicate entry error
+    if (err.code === 'ER_DUP_ENTRY') {
+      res.status(409).send('Username sudah digunakan'); // 409 Conflict for duplicate
+    } else {
+      // Send a generic server error for other issues
+      res.status(500).send('Terjadi kesalahan pada server saat mendaftarkan user');
+    }
+  }
 });
 
-router.post('/register', (req, res) => {
-  const { username } = req.body;
-  res.send(`User ${username} berhasil didaftarkan`);
+// Endpoint untuk login
+router.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).send('Username dan password harus diisi');
+  }
+
+  try {
+    // Cari user berdasarkan username
+    const [rows] = await pool.query('SELECT * FROM users WHERE username = ?', [username]);
+
+    if (rows.length > 0) {
+      const user = rows[0];
+
+      // Verifikasi password dengan bcrypt
+      const isMatch = await bcrypt.compare(password, user.password);
+
+      if (isMatch) {
+        // Jika password cocok, kirimkan token
+        const token = jwt.sign({ username: user.username }, 'your-secret-key', { expiresIn: '1h' });
+        res.json({ message: 'Login berhasil', token });
+      } else {
+        res.status(401).send('Password salah');
+      }
+    } else {
+      res.status(401).send('Username atau password salah'); // More generic message for security
+    }
+  } catch (err) {
+    console.error('Error saat login:', err); // Log the actual error
+    res.status(500).send('Terjadi kesalahan pada server saat login');
+  }
 });
 
 module.exports = router;

@@ -1,14 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db');
+const pool = require('../config/db');
 
-router.get('/list', (req, res) => {
-  res.send('Daftar kamar kos berhasil diambil');
+router.get('/list', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM rooms');
+    res.json(rows);
+  } catch (err) {
+    res.status(500).send('Gagal mengambil daftar kamar kos');
+  }
 });
 
-router.post('/add', (req, res) => {
+router.post('/add', async (req, res) => {
   const { roomName } = req.body;
-  res.send(`Kamar ${roomName} berhasil ditambahkan`);
+  try {
+    await pool.query('INSERT INTO rooms (room_name) VALUES (?)', [roomName]);
+    res.send(`Kamar ${roomName} berhasil ditambahkan`);
+  } catch (err) {
+    res.status(500).send('Gagal menambahkan kamar');
+  }
 });
 
 module.exports = router;
