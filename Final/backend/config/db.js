@@ -1,14 +1,16 @@
-const mysql = require('mysql2');
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '', // sesuaikan
-    database: 'smartbizadmin' // sesuaikan
+// config/db.js
+
+const mysql = require('mysql2/promise'); // Import promise wrapper
+
+// Membuat koneksi ke database MySQL
+const pool = mysql.createPool({
+  host: 'localhost', // Ganti dengan host database Anda
+  user: 'root',       // Ganti dengan username MySQL Anda
+  password: '', // Ganti dengan password MySQL Anda
+  database: 'smartbizadmin',  // Ganti dengan nama database Anda
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-connection.connect((err) => {
-    if (err) throw err;
-    console.log('Connected to MySQL');
-});
-
-module.exports = connection;
+module.exports = pool;

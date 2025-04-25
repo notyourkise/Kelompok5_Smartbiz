@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const PORT = 3001;
-const pool = require('./db');
+const pool = require('./config/db');
 
 app.use(cors());
 app.use(express.json());
@@ -13,6 +13,7 @@ const keuanganRoutes = require('./routes/keuangan');
 const kosRoutes = require('./routes/kos');
 const coffeeShopRoutes = require('./routes/coffeeShop');
 const inventarisRoutes = require('./routes/inventaris');
+const userRoutes = require('./routes/userRoutes');
 
 // Use routes
 app.use('/auth', authRoutes);
@@ -25,14 +26,17 @@ app.get('/', (req, res) => {
   res.send('Smartbiz Admin API is running 🚀');
 });
 
-// Uji koneksi database
-pool.query('SELECT NOW()', (err, res) => {
-    if (err) {
-      console.error('Koneksi ke database gagal ❌', err);
-    } else {
-      console.log('Koneksi ke database berhasil ✅', res.rows[0]);
-    }
-  });
+// Uji koneksi database menggunakan async/await
+async function testDatabaseConnection() {
+  try {
+    const [rows] = await pool.query('SELECT NOW()');
+    console.log('✅ Koneksi ke database berhasil:', rows[0]);
+  } catch (err) {
+    console.error('❌ Koneksi ke database gagal:', err);
+  }
+}
+
+testDatabaseConnection(); // Panggil fungsi uji koneksi
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
