@@ -3,13 +3,18 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Button, Row, Col } from 'react-bootstrap'; // Menggunakan Bootstrap
 import { FaDollarSign, FaBed, FaCoffee, FaUser } from 'react-icons/fa'; // Menggunakan React Icons
+import Footer from './Footer'; // Import the Footer component
 
 const Dashboard = () => {
   const navigate = useNavigate();
 
+  // Ambil username dari localStorage
+  const username = localStorage.getItem('username');
+
   const handleLogout = () => {
-    // Menghapus token dari localStorage
+    // Menghapus token dan username dari localStorage
     localStorage.removeItem('token');
+    localStorage.removeItem('username');
     // Arahkan ke halaman login
     navigate('/login');
   };
@@ -41,7 +46,7 @@ const Dashboard = () => {
       </header>
 
       {/* Welcome Message */}
-      <h3 style={{ color: 'white', textAlign: 'center', marginBottom: '30px' }}>Selamat Datang, adada!</h3>
+      <h3 style={{ color: 'white', textAlign: 'center', marginBottom: '30px' }}>Selamat Datang, {username}!</h3>
       <h5 style={{ color: 'white', textAlign: 'center' }}>Role: Admin</h5>
 
       {/* Grid Layout untuk Menu Dashboard */}
@@ -97,11 +102,13 @@ const Dashboard = () => {
               <Card.Text>
                 Kelola data pengguna (CRUD).
               </Card.Text>
-              <Button variant="outline-primary" className="w-100" onClick={handleManageUser}>Kelola</Button> {/* Onclick untuk navigate ke Manage User */}
+              <Button variant="outline-primary" className="w-100" onClick={handleManageUser}>Kelola</Button>
             </Card.Body>
           </Card>
         </Col>
       </Row>
+      {/* Include the Footer component */}
+      <Footer /> 
     </div>
   );
 };

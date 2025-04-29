@@ -13,7 +13,8 @@ const keuanganRoutes = require('./routes/keuangan');
 const kosRoutes = require('./routes/kos');
 const coffeeShopRoutes = require('./routes/coffeeShop');
 const inventarisRoutes = require('./routes/inventaris');
-const userRoutes = require('./routes/userRoutes');
+const UserRoutes = require('./routes/UserRoutes');
+const authenticateToken = require('./middleware/authMiddleware'); // Import the authentication middleware
 
 // Use routes
 app.use('/auth', authRoutes);
@@ -21,7 +22,8 @@ app.use('/keuangan', keuanganRoutes);
 app.use('/kos', kosRoutes);
 app.use('/coffee', coffeeShopRoutes);
 app.use('/inventaris', inventarisRoutes);
-app.use('/api/users', userRoutes);
+// Apply authentication middleware to the user routes
+app.use('/api/users', authenticateToken, UserRoutes); 
 
 app.get('/', (req, res) => {
   res.send('Smartbiz Admin API is running 🚀');

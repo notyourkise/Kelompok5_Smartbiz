@@ -5,6 +5,7 @@ import Register from "./components/Register"; // Pastikan komponen Register diim
 import Dashboard from "./components/Dashboard";  // Komponen Dashboard
 import ManageUser from "./components/ManageUser";
 import 'bootstrap/dist/css/bootstrap.min.css';  // Pastikan Bootstrap diimpor
+import Footer from './components/Footer';
 
 function App() {
   return (

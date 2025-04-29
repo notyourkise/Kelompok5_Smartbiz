@@ -27,7 +27,11 @@ const Login = () => {
         password,
       });
 
+      // Menyimpan token dan username di localStorage
       localStorage.setItem("token", response.data.token);
+      localStorage.setItem("username", username);  // Menyimpan username ke localStorage
+
+      // Arahkan ke halaman dashboard
       navigate("/dashboard");
     } catch (error) {
       setErrorMessage("Login gagal. Periksa kembali username dan password.");
