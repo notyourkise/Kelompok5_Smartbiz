@@ -5,6 +5,8 @@ const router = express.Router();
 const userController = require('../controllers/UserController');
 
 // Endpoint untuk mendapatkan data pengguna
-router.get('/users', userController.getAllUsers);
+router.get('/', userController.getAllUsers);
+// Endpoint untuk menghapus pengguna berdasarkan ID
+router.delete('/:id', userController.deleteUser);
 
 module.exports = router;

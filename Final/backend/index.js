@@ -21,6 +21,7 @@ app.use('/keuangan', keuanganRoutes);
 app.use('/kos', kosRoutes);
 app.use('/coffee', coffeeShopRoutes);
 app.use('/inventaris', inventarisRoutes);
+app.use('/api/users', userRoutes);
 
 app.get('/', (req, res) => {
   res.send('Smartbiz Admin API is running 🚀');

@@ -1,24 +1,6 @@
-// src/components/UserTable.jsx
+import React from 'react';
 
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-
-const UserTable = () => {
-  const [users, setUsers] = useState([]);
-
-  // Ambil data pengguna dari API
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get('http://localhost:3001/api/users');
-        setUsers(response.data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
-    fetchUsers();
-  }, []);
-
+const UserTable = ({ users, handleDelete }) => {
   return (
     <div className="container mt-4">
       <h3 className="mb-4">Manajemen Pengguna</h3>
@@ -27,15 +9,21 @@ const UserTable = () => {
           <tr>
             <th>ID</th>
             <th>Username</th>
-            <th>Email</th>
+            <th>Role</th>
+            <th>Aksi</th>
           </tr>
         </thead>
         <tbody>
-          {users.map(user => (
+          {users.map(users => (
             <tr key={user.id}>
               <td>{user.id}</td>
               <td>{user.username}</td>
-              <td>{user.email}</td>
+              <td>{user.role}</td>
+              <td>
+                <button className="btn btn-danger btn-sm" onClick={() => handleDelete(users.id)}>
+                  Hapus
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -45,3 +33,4 @@ const UserTable = () => {
 };
 
 export default UserTable;
+

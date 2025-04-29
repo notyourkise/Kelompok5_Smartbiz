@@ -1,45 +1,37 @@
-// src/components/ManageUser.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import UserTable from './UserTable';
 
 const ManageUser = () => {
   const [users, setUsers] = useState([]);
 
+  // Ambil data user dari backend
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/api/users');
+      setUsers(response.data);
+    } catch (error) {
+      console.error("❌ Gagal mengambil data pengguna:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get('http://localhost:3001/api/users');
-        setUsers(response.data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
     fetchUsers();
   }, []);
 
-  return (
-    <div className="container mt-4">
-      <h3 className="mb-4">Manajemen Pengguna</h3>
-      <table className="table table-bordered">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(user => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.username}</td>
-              <td>{user.email}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+  // Hapus user
+  const handleDelete = async (id) => {
+    if (window.confirm('Yakin ingin menghapus pengguna ini?')) {
+      try {
+        await axios.delete(`http://localhost:3001/api/users/${id}`);
+        fetchUsers(); // Refresh data setelah hapus
+      } catch (error) {
+        console.error("❌ Gagal menghapus pengguna:", error);
+      }
+    }
+  };
+
+  return <UserTable users={users} handleDelete={handleDelete} />;
 };
 
 export default ManageUser;
