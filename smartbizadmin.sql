@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 25, 2025 at 08:25 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Waktu pembuatan: 30 Apr 2025 pada 12.18
+-- Versi server: 10.4.32-MariaDB
+-- Versi PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bookings`
+-- Struktur dari tabel `bookings`
 --
 
 CREATE TABLE `bookings` (
@@ -40,7 +40,7 @@ CREATE TABLE `bookings` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cart`
+-- Struktur dari tabel `cart`
 --
 
 CREATE TABLE `cart` (
@@ -55,7 +55,7 @@ CREATE TABLE `cart` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory`
+-- Struktur dari tabel `inventory`
 --
 
 CREATE TABLE `inventory` (
@@ -69,7 +69,7 @@ CREATE TABLE `inventory` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `inventory_transactions`
+-- Struktur dari tabel `inventory_transactions`
 --
 
 CREATE TABLE `inventory_transactions` (
@@ -85,7 +85,7 @@ CREATE TABLE `inventory_transactions` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `menu_items`
+-- Struktur dari tabel `menu_items`
 --
 
 CREATE TABLE `menu_items` (
@@ -100,7 +100,7 @@ CREATE TABLE `menu_items` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `orders`
+-- Struktur dari tabel `orders`
 --
 
 CREATE TABLE `orders` (
@@ -114,7 +114,7 @@ CREATE TABLE `orders` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `order_items`
+-- Struktur dari tabel `order_items`
 --
 
 CREATE TABLE `order_items` (
@@ -128,7 +128,7 @@ CREATE TABLE `order_items` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `rooms`
+-- Struktur dari tabel `rooms`
 --
 
 CREATE TABLE `rooms` (
@@ -142,7 +142,7 @@ CREATE TABLE `rooms` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `transactions`
+-- Struktur dari tabel `transactions`
 --
 
 CREATE TABLE `transactions` (
@@ -158,7 +158,7 @@ CREATE TABLE `transactions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `transactions`
+-- Dumping data untuk tabel `transactions`
 --
 
 INSERT INTO `transactions` (`id`, `type`, `amount`, `description`, `category`, `payment_method`, `created_at`, `updated_at`, `created_by`) VALUES
@@ -173,41 +173,32 @@ INSERT INTO `transactions` (`id`, `type`, `amount`, `description`, `category`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Struktur dari tabel `users`
 --
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role` enum('admin') NOT NULL DEFAULT 'admin',
+  `role` enum('admin','superadmin') NOT NULL DEFAULT 'admin',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `users`
+-- Dumping data untuk tabel `users`
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `role`, `created_at`) VALUES
 (14, 'haiikalll', '$2y$10$EWB0.ax8zXBp.bNiVyqrteDxTa81.z5LI9YO1KcRlzmJxr2sJVmaS', 'admin', '2025-03-01 17:53:27'),
-(16, 'irpan', '$2y$10$SNsfJlQa63DMyg.2nqtNyOaI8XP/KRQPJ3zwOblz6Tnmyglu9A2lK', 'admin', '2025-04-13 07:18:02'),
-(17, 'admin', 'adminpassword', 'admin', '2025-04-24 19:17:48'),
-(23, 'adit', '$2b$10$45OLPHrihesWqOwFag8YI./RRMWVZy2i4pDlT41NscMsoY3bElNnG', 'admin', '2025-04-24 20:56:06'),
-(24, 'ajeng', '$2b$10$Jpglsy3BD0Vt9MXQU37Zs.3DmC1HeVVgtlJzeLrgSPNulGMrKBQ6.', 'admin', '2025-04-24 22:19:28'),
-(25, 'pange', '$2b$10$PcH3tLsA3t/jYPyGkP4Jte3Qg6DP.D5odg.Ogf6OBXUul8YZje1Py', 'admin', '2025-04-25 02:23:27'),
-(26, 'haihai', '$2b$10$ZgAB4nAqqZ4h//KzJUG6sOHFHqjJ2GmrwqkpJVUocZefVQwiNLwEO', 'admin', '2025-04-25 02:26:45'),
-(27, 'anjay', '$2b$10$gNIo0OVNG8SQzTHJyHBnYOjB2oTRn7oWcf2yp2RAeAhJsy3wwVk5G', 'admin', '2025-04-25 03:12:48'),
-(33, 'adiiii', '$2b$10$IPxB9hBeVlPfxm4xCRJ9C.cT2XGJRyPAN9QLMo9b5cec53GaIpl..', 'admin', '2025-04-25 03:13:19'),
-(36, 'riiiii', '$2b$10$pVV0gb6dzAl32VRicCaxh./cx9AyDNR1vRsfICRV39Q4S5s0sZGNu', 'admin', '2025-04-25 03:14:25'),
-(40, 'kemal', '$2b$10$3o7vJcB9I3G28e52pSAr/e8yVwLePm.SC09gHPP6T6hx27gMFEtrO', 'admin', '2025-04-25 03:18:57'),
-(41, 'adada', '$2b$10$UeNvHOJyzbEF448Y6goS2.gSM7YdQv8dPguXK9TysrVDbDm22vPa6', 'admin', '2025-04-25 03:22:35');
+(44, 'SAD', '$2b$10$tJY3aZnlUVroKDnPOrOvK.YUfw4LCmqKT3c.8uCq2W.VVrf1351fK', 'superadmin', '2025-04-30 07:13:32'),
+(45, 'Ucup', '$2b$10$Q5IkFtXoLsuGuEjLKdygheoGzDvO8HYL1YllH3nipmzQBGrZtUVSi', 'admin', '2025-04-30 09:54:09');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `bookings`
+-- Indeks untuk tabel `bookings`
 --
 ALTER TABLE `bookings`
   ADD PRIMARY KEY (`id`),
@@ -215,7 +206,7 @@ ALTER TABLE `bookings`
   ADD KEY `room_id` (`room_id`);
 
 --
--- Indexes for table `cart`
+-- Indeks untuk tabel `cart`
 --
 ALTER TABLE `cart`
   ADD PRIMARY KEY (`id`),
@@ -223,13 +214,13 @@ ALTER TABLE `cart`
   ADD KEY `menu_item_id` (`menu_item_id`);
 
 --
--- Indexes for table `inventory`
+-- Indeks untuk tabel `inventory`
 --
 ALTER TABLE `inventory`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `inventory_transactions`
+-- Indeks untuk tabel `inventory_transactions`
 --
 ALTER TABLE `inventory_transactions`
   ADD PRIMARY KEY (`id`),
@@ -237,20 +228,20 @@ ALTER TABLE `inventory_transactions`
   ADD KEY `created_by` (`created_by`);
 
 --
--- Indexes for table `menu_items`
+-- Indeks untuk tabel `menu_items`
 --
 ALTER TABLE `menu_items`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `orders`
+-- Indeks untuk tabel `orders`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `order_items`
+-- Indeks untuk tabel `order_items`
 --
 ALTER TABLE `order_items`
   ADD PRIMARY KEY (`id`),
@@ -258,129 +249,129 @@ ALTER TABLE `order_items`
   ADD KEY `menu_item_id` (`menu_item_id`);
 
 --
--- Indexes for table `rooms`
+-- Indeks untuk tabel `rooms`
 --
 ALTER TABLE `rooms`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `transactions`
+-- Indeks untuk tabel `transactions`
 --
 ALTER TABLE `transactions`
   ADD PRIMARY KEY (`id`),
   ADD KEY `fk_transactions_user` (`created_by`);
 
 --
--- Indexes for table `users`
+-- Indeks untuk tabel `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username` (`username`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
 --
--- AUTO_INCREMENT for table `bookings`
+-- AUTO_INCREMENT untuk tabel `bookings`
 --
 ALTER TABLE `bookings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `cart`
+-- AUTO_INCREMENT untuk tabel `cart`
 --
 ALTER TABLE `cart`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `inventory`
+-- AUTO_INCREMENT untuk tabel `inventory`
 --
 ALTER TABLE `inventory`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `inventory_transactions`
+-- AUTO_INCREMENT untuk tabel `inventory_transactions`
 --
 ALTER TABLE `inventory_transactions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `menu_items`
+-- AUTO_INCREMENT untuk tabel `menu_items`
 --
 ALTER TABLE `menu_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `orders`
+-- AUTO_INCREMENT untuk tabel `orders`
 --
 ALTER TABLE `orders`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `order_items`
+-- AUTO_INCREMENT untuk tabel `order_items`
 --
 ALTER TABLE `order_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `rooms`
+-- AUTO_INCREMENT untuk tabel `rooms`
 --
 ALTER TABLE `rooms`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `transactions`
+-- AUTO_INCREMENT untuk tabel `transactions`
 --
 ALTER TABLE `transactions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
--- Constraints for dumped tables
+-- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
 --
 
 --
--- Constraints for table `bookings`
+-- Ketidakleluasaan untuk tabel `bookings`
 --
 ALTER TABLE `bookings`
   ADD CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `bookings_ibfk_2` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`id`);
 
 --
--- Constraints for table `cart`
+-- Ketidakleluasaan untuk tabel `cart`
 --
 ALTER TABLE `cart`
   ADD CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `cart_ibfk_2` FOREIGN KEY (`menu_item_id`) REFERENCES `menu_items` (`id`);
 
 --
--- Constraints for table `inventory_transactions`
+-- Ketidakleluasaan untuk tabel `inventory_transactions`
 --
 ALTER TABLE `inventory_transactions`
   ADD CONSTRAINT `inventory_transactions_ibfk_1` FOREIGN KEY (`inventory_id`) REFERENCES `inventory` (`id`),
   ADD CONSTRAINT `inventory_transactions_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`);
 
 --
--- Constraints for table `orders`
+-- Ketidakleluasaan untuk tabel `orders`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
--- Constraints for table `order_items`
+-- Ketidakleluasaan untuk tabel `order_items`
 --
 ALTER TABLE `order_items`
   ADD CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
   ADD CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`menu_item_id`) REFERENCES `menu_items` (`id`);
 
 --
--- Constraints for table `transactions`
+-- Ketidakleluasaan untuk tabel `transactions`
 --
 ALTER TABLE `transactions`
   ADD CONSTRAINT `fk_transactions_user` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`);

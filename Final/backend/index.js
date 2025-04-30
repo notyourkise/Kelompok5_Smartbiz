@@ -4,8 +4,16 @@ const app = express();
 const PORT = 3001;
 const pool = require('./config/db');
 
-app.use(cors());
-app.use(express.json());
+// Konfigurasi CORS untuk membatasi akses hanya untuk frontend
+const corsOptions = {
+  origin: 'http://localhost:5173',  // Ganti dengan URL frontend kamu
+  methods: 'GET,POST,PUT,DELETE',  // Tentukan metode HTTP yang diizinkan
+  allowedHeaders: 'Content-Type,Authorization', // Tentukan header yang diizinkan
+};
+
+// Menggunakan CORS
+app.use(cors(corsOptions));  
+app.use(express.json());  // Mengizinkan request dengan format JSON
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -14,33 +22,36 @@ const kosRoutes = require('./routes/kos');
 const coffeeShopRoutes = require('./routes/coffeeShop');
 const inventarisRoutes = require('./routes/inventaris');
 const UserRoutes = require('./routes/UserRoutes');
-const authenticateToken = require('./middleware/authMiddleware'); // Import the authentication middleware
+const authenticateToken = require('./middleware/authMiddleware'); // Import authentication middleware
 
-// Use routes
-app.use('/auth', authRoutes);
-app.use('/keuangan', keuanganRoutes);
-app.use('/kos', kosRoutes);
-app.use('/coffee', coffeeShopRoutes);
-app.use('/inventaris', inventarisRoutes);
-// Apply authentication middleware to the user routes
-app.use('/api/users', authenticateToken, UserRoutes); 
+// Gunakan routes
+app.use('/auth', authRoutes);  // Rute untuk login dan registrasi
+app.use('/keuangan', keuanganRoutes);  // Rute untuk manajemen keuangan
+app.use('/kos', kosRoutes);  // Rute untuk manajemen kos
+app.use('/coffee', coffeeShopRoutes);  // Rute untuk manajemen coffee shop
+app.use('/inventaris', inventarisRoutes);  // Rute untuk inventaris
+// Gunakan middleware otentikasi untuk rute pengguna
+app.use('/api/users', authenticateToken, UserRoutes);  // Rute untuk mengelola pengguna
 
+// Endpoint utama
 app.get('/', (req, res) => {
   res.send('Smartbiz Admin API is running 🚀');
 });
 
-// Uji koneksi database menggunakan async/await
-async function testDatabaseConnection() {
+// Uji koneksi ke database menggunakan async/await
+const testDatabaseConnection = async () => {
   try {
     const [rows] = await pool.query('SELECT NOW()');
     console.log('✅ Koneksi ke database berhasil:', rows[0]);
   } catch (err) {
     console.error('❌ Koneksi ke database gagal:', err);
   }
-}
+};
 
-testDatabaseConnection(); // Panggil fungsi uji koneksi
+// Uji koneksi database saat server dijalankan
+testDatabaseConnection(); 
 
+// Menjalankan server
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });

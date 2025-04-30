@@ -1,5 +1,3 @@
-// routes/auth.js
-
 const express = require('express');
 const bcrypt = require('bcrypt');
 const router = express.Router();
@@ -8,18 +6,24 @@ const jwt = require('jsonwebtoken'); // Import JWT untuk menghasilkan token
 
 // Endpoint untuk registrasi
 router.post('/register', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, role } = req.body;
 
-  if (!username || !password) {
-    return res.status(400).send('Username dan password harus diisi');
+  // Validasi input
+  if (!username || !password || !role) {
+    return res.status(400).send('Username, password, dan role harus diisi');
+  }
+
+  // Pastikan role hanya 'admin' atau 'superadmin'
+  if (role !== 'admin' && role !== 'superadmin') {
+    return res.status(400).send('Role tidak valid. Hanya admin atau superadmin yang diperbolehkan.');
   }
 
   try {
     // Hash password sebelum disimpan ke database
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Simpan username dan hashed password ke database
-    await pool.query('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword]);
+    // Simpan username, hashed password, dan role ke database
+    await pool.query('INSERT INTO users (username, password, role) VALUES (?, ?, ?)', [username, hashedPassword, role]);
 
     res.status(201).send(`User ${username} berhasil didaftarkan`); // Use 201 Created status
   } catch (err) {
@@ -55,8 +59,12 @@ router.post('/login', async (req, res) => {
 
       if (isMatch) {
         // Jika password cocok, kirimkan token
-        const token = jwt.sign({ username: user.username }, 'your-secret-key', { expiresIn: '1h' });
-        res.json({ message: 'Login berhasil', token });
+        const token = jwt.sign(
+          { id: user.id, username: user.username, role: user.role }, // Menyertakan role dalam payload
+          'your-secret-key', 
+          { expiresIn: '1h' } // Token berlaku selama 1 jam
+        );
+        res.json({ message: 'Login berhasil', token, role: user.role });
       } else {
         res.status(401).send('Password salah');
       }

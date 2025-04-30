@@ -1,5 +1,3 @@
-// src/components/Login.jsx
-
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -27,12 +25,18 @@ const Login = () => {
         password,
       });
 
-      // Menyimpan token dan username di localStorage
+      // Menyimpan token, username, dan role di localStorage
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("username", username);  // Menyimpan username ke localStorage
+      localStorage.setItem("role", response.data.role); // Menyimpan role pengguna
 
-      // Arahkan ke halaman dashboard
-      navigate("/dashboard");
+      // Mengarahkan berdasarkan role
+      if (response.data.role === 'admin') {
+        navigate("/dashboard"); // Admin menuju dashboard
+      } else if (response.data.role === 'superadmin') {
+        navigate("/dashboard"); // Superadmin menuju dashboard (bisa ditambahkan lebih banyak fitur nantinya)
+      }
+
     } catch (error) {
       setErrorMessage("Login gagal. Periksa kembali username dan password.");
     }
@@ -43,7 +47,7 @@ const Login = () => {
       <div className="login-card">
         <div className="login-left">
           <h2>LOGIN</h2>
-          <p className="sub">Area 9 Coffe Shop</p>
+          <p className="sub">Area 9 Coffee Shop</p>
 
           <form onSubmit={handleLogin}>
             <div className="form-group">
