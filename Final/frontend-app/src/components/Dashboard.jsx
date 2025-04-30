@@ -1,8 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Button, Row, Col } from 'react-bootstrap'; // Menggunakan Bootstrap
+// Remove Bootstrap components Card, Row, Col. Keep Button for now or replace later if needed.
+import { Button } from 'react-bootstrap'; 
 import { FaDollarSign, FaBed, FaCoffee, FaUser, FaBox } from 'react-icons/fa'; // Menggunakan React Icons
 import Footer from './Footer'; // Import the Footer component
+import './Dashboard.css'; // Import the new CSS file
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -29,111 +31,103 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="container-fluid p-4" style={{ height: '100vh', backgroundColor: '#2c3e50' }}>
+    // Use CSS classes instead of inline styles and Bootstrap container
+    <div className="dashboard-container"> 
       {/* Header */}
-      <header className="d-flex justify-content-between align-items-center mb-4">
-        <h2 style={{ color: 'white' }}>Smartbiz Admin</h2>
-        {/* Tombol Logout */}
+      <header className="dashboard-header"> 
+        <h2 className="dashboard-title">Smartbiz Admin</h2> 
+        {/* Tombol Logout with CSS class */}
         <Button 
-          variant="danger" 
+          variant="danger" // Keep variant for base styling, override with class
           onClick={handleLogout} 
-          size="sm" 
-          style={{
-            width: '100px',
-            height: '40px',
-            padding: '0',
-            borderRadius: '5px',
-            fontWeight: 'bold'
-          }}
+          className="logout-button" // Apply CSS class
         >
           Logout
         </Button>
       </header>
 
       {/* Welcome Message */}
-      <h3 style={{ color: 'white', textAlign: 'center', marginBottom: '30px' }}>Selamat Datang, {username}!</h3>
-      <h5 style={{ color: 'white', textAlign: 'center' }}>Role: {role}</h5>
+      <h3 className="welcome-message">Selamat Datang, {username}!</h3> 
+      <h5 className="role-display">Role: {role}</h5> 
 
-      {/* Grid Layout untuk Menu Dashboard */}
-      <Row xs={1} sm={2} md={3} lg={4} className="g-4 justify-content-center">
+      {/* Grid Layout untuk Menu Dashboard - Use div with CSS class */}
+      <div className="dashboard-grid"> 
         {/* Manajemen Keuangan Card - Hanya untuk Superadmin */}
         {role === 'superadmin' && (
-          <Col>
-            <Card className="text-center shadow p-3 mb-5 rounded">
-              <Card.Body>
-                <FaDollarSign style={{ fontSize: '3rem', color: '#f39c12' }} />
-                <Card.Title>Manajemen Keuangan</Card.Title>
-                <Card.Text>
-                  Kelola pemasukan dan pengeluaran bisnis Anda.
-                </Card.Text>
-                <Button variant="outline-primary" className="w-100">Kelola</Button>
-              </Card.Body>
-            </Card>
-          </Col>
+          // Replace Col and Card with div and CSS classes
+          <div className="dashboard-card"> 
+            {/* Replace Card.Body */}
+            <div>
+              {/* Apply icon class and specific color */}
+              <FaDollarSign className="card-icon" style={{ color: '#2ecc71' }} /> {/* Green for finance */}
+              <h4 className="card-title">Manajemen Keuangan</h4>
+              <p className="card-text">
+                Kelola pemasukan dan pengeluaran bisnis Anda.
+              </p>
+              {/* Apply button class */}
+              <Button variant="outline-primary" className="card-button">Kelola</Button> 
+            </div>
+          </div>
         )}
 
         {/* Kamar Kos Card - Hanya untuk Superadmin */}
         {role === 'superadmin' && (
-          <Col>
-            <Card className="text-center shadow p-3 mb-5 rounded">
-              <Card.Body>
-                <FaBed style={{ fontSize: '3rem', color: '#2ecc71' }} />
-                <Card.Title>Kamar Kos</Card.Title>
-                <Card.Text>
-                  Kelola ketersediaan kamar dan pemesanan.
-                </Card.Text>
-                <Button variant="outline-primary" className="w-100">Lihat</Button>
-              </Card.Body>
-            </Card>
-          </Col>
+          <div className="dashboard-card">
+            <div>
+              {/* Apply icon class and specific color */}
+              <FaBed className="card-icon" style={{ color: '#3498db' }} /> {/* Blue for rooms */}
+              <h4 className="card-title">Kamar Kos</h4>
+              <p className="card-text">
+                Kelola ketersediaan kamar dan pemesanan.
+              </p>
+              <Button variant="outline-primary" className="card-button">Lihat</Button>
+            </div>
+          </div>
         )}
 
         {/* Area 9 - Coffee Shop Card - Untuk Semua Role */}
-        <Col>
-          <Card className="text-center shadow p-3 mb-5 rounded">
-            <Card.Body>
-              <FaCoffee style={{ fontSize: '3rem', color: '#e67e22' }} />
-              <Card.Title>Area 9 - Coffee Shop</Card.Title>
-              <Card.Text>
-                Klik untuk melihat menu kopi dan melakukan pemesanan.
-              </Card.Text>
-              <Button variant="outline-primary" className="w-100">Lihat Menu</Button>
-            </Card.Body>
-          </Card>
-        </Col>
+        <div className="dashboard-card">
+          <div>
+            {/* Apply icon class and specific color */}
+            <FaCoffee className="card-icon" style={{ color: '#a0522d' }} /> {/* Brown for coffee */}
+            <h4 className="card-title">Area 9 - Coffee Shop</h4>
+            <p className="card-text">
+              Klik untuk melihat menu kopi dan melakukan pemesanan.
+            </p>
+            <Button variant="outline-primary" className="card-button">Lihat Menu</Button>
+          </div>
+        </div>
 
         {/* Manajemen User Card - Hanya untuk Superadmin */}
         {role === 'superadmin' && (
-          <Col>
-            <Card className="text-center shadow p-3 mb-5 rounded">
-              <Card.Body>
-                <FaUser style={{ fontSize: '3rem', color: '#3498db' }} />
-                <Card.Title>Manajemen User</Card.Title>
-                <Card.Text>
-                  Kelola data pengguna (CRUD).
-                </Card.Text>
-                <Button variant="outline-primary" className="w-100" onClick={handleManageUser}>Kelola</Button>
-              </Card.Body>
-            </Card>
-          </Col>
+          <div className="dashboard-card">
+            <div>
+              {/* Apply icon class and specific color */}
+              <FaUser className="card-icon" style={{ color: '#f39c12' }} /> {/* Orange for users */}
+              <h4 className="card-title">Manajemen User</h4>
+              <p className="card-text">
+                Kelola data pengguna anda .
+              </p>
+              <Button variant="outline-primary" className="card-button" onClick={handleManageUser}>Kelola</Button>
+            </div>
+          </div>
         )}
 
         {/* Inventaris Bisnis Card - Hanya untuk Superadmin */}
         {role === 'superadmin' && (
-          <Col>
-            <Card className="text-center shadow p-3 mb-5 rounded">
-              <Card.Body>
-                <FaBox style={{ fontSize: '3rem', color: '#9b59b6' }} />
-                <Card.Title>Inventaris Bisnis</Card.Title>
-                <Card.Text>
-                  Kelola stok dan inventaris bisnis Anda.
-                </Card.Text>
-                <Button variant="outline-primary" className="w-100" onClick={handleInventaris}>Kelola Inventaris</Button>
-              </Card.Body>
-            </Card>
-          </Col>
+          <div className="dashboard-card">
+            <div>
+              {/* Apply icon class and specific color */}
+              <FaBox className="card-icon" style={{ color: '#95a5a6' }} /> {/* Gray for inventory */}
+              <h4 className="card-title">Inventaris Bisnis</h4>
+              <p className="card-text">
+                Kelola stok dan inventaris bisnis Anda.
+              </p>
+              <Button variant="outline-primary" className="card-button" onClick={handleInventaris}>Kelola Inventaris</Button>
+            </div>
+          </div>
         )}
-      </Row>
+      </div> 
 
       {/* Include the Footer component */}
       <Footer /> 

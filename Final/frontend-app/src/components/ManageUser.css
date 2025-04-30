@@ -1,0 +1,183 @@
+/* src/components/ManageUser.css */
+
+/* Base container style from Dashboard */
+.manage-user-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1f2833 0%, #45a29e 100%);
+  padding: 2rem;
+  color: #c5c6c7;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header style similar to Dashboard */
+.manage-user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #4b5a6a;
+}
+
+.manage-user-title {
+  color: #66fcf1;
+  font-weight: bold;
+  font-size: 2rem;
+}
+
+/* Button styles */
+.action-button {
+  background-color: transparent;
+  border: 1px solid #66fcf1;
+  color: #66fcf1;
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Space between icon and text */
+}
+
+.action-button:hover {
+  background-color: #66fcf1;
+  color: #1f2833;
+  transform: scale(1.05);
+}
+
+.back-button {
+  background-color: #4b5a6a; /* Different background for back button */
+  border: 1px solid #6c757d;
+  color: #c5c6c7;
+  padding: 0.6rem; /* Adjust padding for icon-only */
+  width: 45px; /* Fixed size */
+  height: 45px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #6c757d;
+  transform: scale(1.1);
+}
+
+/* Table Styles (Copied from ManageInventaris.css and adapted) */
+.table-responsive {
+  margin-top: 2rem; /* Add space above the table */
+}
+
+.user-table { /* Use .user-table class */
+  background-color: #2c3e50; /* Darker background for table */
+  color: #c5c6c7; /* Light text color */
+  border: 1px solid #4b5a6a; /* Border color */
+  border-radius: 8px; /* Rounded corners for the table container */
+  overflow: hidden; /* Ensures border-radius clips content */
+}
+
+.user-table thead { /* Use .user-table class */
+  background-color: #1f2833; /* Even darker header */
+  color: #66fcf1; /* Accent color for header text */
+}
+
+.user-table th, /* Use .user-table class */
+.user-table td { /* Use .user-table class */
+  vertical-align: middle; /* Center content vertically */
+  padding: 0.8rem 1rem; /* Adjust padding */
+  border-color: #4b5a6a; /* Match border color */
+}
+
+/* Style for striped rows */
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+  background-color: rgba(75, 90, 106, 0.5); /* Slightly different shade for odd rows */
+  color: #c5c6c7;
+}
+
+/* Hover effect for rows */
+.table-hover > tbody > tr:hover > * {
+  background-color: #45a29e; /* Accent color on hover */
+  color: #1f2833; /* Dark text on hover */
+}
+
+/* Ensure buttons in table cells have some space */
+.user-table td .btn { /* Use .user-table class */
+  margin-right: 0.5rem; /* Add space between buttons */
+}
+.user-table td .btn:last-child { /* Use .user-table class */
+  margin-right: 0; /* Remove margin from the last button */
+}
+
+
+/* Modal styles (Copied and adapted from Register.css) */
+.modal-content {
+  background-color: #1f2833; /* Match card background */
+  color: #c5c6c7;
+  border: 1px solid #4b5a6a;
+  border-radius: 10px;
+}
+
+.modal-header {
+  border-bottom: 1px solid #4b5a6a;
+  color: #66fcf1; /* Accent title */
+}
+
+.modal-header .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%); /* Make close button visible */
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-body .form-label {
+ color: #c5c6c7;
+}
+
+.modal-body .form-control {
+  background-color: #2c3e50;
+  color: #ffffff;
+  border: 1px solid #4b5a6a;
+  border-radius: 5px; /* Standard radius for modal inputs */
+}
+
+.modal-body .form-control::placeholder {
+  color: #8a9a9a;
+}
+
+.modal-body .form-control:focus {
+  border-color: #66fcf1;
+  background-color: #2c3e50; /* Keep background on focus */
+  color: #ffffff;
+  box-shadow: none;
+}
+
+
+.modal-footer {
+  border-top: 1px solid #4b5a6a;
+}
+
+/* Style modal buttons */
+.modal-footer .btn-primary {
+  background-color: #66fcf1;
+  border-color: #66fcf1;
+  color: #1f2833;
+  font-weight: bold;
+}
+.modal-footer .btn-primary:hover {
+  background-color: #45a29e;
+  border-color: #45a29e;
+  color: #1f2833;
+}
+
+.modal-footer .btn-secondary {
+  color: #c5c6c7;
+  background-color: #4b5a6a;
+  border-color: #6c757d;
+  font-weight: bold;
+}
+.modal-footer .btn-secondary:hover {
+  background-color: #6c757d;
+  color: #ffffff;
+}

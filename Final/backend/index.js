@@ -20,7 +20,7 @@ const authRoutes = require('./routes/auth');
 const keuanganRoutes = require('./routes/keuangan');
 const kosRoutes = require('./routes/kos');
 const coffeeShopRoutes = require('./routes/coffeeShop');
-const inventarisRoutes = require('./routes/inventaris');
+const inventarisRoutes = require('./routes/InventarisRoutes'); // Corrected import path
 const UserRoutes = require('./routes/UserRoutes');
 const authenticateToken = require('./middleware/authMiddleware'); // Import authentication middleware
 
@@ -29,7 +29,8 @@ app.use('/auth', authRoutes);  // Rute untuk login dan registrasi
 app.use('/keuangan', keuanganRoutes);  // Rute untuk manajemen keuangan
 app.use('/kos', kosRoutes);  // Rute untuk manajemen kos
 app.use('/coffee', coffeeShopRoutes);  // Rute untuk manajemen coffee shop
-app.use('/inventaris', inventarisRoutes);  // Rute untuk inventaris
+// Corrected path and applied authentication middleware
+app.use('/api/inventaris', authenticateToken, inventarisRoutes); // Corrected path and added auth
 // Gunakan middleware otentikasi untuk rute pengguna
 app.use('/api/users', authenticateToken, UserRoutes);  // Rute untuk mengelola pengguna
 

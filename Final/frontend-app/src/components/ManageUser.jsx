@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import UserTable from "./UserTable";
-import { Button, Modal, Form } from "react-bootstrap"; // Import Bootstrap components
-import { FaPlus, FaEdit, FaArrowLeft } from "react-icons/fa"; // Import Plus, Edit, and ArrowLeft icons
+// Import Table component from react-bootstrap
+import { Button, Modal, Form, Table } from "react-bootstrap"; 
+import { FaTrashAlt, FaEdit, FaPlus, FaArrowLeft } from "react-icons/fa"; // Import necessary icons
 import { useNavigate } from "react-router-dom"; // Import useNavigate
-import Footer from './Footer'; // Import the Footer component
+import Footer from "./Footer"; // Import the Footer component
+import './ManageUser.css'; // Import the new CSS file
 
 const ManageUser = () => {
   const navigate = useNavigate(); // Initialize navigate
@@ -143,41 +144,85 @@ const ManageUser = () => {
       );
     }
   };
-  
+
   return (
-    <div className="container-fluid mt-4">
-      {/* Back Button */}
-      <div className="d-flex justify-content-start mb-3">
-        {/* Back button with custom styling to match Dashboard Logout button */}
-        <Button 
-          variant="secondary" 
-          onClick={handleBack} 
-          style={{
-            width: '45px', // Adjusted width for just the icon
-            height: '45px',
-            padding: '0',
-            borderRadius: '10px',
-            display: 'flex', // Use flex to center the icon
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
+    // Use the new container class
+    <div className="manage-user-container"> 
+      {/* Header with Back Button and Title */}
+      <header className="manage-user-header">
+        {/* Back Button with CSS class */}
+        <Button
+          variant="secondary" // Keep variant for base styling, override with class
+          onClick={handleBack}
+          className="back-button" // Apply CSS class
         >
-          <FaArrowLeft /> 
+          <FaArrowLeft />
         </Button>
-      </div>
+        <h2 className="manage-user-title">Manajemen Pengguna</h2> {/* Add title */}
+        {/* Create User Button */}
+         <Button
+          variant="primary" // Keep variant for base styling, override with class
+          onClick={() => setShowCreateModal(true)}
+          className="action-button" // Apply CSS class
+        >
+          <FaPlus /> Tambah Pengguna
+        </Button>
+      </header>
 
       {/* User Table */}
-      <UserTable
-        users={users}
-        handleDelete={handleDelete}
-        handleEditClick={handleEditClick}
-      />
+      <div className="table-responsive"> {/* Make table responsive */}
+        <Table striped bordered hover className="user-table"> {/* Add class for potential styling */}
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Username</th>
+              <th>Role</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.length > 0 ? (
+              users.map((user, index) => (
+                <tr key={user.id}>
+                  <td>{index + 1}</td>
+                  <td>{user.username}</td>
+                  <td>{user.role}</td>
+                  <td>
+                    <Button 
+                      variant="outline-primary" 
+                      size="sm" 
+                      className="me-2" // Margin end for spacing
+                      onClick={() => handleEditClick(user)}
+                    >
+                      <FaEdit /> Edit
+                    </Button>
+                    <Button 
+                      variant="outline-danger" 
+                      size="sm" 
+                      onClick={() => handleDelete(user.id)}
+                    >
+                      <FaTrashAlt /> Hapus
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="text-center">Tidak ada data pengguna.</td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
+      </div>
 
       {/* Include the Footer component */}
       <Footer />
 
       {/* Create User Modal */}
-      <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)}>
+      <Modal show={showCreateModal} onHide={() => setShowCreateModal(true)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Tambah Pengguna Baru</Modal.Title>
+        </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3">

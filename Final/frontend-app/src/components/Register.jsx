@@ -3,9 +3,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Modal, Button } from "react-bootstrap";
-import { FaCheckCircle } from "react-icons/fa"; // Pastikan ikon FaCheckCircle diimpor
-import "./Register.css";
+import { Modal, Button } from "react-bootstrap"; // Keep Modal and Button for the popup
+import { FaCheckCircle, FaUser, FaLock } from "react-icons/fa"; // Import necessary icons
+import "./Register.css"; // Ensure CSS is imported
 import logo from "../assets/smartbizlogo.png"; // Pastikan path logo benar
 
 const Register = () => {
@@ -13,13 +13,14 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState("admin"); // Add state for role, default to 'admin'
   const [errorMessage, setErrorMessage] = useState("");
   const [showModal, setShowModal] = useState(false); // State untuk modal
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    if (!username || !password || !confirmPassword) {
+    if (!username || !password || !confirmPassword || !role) { // Add role validation
       setErrorMessage("Semua kolom harus diisi.");
       return;
     }
@@ -33,6 +34,7 @@ const Register = () => {
       const response = await axios.post("http://localhost:3001/auth/register", {
         username,
         password,
+        role, // Include role in the request payload
       });
 
       // Tampilkan modal setelah berhasil register
@@ -48,9 +50,16 @@ const Register = () => {
   };
 
   return (
-    <div className="register-wrapper">
-      <div className="register-card">
-        <div className="register-left">
+    <div className="auth-container"> 
+      {/* Use the split card class */}
+      <div className="auth-card-split"> 
+        {/* Image Section (Left) */}
+        <div className="auth-image-section"> 
+          <img src={logo} alt="Smartbiz Logo" className="auth-logo" /> 
+        </div>
+
+        {/* Form Section (Right) */}
+        <div className="auth-form-section"> 
           <h2>REGISTER</h2>
           <p className="sub">Area 9 Coffee Shop</p>
 
@@ -58,6 +67,7 @@ const Register = () => {
             <div className="form-group">
               <label>Username</label>
               <div className="input-icon">
+                <FaUser /> {/* Add icon */}
                 <input
                   type="text"
                   placeholder="Enter username"
@@ -70,6 +80,7 @@ const Register = () => {
             <div className="form-group">
               <label>Password</label>
               <div className="input-icon">
+                <FaLock /> {/* Add icon */}
                 <input
                   type="password"
                   placeholder="Enter password"
@@ -82,6 +93,7 @@ const Register = () => {
             <div className="form-group">
               <label>Confirm Password</label>
               <div className="input-icon">
+                <FaLock /> {/* Add icon */}
                 <input
                   type="password"
                   placeholder="Confirm password"
@@ -91,22 +103,34 @@ const Register = () => {
               </div>
             </div>
 
-            {errorMessage && <div className="error">{errorMessage}</div>}
+            <div className="form-group">
+              <label>Role</label>
+              <div className="input-icon">
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                >
+                  <option value="admin">Admin</option>
+                  <option value="superadmin">Superadmin</option>
+                </select>
+              </div>
+            </div>
 
-            <button type="submit">Register</button>
+            {/* Apply consistent error message class */}
+            {errorMessage && <div className="error-message">{errorMessage}</div>} 
+
+            {/* Apply new button class */}
+            <button type="submit" className="auth-button">Register</button> 
           </form>
 
-          <p className="mt-3 text-center">
+          {/* Use consistent link style */}
+          <p className="switch-auth-link"> 
             Sudah punya akun? <a href="/login">Login</a>
           </p>
-        </div>
-
-        <div className="register-right">
-          <img src={logo} alt="Smartbiz Logo" />
-        </div>
+        </div> 
       </div>
 
-      {/* Modal Pop-up */}
+      {/* Modal Pop-up remains outside the split card */}
       <Modal show={showModal} onHide={closeModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>

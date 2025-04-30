@@ -1,130 +1,231 @@
-/* src/components/Register.css */
+/* src/components/Register.css - Updated Styles */
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', sans-serif;
-}
-
-.register-wrapper {
-  height: 100vh;
-  width: 100vw;
-  background: #ba832b;  /* Warna latar belakang kuning */
+/* Apply base styles similar to Dashboard/Login */
+.auth-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1f2833 0%, #45a29e 100%); /* Gradient background */
+  padding: 2rem;
+  color: #c5c6c7; /* Softer text color */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
   display: flex;
   justify-content: center;
   align-items: center;
-  backdrop-filter: blur(10px); /* Efek blur */
 }
 
-.register-card {
-  display: flex;
-  width: 850px;
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
+/* Updated card for split layout (same as Login.css) */
+.auth-card-split {
+  display: flex; /* Enable flexbox for columns */
+  background-color: #1f2833; 
+  border: 1px solid #4b5a6a; 
+  border-radius: 15px; /* Slightly larger radius like image */
+  width: 100%;
+  max-width: 900px; /* Wider card for two columns */
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4); /* Slightly stronger shadow */
+  overflow: hidden; /* Ensure content stays within rounded corners */
+  min-height: 500px; /* Give it some minimum height */
 }
 
-.register-left, .register-right {
-  flex: 1;
-  padding: 40px;
-}
-
-.register-left {
+/* Section for the form (same as Login.css) */
+.auth-form-section {
+  flex: 1; /* Take half the space */
+  padding: 3rem 4rem; /* Generous padding */
   display: flex;
   flex-direction: column;
+  justify-content: center; /* Center form vertically */
+  text-align: left; /* Align form content left */
+}
+
+/* Section for the image/logo (same as Login.css) */
+.auth-image-section {
+  flex: 1; /* Take half the space */
+  background-color: #2c3e50; /* Slightly different background for contrast */
+  display: flex;
   justify-content: center;
+  align-items: center;
+  padding: 2rem;
 }
 
-.register-left h2 {
+.auth-logo {
+  width: 150px; /* Adjust logo size */
+  height: auto;
+  margin-bottom: 1.5rem;
+  /* Center logo within its section if needed, but image section handles centering */
+}
+
+/* Adjust heading and subtext alignment/margins for the form section (same as Login.css) */
+.auth-form-section h2 {
+  color: #66fcf1; 
   font-weight: bold;
-  margin-bottom: 5px;
-  font-size: 26px;
-  color: #333;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  text-align: center; /* Center title within form section */
 }
 
-.register-left .sub {
-  margin-bottom: 25px;
-  font-size: 14px;
-  color: #888;
+.auth-form-section .sub {
+  margin-bottom: 2rem;
+  font-size: 1rem;
+  color: #a8b2b1; 
+  text-align: center; /* Center subtext within form section */
 }
 
+/* Ensure form group text remains left-aligned */
+
+/* .form-group already has text-align: left */
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
 }
 
 .form-group label {
   font-weight: 600;
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 0.5rem;
+  color: #c5c6c7; /* Label color */
+  font-size: 0.9rem;
 }
 
 .input-icon {
   position: relative;
-}
-
-.input-icon input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 50px;  /* Mengubah radius corner menjadi 50px */
-  outline: none;
-  background-color: #f8f8f8;  /* Latar belakang lebih terang */
-  font-size: 16px;  /* Menyesuaikan ukuran font */
-  padding-left: 40px;  /* Memberikan ruang untuk ikon */
-}
-
-.input-icon svg { 
-  position: absolute;
-  left: 12px;
-  color: #888; /* Warna ikon */
-  font-size: 18px;
-}
-
-button {
-  background-color: #f5a623;
-  color: white;
-  padding: 12px;
-  border: none;
-  border-radius: 50px;  /* Mengubah radius corner tombol menjadi 50px */
-  font-weight: bold;
-  width: 70%;  /* Membuat tombol lebih pendek dari inputan */
-  cursor: pointer;
-  transition: 0.3s;
-  margin: 20px auto 0; /* Agar tombol berada di tengah dan sedikit lebih ke kanan */
-  display: block;
-}
-
-button:hover {
-  background-color: #e69500;
-}
-
-.forgot-link {
-  display: block;
-  margin-top: 15px;
-  font-size: 13px;
-  color: #5a4fff;
-  text-align: center;
-}
-
-.forgot-link:hover {
-  text-decoration: underline;
-}
-
-.register-right {
-  background-color: #fff3e0;
   display: flex;
-  justify-content: center;
   align-items: center;
 }
 
-.register-right img {
-  width: 250px; /* Memperbesar logo */
-  height: auto;
+/* Style for both input and select */
+.input-icon input,
+.input-icon select {
+  width: 100%;
+  padding: 0.8rem 1rem; /* Base padding */
+  border: 1px solid #4b5a6a; /* Subtle border */
+  border-radius: 20px; /* Rounded input */
+  outline: none;
+  background-color: #2c3e50; /* Darker input background */
+  color: #ffffff; /* White text */
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  appearance: none; /* Remove default select arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Add padding for icons if present (only for inputs in this case) */
+.input-icon input {
+  padding-left: 2.5rem; /* Adjust padding for icon */
+}
+
+/* Style select specifically */
+.input-icon select {
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23C5C6C7%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 0.65em auto;
+  padding-right: 2.5rem; /* Make space for the arrow */
+}
+
+.input-icon input::placeholder {
+  color: #8a9a9a; /* Placeholder color */
+}
+
+.input-icon input:focus,
+.input-icon select:focus {
+  border-color: #66fcf1; /* Accent border on focus */
+}
+
+.input-icon svg {
+  position: absolute;
+  left: 1rem; /* Position icon */
+  color: #8a9a9a; /* Icon color */
+  font-size: 1.1rem;
+}
+
+.auth-button {
+  background-color: transparent;
+  border: 1px solid #66fcf1; /* Accent border */
+  color: #66fcf1; /* Accent text */
+  padding: 0.8rem 0;
+  width: 100%; /* Full width button */
+  border-radius: 20px; /* Rounded button */
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  margin-top: 1rem; /* Add some top margin */
+}
+
+.auth-button:hover {
+  background-color: #66fcf1; /* Fill with accent color on hover */
+  color: #1f2833; /* Dark text on hover */
+  transform: scale(1.02); /* Slight scale effect */
+}
+
+.error-message { /* Consistent error styling */
+  color: #e74c3c; /* Red error color */
+  background-color: rgba(231, 76, 60, 0.1); /* Light red background */
+  border: 1px solid #e74c3c;
+  padding: 0.75rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Ensure link is centered within the form section (same as Login.css) */
+.switch-auth-link {
+  text-align: center; /* Center the switch link */
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #a8b2b1;
+}
+
+.switch-auth-link a {
+  color: #66fcf1; /* Accent color for link */
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.switch-auth-link a:hover {
+  text-decoration: underline;
+}
+
+/* Modal styles (keep existing or adapt if needed) */
+.modal-content {
+  background-color: #1f2833; /* Match card background */
+  color: #c5c6c7;
+  border: 1px solid #4b5a6a;
+  border-radius: 10px;
+}
+
+.modal-header {
+  border-bottom: 1px solid #4b5a6a;
+  color: #66fcf1; /* Accent title */
+}
+
+.modal-header .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%); /* Make close button visible */
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  border-top: 1px solid #4b5a6a;
+}
+
+.modal-footer .btn-success {
+  background-color: #66fcf1;
+  border-color: #66fcf1;
+  color: #1f2833;
+  font-weight: bold;
+}
+.modal-footer .btn-success:hover {
+  background-color: #45a29e;
+  border-color: #45a29e;
+}
+
+.modal-footer .btn-outline-secondary {
+  color: #c5c6c7;
+  border-color: #4b5a6a;
+}
+.modal-footer .btn-outline-secondary:hover {
+  background-color: #4b5a6a;
+  color: #ffffff;
 }

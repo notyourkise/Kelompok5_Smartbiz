@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock } from "react-icons/fa"; // Mengimpor ikon FontAwesome
-import "./Login.css";
+import "./Login.css"; // Ensure CSS is imported
 import logo from "../assets/smartbizlogo.png"; // Pastikan path logo benar
 
 const Login = () => {
@@ -43,9 +43,11 @@ const Login = () => {
   };
 
   return (
-    <div className="login-wrapper">
-      <div className="login-card">
-        <div className="login-left">
+    <div className="auth-container"> 
+      {/* Use the split card class */}
+      <div className="auth-card-split"> 
+        {/* Form Section (Left) */}
+        <div className="auth-form-section"> 
           <h2>LOGIN</h2>
           <p className="sub">Area 9 Coffee Shop</p>
 
@@ -76,15 +78,20 @@ const Login = () => {
               </div>
             </div>
 
-            {errorMessage && <div className="error">{errorMessage}</div>}
+            {/* Apply consistent error message class */}
+            {errorMessage && <div className="error-message">{errorMessage}</div>} 
 
-            <button type="submit">Login</button>
+            {/* Apply new button class */}
+            <button type="submit" className="auth-button" >Login</button> 
           </form>
 
+          {/* Add link to Register page */}
+          
         </div>
 
-        <div className="login-right">
-          <img src={logo} alt="Smartbiz Logo" />
+        {/* Image Section (Right) */}
+        <div className="auth-image-section"> 
+          <img src={logo} alt="Smartbiz Logo" className="auth-logo" /> 
         </div>
       </div>
     </div>
