@@ -5,8 +5,8 @@ const jwt = require('jsonwebtoken');
 // Fungsi untuk mendapatkan semua pengguna
 const getAllUsers = async (req, res) => {
   try {
-    const [users] = await db.query("SELECT id, username, role FROM users");
-    res.status(200).json(users);
+    const result = await db.query("SELECT id, username, role FROM users");
+    res.status(200).json(result.rows);
   } catch (err) {
     console.error("❌ Error mengambil data pengguna:", err);
     res.status(500).json({ error: "Gagal mengambil data pengguna" });
@@ -17,15 +17,14 @@ const getAllUsers = async (req, res) => {
 const createUser = async (req, res) => {
   const { username, password, role } = req.body;
 
-  // Pastikan hanya superadmin yang bisa membuat user dengan role superadmin
-  if (role === 'superadmin' && req.user.role !== 'superadmin') {
-    return res.status(403).json({ error: "Access denied. Only superadmin can create superadmin." });
-  }
+  // Removed the check for req.user.role as it's not available during public registration
+  // Access control for creating superadmins should be handled in authenticated routes.
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const [result] = await db.query(
-      "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
+    // pg returns a result object, no need to destructure. Success is implied if no error.
+    await db.query(
+      "INSERT INTO users (username, password, role) VALUES ($1, $2, $3)",
       [username, hashedPassword, role]
     );
 
@@ -41,13 +40,13 @@ const loginUser = async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const [rows] = await db.query("SELECT * FROM users WHERE username = ?", [username]);
+    const result = await db.query("SELECT * FROM users WHERE username = $1", [username]);
 
-    if (rows.length === 0) {
+    if (result.rows.length === 0) {
       return res.status(401).json({ error: "Invalid username or password" });
     }
 
-    const user = rows[0];
+    const user = result.rows[0];
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ error: "Invalid username or password" });
@@ -74,9 +73,10 @@ const deleteUser = async (req, res) => {
   }
 
   try {
-    const [result] = await db.query("DELETE FROM users WHERE id = ?", [userId]);
+    const result = await db.query("DELETE FROM users WHERE id = $1", [userId]);
 
-    if (result.affectedRows === 0) {
+    // Use rowCount for pg
+    if (result.rowCount === 0) {
       return res.status(404).json({ error: "Pengguna tidak ditemukan" });
     }
 
@@ -98,12 +98,13 @@ const updateUser = async (req, res) => {
   }
 
   try {
-    const [result] = await db.query(
-      "UPDATE users SET username = ?, role = ? WHERE id = ?",
+    const result = await db.query(
+      "UPDATE users SET username = $1, role = $2 WHERE id = $3",
       [username, role, userId]
     );
 
-    if (result.affectedRows === 0) {
+    // Use rowCount for pg
+    if (result.rowCount === 0) {
       return res.status(404).json({ error: "Pengguna tidak ditemukan" });
     }
 

@@ -1,13 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import './ManageKostFinance.css';
-import { Button, Modal, Form } from 'react-bootstrap'; // Import Modal and Form
-import { FaPlus, FaPrint, FaArrowLeft } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import { Line, Pie } from 'react-chartjs-2';  // Import Chart.js components
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js';
+import React, { useState, useEffect } from "react";
+import "./ManageKostFinance.css";
+import { Button, Modal, Form } from "react-bootstrap"; // Import Modal and Form
+import { FaPlus, FaPrint, FaArrowLeft } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { Line, Pie } from "react-chartjs-2"; // Import Chart.js components
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  PointElement,
+  LineElement,
+} from "chart.js";
 
 // Register Chart.js components
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  PointElement,
+  LineElement
+);
 
 const ManageKostFinance = () => {
   const navigate = useNavigate();
@@ -15,52 +36,72 @@ const ManageKostFinance = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [authError, setAuthError] = useState(null); // Added for consistency
 
   // State for modal and form
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newTransaction, setNewTransaction] = useState({
-    type: 'income', // Default set to 'income'
+    type: "income", // Default set to 'income'
     amount: 0,
-    description: '',
-    category: 'Kost',
-    payment_method: '',
+    description: "",
+    category: "Kost",
+    payment_method: "",
   });
 
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const token = localStorage.getItem('token'); // Ambil token dari localStorage
-        if (!token) {
-          throw new Error('Token tidak ditemukan. Harap login terlebih dahulu.');
-        }
-
-        const response = await fetch('http://localhost:3001/keuangan/detail?category=kost', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // Urutkan data berdasarkan waktu transaksi (created_at) dengan urutan yang benar (dari yang paling lama)
-        const sortedData = data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-
-        setTransactions(sortedData);
-      } catch (error) {
-        setError(error);
-        console.error('Error fetching transactions:', error);
-      } finally {
-        setLoading(false);
+  // Wrap fetchTransactions in useCallback
+  const fetchTransactions = useCallback(async () => {
+    setLoading(true);
+    setAuthError(null); // Reset auth error on fetch attempt
+    setError(null); // Reset general error on fetch attempt
+    try {
+      const token = localStorage.getItem("token"); // Ambil token dari localStorage
+      if (!token) {
+        setAuthError("Token tidak ditemukan. Harap login terlebih dahulu.");
+        setTransactions([]); // Clear data if no token
+        return; // Stop fetching if no token
       }
-    };
 
+      const response = await fetch(
+        "http://localhost:3001/keuangan/detail?category=kost",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          setAuthError("Autentikasi gagal. Silakan login kembali.");
+          setTransactions([]); // Clear data on auth failure
+        } else {
+          setError(new Error(`HTTP error! status: ${response.status}`));
+        }
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Raw data from API (Kost):", data); // Log raw data
+
+      // Urutkan data berdasarkan waktu transaksi (created_at)
+      const sortedData = data.sort(
+        (a, b) => new Date(a.created_at) - new Date(b.created_at)
+      );
+      console.log("Sorted transactions data (Kost):", sortedData); // Log sorted data
+      setTransactions(sortedData);
+
+    } catch (error) {
+      // Error state is set within the try block for specific errors
+      console.error("Error fetching Kost transactions:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []); // Empty dependency array ensures stable function reference
+
+  useEffect(() => {
     fetchTransactions();
-  }, []);
+  }, [fetchTransactions]); // Depend on the stable fetchTransactions
 
   // Handle form input change untuk transaksi baru
   const handleNewTransactionInputChange = (e) => {
@@ -79,30 +120,30 @@ const ManageKostFinance = () => {
   const handleCloseCreateModal = () => {
     setShowCreateModal(false); // Tutup Modal
     setNewTransaction({
-      type: 'income',
+      type: "income",
       amount: 0,
-      description: '',
-      category: 'Kost',
-      payment_method: '',
+      description: "",
+      category: "Kost",
+      payment_method: "",
     }); // Reset form
   };
 
   // Handle menyimpan transaksi baru
   const handleCreateTransaction = async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      console.error('Token tidak ditemukan');
+      console.error("Token tidak ditemukan");
       return;
     }
 
     try {
-      console.log('Data yang akan dikirim:', newTransaction);
+      console.log("Data yang akan dikirim:", newTransaction);
 
-      const response = await fetch('http://localhost:3001/keuangan/detail', {
-        method: 'POST',
+      const response = await fetch("http://localhost:3001/keuangan/detail", {
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(newTransaction),
       });
@@ -112,34 +153,34 @@ const ManageKostFinance = () => {
       }
 
       const data = await response.json();
-      console.log('Transaksi berhasil disimpan:', data);
+      const newTransactionData = await response.json(); // Get the newly created transaction data
+      console.log("Transaksi Kost berhasil disimpan:", newTransactionData);
 
-      // Setelah berhasil menambah transaksi, update state transactions
-      setTransactions((prevTransactions) => [data, ...prevTransactions]);
+      // Re-fetch transactions to update the list automatically
+      fetchTransactions();
 
       // Tutup Modal dan Reset form
       setShowCreateModal(false);
       setNewTransaction({
-        type: 'income',
+        type: "income",
         amount: 0,
-        description: '',
-        category: 'Kost',
-        payment_method: '',
+        description: "",
+        category: "Kost",
+        payment_method: "",
       });
-
     } catch (error) {
-      console.error('Error creating transaction:', error);
+      console.error("Error creating transaction:", error);
     }
   };
 
   // Fungsi untuk menghitung saldo
   const calculateSaldo = (transactions) => {
     let currentSaldo = 0;
-    return transactions.map(transaction => {
-      if (transaction.type === 'income') {
-        currentSaldo += parseFloat(transaction.amount) || 0;  // Pastikan amount valid
-      } else if (transaction.type === 'expense') {
-        currentSaldo -= parseFloat(transaction.amount) || 0;  // Pastikan amount valid
+    return transactions.map((transaction) => {
+      if (transaction.type === "income") {
+        currentSaldo += parseFloat(transaction.amount) || 0; // Pastikan amount valid
+      } else if (transaction.type === "expense") {
+        currentSaldo -= parseFloat(transaction.amount) || 0; // Pastikan amount valid
       }
       return { ...transaction, saldo: currentSaldo };
     });
@@ -147,59 +188,80 @@ const ManageKostFinance = () => {
 
   // Format currency to Rupiah (IDR)
   const formatRupiah = (amount) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
     }).format(amount);
   };
 
   // Filter transaksi hanya dengan kategori 'kost'
-  const filteredTransactions = transactions.filter(transaction => transaction.category === 'Kost');
+  const filteredTransactions = transactions.filter(
+    (transaction) => transaction.category === "Kost"
+  );
   const transactionsWithSaldo = calculateSaldo(filteredTransactions);
 
   // Create data for Pie chart (Distribusi Pemasukan vs Pengeluaran)
   const pieChartData = {
-    labels: ['Pemasukan', 'Pengeluaran'],
+    labels: ["Pemasukan", "Pengeluaran"],
     datasets: [
       {
         data: [
-          transactionsWithSaldo.filter((t) => t.type === 'income').reduce((acc, t) => acc + t.amount, 0),
-          transactionsWithSaldo.filter((t) => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0)
+          // Make sure that we handle the cases where income is zero or not available
+          Math.max(
+            transactionsWithSaldo
+              .filter((t) => t.type === "income")
+              .reduce((acc, t) => acc + t.amount, 0),
+            0.01 // Default value to ensure the segment is visible even when it's zero
+          ),
+          Math.max(
+            transactionsWithSaldo
+              .filter((t) => t.type === "expense")
+              .reduce((acc, t) => acc + t.amount, 0),
+            0.01 // Same for expenses, to avoid zero values
+          ),
         ],
-        backgroundColor: ['#4CAF50', '#FF5733'],
-        hoverBackgroundColor: ['#45a049', '#ff4731']
-      }
-    ]
+        backgroundColor: ["#4CAF50", "#FF5733"],
+        hoverBackgroundColor: ["#45a049", "#ff4731"],
+      },
+    ],
   };
 
   // Create data for Bar chart (Perbandingan Pemasukan dan Pengeluaran)
   const barChartData = {
-    labels: ['Pemasukan', 'Pengeluaran'],
+    labels: ["Pemasukan", "Pengeluaran"],
     datasets: [
       {
-        label: 'Pemasukan vs Pengeluaran',
+        label: "Pemasukan vs Pengeluaran",
         data: [
-          transactionsWithSaldo.filter((t) => t.type === 'income').reduce((acc, t) => acc + t.amount, 0),
-          transactionsWithSaldo.filter((t) => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0)
+          transactionsWithSaldo
+            .filter((t) => t.type === "income")
+            .reduce((acc, t) => acc + t.amount, 0),
+          transactionsWithSaldo
+            .filter((t) => t.type === "expense")
+            .reduce((acc, t) => acc + t.amount, 0),
         ],
-        backgroundColor: ['#4CAF50', '#FF5733'],
-        borderColor: ['#45a049', '#ff4731'],
-        borderWidth: 1
-      }
-    ]
+        backgroundColor: ["#4CAF50", "#FF5733"],
+        borderColor: ["#45a049", "#ff4731"],
+        borderWidth: 1,
+      },
+    ],
   };
 
   return (
     <div className="manage-kost-finance-container">
       <header className="manage-kost-finance-header">
-        <FaArrowLeft className="back-icon" onClick={() => navigate('/dashboard')} />
+        <FaArrowLeft
+          className="back-icon"
+          onClick={() => navigate("/dashboard")}
+        />
         <h2 className="manage-kost-finance-title">Manajemen Keuangan Kost</h2>
       </header>
 
       {loading && <p>Loading transactions...</p>}
-      {error && <p>Error loading transactions: {error.message}</p>}
+      {authError && <p className="error-message">{authError}</p>} {/* Display auth errors */}
+      {error && !authError && <p>Error loading transactions: {error.message}</p>} {/* Display general errors only if no auth error */}
 
-      {!loading && !error && (
+      {!loading && !error && !authError && (
         <>
           <div className="finance-summary">
             <div className="chart-container">
@@ -218,11 +280,19 @@ const ManageKostFinance = () => {
           </div>
 
           <div className="action-buttons">
-            <Button variant="success" onClick={handleCreateModal} className="add-button">
+            <Button
+              variant="success"
+              onClick={handleCreateModal}
+              className="add-button"
+            >
               <FaPlus /> Tambah Transaksi
             </Button>
             <div className="print-button-container">
-              <Button variant="primary" onClick={() => setShowPrintOptions(!showPrintOptions)} className="print-button">
+              <Button
+                variant="primary"
+                onClick={() => setShowPrintOptions(!showPrintOptions)}
+                className="print-button"
+              >
                 <FaPrint /> Cetak
               </Button>
             </div>
@@ -246,8 +316,12 @@ const ManageKostFinance = () => {
                     <td>{index + 1}</td>
                     <td>{item.description}</td>
                     <td>{item.payment_method}</td>
-                    <td>{item.type === 'income' ? formatRupiah(item.amount) : 0}</td>
-                    <td>{item.type === 'expense' ? formatRupiah(item.amount) : 0}</td>
+                    <td>
+                      {item.type === "income" ? formatRupiah(item.amount) : 0}
+                    </td>
+                    <td>
+                      {item.type === "expense" ? formatRupiah(item.amount) : 0}
+                    </td>
                     <td>{formatRupiah(item.saldo)}</td>
                   </tr>
                 ))}

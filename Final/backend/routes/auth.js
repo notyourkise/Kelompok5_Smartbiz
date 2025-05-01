@@ -22,15 +22,15 @@ router.post('/register', async (req, res) => {
     // Hash password sebelum disimpan ke database
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Simpan username, hashed password, dan role ke database
-    await pool.query('INSERT INTO users (username, password, role) VALUES (?, ?, ?)', [username, hashedPassword, role]);
+    // Simpan username, hashed password, dan role ke database using PostgreSQL syntax
+    await pool.query('INSERT INTO users (username, password, role) VALUES ($1, $2, $3)', [username, hashedPassword, role]);
 
     res.status(201).send(`User ${username} berhasil didaftarkan`); // Use 201 Created status
   } catch (err) {
     console.error('Error saat registrasi:', err); // Log the actual error to the console
 
-    // Check for specific MySQL duplicate entry error
-    if (err.code === 'ER_DUP_ENTRY') {
+    // Check for specific PostgreSQL duplicate entry error code
+    if (err.code === '23505') { // PostgreSQL unique_violation code
       res.status(409).send('Username sudah digunakan'); // 409 Conflict for duplicate
     } else {
       // Send a generic server error for other issues
@@ -48,11 +48,11 @@ router.post('/login', async (req, res) => {
   }
 
   try {
-    // Cari user berdasarkan username
-    const [rows] = await pool.query('SELECT * FROM users WHERE username = ?', [username]);
+    // Cari user berdasarkan username using PostgreSQL syntax
+    const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
 
-    if (rows.length > 0) {
-      const user = rows[0];
+    if (result.rows.length > 0) { // Use result.rows
+      const user = result.rows[0]; // Use result.rows
 
       // Verifikasi password dengan bcrypt
       const isMatch = await bcrypt.compare(password, user.password);

@@ -1,64 +1,144 @@
-import React, { useState, useEffect } from 'react';
-import './ManageCoffeeShopFinance.css';
-import { Button, Modal, Form } from 'react-bootstrap'; // Import Modal and Form
-import { FaPlus, FaPrint, FaArrowLeft } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import { Pie, Bar } from 'react-chartjs-2';  // Import Chart.js components
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js';
+import React, { useState, useEffect, useCallback } from "react";
+import "./ManageCoffeeShopFinance.css";
+import { Button, Modal, Form, Dropdown, DropdownButton } from "react-bootstrap";
+import { FaPlus, FaPrint, FaArrowLeft, FaEdit, FaTrash } from "react-icons/fa"; // Add Edit and Trash icons
+import { useNavigate } from "react-router-dom";
+import { Doughnut, Bar } from "react-chartjs-2";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver"; // Import file-saver for CSV download
+import { NumberFormatBase } from "react-number-format"; // Correct import for Vite
+
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  PointElement,
+  LineElement,
+} from "chart.js";
 
 // Register Chart.js components
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  PointElement,
+  LineElement
+);
+
+// Error Boundary component
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.log("Error caught by Error Boundary:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <h1>Something went wrong. Please try again later.</h1>;
+    }
+    return this.props.children;
+  }
+}
 
 const ManageCoffeeShopFinance = () => {
   const navigate = useNavigate();
-  const [showPrintOptions, setShowPrintOptions] = useState(false);
+  const [showPrintOptions, setShowPrintOptions] = useState(false); // Re-added showPrintOptions state
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [authError, setAuthError] = useState(null); // New state for auth errors
 
   // State for modal and form
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newTransaction, setNewTransaction] = useState({
-    type: 'income', // Default set to 'income'
-    amount: 0,
-    description: '',
-    category: 'Coffee Shop',
-    payment_method: '',
+    type: "income", // Default set to 'income'
+    amount: "", // Changed initial amount to empty string
+    description: "",
+    category: "Coffee Shop",
+    payment_method: "cash",
   });
 
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const token = localStorage.getItem('token'); // Ambil token dari localStorage
-        if (!token) {
-          throw new Error('Token tidak ditemukan. Harap login terlebih dahulu.');
-        }
+  // State for Edit Modal
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState(null); // Store the transaction being edited
 
-        const response = await fetch('http://localhost:3001/keuangan/detail?category=coffee shop', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          }
-        });
+  // State for Delete Modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingTransactionId, setDeletingTransactionId] = useState(null);
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        // Sort data by created_at date
-        const sortedData = data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-        setTransactions(sortedData);
-      } catch (error) {
-        setError(error);
-        console.error('Error fetching transactions:', error);
-      } finally {
-        setLoading(false);
+  // Wrap fetchTransactions in useCallback to ensure stable reference
+  const fetchTransactions = useCallback(async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token"); // Ambil token dari localStorage
+      if (!token) {
+        throw new Error("Token tidak ditemukan. Harap login terlebih dahulu.");
       }
-    };
 
+      const response = await fetch(
+        "http://localhost:3001/keuangan/detail?category=coffee shop",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        // Check for specific auth errors
+        if (response.status === 401 || response.status === 403) {
+          setAuthError("Authentication failed. Please log in again.");
+          // Optionally clear transactions or navigate to login
+          setTransactions([]); // Clear potentially stale data
+        } else {
+          setError(new Error(`HTTP error! status: ${response.status}`)); // Set general error
+        }
+        // Throw an error or return early to stop further processing
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Raw data from API:", data); // Log raw data
+      setAuthError(null); // Clear auth error on success
+      // Sort data by created_at date
+      const sortedData = data.sort(
+        (a, b) => new Date(a.created_at) - new Date(b.created_at)
+      );
+      console.log("Sorted transactions data:", sortedData); // Log sorted data
+      setTransactions(sortedData);
+      setError(null); // Clear general errors on success
+    } catch (error) {
+      // Only set general error if authError is not already set
+      if (!authError) {
+        setError(error);
+      }
+      console.error("Error fetching transactions:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [authError]); // Empty dependency array means this useCallback version is stable
+
+  useEffect(() => {
     fetchTransactions();
-  }, []);
+  }, [fetchTransactions]); // Depend on the stable fetchTransactions function
 
   // Handle form input change for new transaction
   const handleNewTransactionInputChange = (e) => {
@@ -77,250 +157,774 @@ const ManageCoffeeShopFinance = () => {
   const handleCloseCreateModal = () => {
     setShowCreateModal(false); // Close the modal
     setNewTransaction({
-      type: 'income',
-      amount: 0,
-      description: '',
-      category: 'Coffee Shop',
-      payment_method: '',
+      type: "income",
+      amount: "", // Reset amount to empty string for consistency
+      description: "",
+      category: "Coffee Shop",
+      payment_method: "cash", // Reset payment method to 'cash'
     }); // Reset the form
   };
 
   // Handle creating a new transaction
   const handleCreateTransaction = async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      console.error('Token tidak ditemukan');
+      console.error("Token tidak ditemukan");
+      return;
+    }
+
+    // Basic validation
+    if (
+      !newTransaction.amount ||
+      !newTransaction.description ||
+      !newTransaction.payment_method
+    ) {
+      console.error("Amount, description, and payment method are required.");
       return;
     }
 
     try {
-      const response = await fetch('http://localhost:3001/keuangan/detail', {
-        method: 'POST',
+      const response = await fetch("http://localhost:3001/keuangan/detail", {
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(newTransaction),
+        body: JSON.stringify({
+          ...newTransaction,
+          amount: parseFloat(newTransaction.amount), // Ensure amount is a number
+        }),
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response
+          .json()
+          .catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+        throw new Error(
+          errorData.message || `HTTP error! status: ${response.status}`
+        );
       }
 
       const data = await response.json();
-      console.log('Transaksi berhasil disimpan:', data);
+      console.log("Transaksi berhasil disimpan:", data);
 
-      // After successful creation, re-fetch data to update the table and charts
-      fetchTransactions();
+      // Add the new transaction directly to the state and re-sort
+      setTransactions((prevTransactions) =>
+        [...prevTransactions, data].sort(
+          (a, b) => new Date(a.created_at) - new Date(b.created_at)
+        )
+      );
 
       // Close Modal and reset form
       setShowCreateModal(false);
       setNewTransaction({
-        type: 'income',
-        amount: 0,
-        description: '',
-        category: 'Coffee Shop',
-        payment_method: '',
+        type: "income",
+        amount: "", // Reset amount to empty string for consistency
+        description: "",
+        category: "Coffee Shop",
+        payment_method: "",
       });
 
+      // Re-fetch transactions to update the table
+      // No need to re-fetch here as we optimistically updated the state
+      // fetchTransactions();
     } catch (error) {
-      console.error('Error creating transaction:', error);
+      console.error("Error creating transaction:", error);
+      setError(error); // Display error to user if needed
     }
   };
 
-  // Calculate saldo
-  const calculateSaldo = (transactions) => {
-    let currentSaldo = 0;
-    return transactions.map(transaction => {
-      if (transaction.type === 'income') {
-        currentSaldo += parseFloat(transaction.amount) || 0;
-      } else if (transaction.type === 'expense') {
-        currentSaldo -= parseFloat(transaction.amount) || 0;
-      }
-      return { ...transaction, saldo: currentSaldo };
+  // --- Edit Transaction Logic ---
+
+  const handleEditModal = (transaction) => {
+    setEditingTransaction(transaction); // Set the transaction to edit
+    setShowEditModal(true); // Show the edit modal
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setEditingTransaction(null); // Clear editing state
+  };
+
+  const handleEditTransactionInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditingTransaction({
+      ...editingTransaction,
+      [name]: value,
     });
+  };
+
+  const handleUpdateTransaction = async () => {
+    if (!editingTransaction) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setAuthError("Token tidak ditemukan. Harap login terlebih dahulu.");
+      return;
+    }
+
+    // Basic validation
+    if (
+      !editingTransaction.amount ||
+      !editingTransaction.description ||
+      !editingTransaction.payment_method
+    ) {
+      console.error("Amount, description, and payment method are required for update.");
+      // Optionally set an error state to show in the modal
+      return;
+    }
+
+
+    try {
+      const response = await fetch(`http://localhost:3001/keuangan/detail/${editingTransaction.id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...editingTransaction,
+          amount: parseFloat(editingTransaction.amount), // Ensure amount is a number
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+        if (response.status === 401 || response.status === 403) {
+          setAuthError("Authentication failed or insufficient permissions. Please log in again.");
+        } else {
+          setError(new Error(errorData.message || `HTTP error! status: ${response.status}`));
+        }
+        throw new Error(errorData.message || `Update failed with status ${response.status}`);
+      }
+
+      // Update the transaction in the local state
+      setTransactions(prevTransactions =>
+        prevTransactions.map(t =>
+          t.id === editingTransaction.id ? { ...editingTransaction, amount: parseFloat(editingTransaction.amount) } : t // Update the specific transaction
+        ).sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) // Re-sort after update
+      );
+
+
+      handleCloseEditModal(); // Close modal on success
+    } catch (error) {
+      console.error("Error updating transaction:", error);
+      // Error state is set within the try block for specific errors
+    }
+  };
+
+
+  // --- Delete Transaction Logic ---
+
+  const handleDeleteModal = (id) => {
+    setDeletingTransactionId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setDeletingTransactionId(null);
+  };
+
+  const handleDeleteTransaction = async () => {
+    if (!deletingTransactionId) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setAuthError("Token tidak ditemukan. Harap login terlebih dahulu.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3001/keuangan/detail/${deletingTransactionId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+         const errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+         if (response.status === 401 || response.status === 403) {
+           setAuthError("Authentication failed or insufficient permissions. Please log in again.");
+         } else {
+           setError(new Error(errorData.message || `HTTP error! status: ${response.status}`));
+         }
+         throw new Error(errorData.message || `Delete failed with status ${response.status}`);
+      }
+
+      // Remove the transaction from the local state
+      setTransactions(prevTransactions =>
+        prevTransactions.filter(t => t.id !== deletingTransactionId)
+      );
+
+      handleCloseDeleteModal(); // Close modal on success
+    } catch (error) {
+      console.error("Error deleting transaction:", error);
+       // Error state is set within the try block for specific errors
+    }
   };
 
   // Format currency to Rupiah (IDR)
   const formatRupiah = (amount) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
     }).format(amount);
   };
 
-// Filter transaksi hanya dengan kategori 'coffee shop'
-const filteredTransactions = transactions.filter(transaction => transaction.category === 'Coffee Shop');
-const transactionsWithSaldo = calculateSaldo(filteredTransactions);
+  // Filter transaksi hanya dengan kategori 'coffee shop'
+  const filteredTransactions = transactions.filter(
+    (transaction) => transaction.category === "Coffee Shop"
+  );
 
-// Create data for Pie chart (Distribusi Pemasukan vs Pengeluaran)
-const pieChartData = {
-  labels: ['Pemasukan', 'Pengeluaran'],
-  datasets: [
-    {
-      data: [
-        transactionsWithSaldo.filter((t) => t.type === 'income').reduce((acc, t) => acc + t.amount, 0),
-        transactionsWithSaldo.filter((t) => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0)
-      ],
-      backgroundColor: ['#4CAF50', '#FF5733'],
-      hoverBackgroundColor: ['#45a049', '#ff4731']
-    }
-  ]
-};
+  // Ganti kode transactionsWithSaldo Anda dengan kode ini
+  const transactionsWithSaldo = filteredTransactions.reduce(
+    (acc, transaction, index) => {
+      console.log("Processing transaction:", transaction); // Log each transaction being processed
+      const previousSaldo = index === 0 ? 0 : acc[index - 1].saldo;
+      let currentSaldo = previousSaldo;
 
-// Create data for Bar chart (Perbandingan Pemasukan dan Pengeluaran per Transaksi)
-const barChartData = {
-  labels: transactionsWithSaldo.map(item => item.description), // Use transaction description as labels
-  datasets: [
-    {
-      label: 'Pemasukan',
-      data: transactionsWithSaldo.map(item => item.type === 'income' ? item.amount : 0), // Data for income
-      backgroundColor: '#4CAF50',
-      borderColor: '#45a049',
-      borderWidth: 1
+      const amount = parseFloat(transaction.amount) || 0;
+      console.log("Transaction type and amount:", transaction.type, amount); // Log type and amount
+
+      if (transaction.type === "income") {
+        currentSaldo += amount;
+      } else if (transaction.type === "expense") {
+        currentSaldo -= amount;
+      }
+
+      // Perbaikan format tanggal
+      let formattedDate = "Tanggal tidak valid";
+
+      try {
+        console.log("Raw created_at:", transaction.created_at); // Log raw date string
+
+        // Pastikan transaction.created_at ada dan merupakan string
+        if (transaction.created_at && typeof transaction.created_at === 'string') {
+          const [datePart, timePart] = transaction.created_at.split(" ");
+
+          // Pastikan datePart dan timePart ada
+          if (datePart && timePart) {
+            const [year, month, day] = datePart.split("-").map(Number);
+            const [hour, minute, second] = timePart.split(":").map(Number);
+
+            // Pastikan semua komponen tanggal dan waktu adalah angka valid
+            if (!isNaN(year) && !isNaN(month) && !isNaN(day) && !isNaN(hour) && !isNaN(minute) && !isNaN(second)) {
+              // Month is 0-indexed in JavaScript Date objects, so subtract 1
+              const dateObj = new Date(year, month - 1, day, hour, minute, second);
+
+              // Cek apakah tanggal valid
+              if (!isNaN(dateObj.getTime())) {
+                formattedDate = dateObj.toLocaleString("id-ID", {
+                  weekday: "short",
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                  second: "numeric",
+                  timeZone: "Asia/Makassar", // WITA timezone
+                });
+              }
+            } else {
+              console.error("Invalid date or time components:", { year, month, day, hour, minute, second });
+            }
+          } else {
+            console.error("Invalid date or time format:", transaction.created_at);
+          }
+        } else {
+          console.error("created_at is not a valid string:", transaction.created_at);
+        }
+      } catch (err) {
+        console.error("Error formatting date:", err, transaction.created_at);
+      }
+
+      acc.push({
+        ...transaction,
+        saldo: currentSaldo,
+        formattedDate: formattedDate,
+      });
+      return acc;
     },
-    {
-      label: 'Pengeluaran',
-      data: transactionsWithSaldo.map(item => item.type === 'expense' ? item.amount : 0), // Data for expense
-      backgroundColor: '#FF5733',
-      borderColor: '#ff4731',
-      borderWidth: 1
+    []
+  );
+
+  // Aggregate data by month for the bar chart
+  const monthlyData = transactionsWithSaldo.reduce((acc, transaction) => {
+    const date = new Date(transaction.created_at);
+    const monthYear = date.toLocaleString("id-ID", { month: "long", year: "numeric" });
+
+    if (!acc[monthYear]) {
+      acc[monthYear] = { income: 0, expense: 0 };
     }
-  ]
-};
+
+    if (transaction.type === "income") {
+      acc[monthYear].income += parseFloat(transaction.amount) || 0;
+    } else if (transaction.type === "expense") {
+      acc[monthYear].expense += parseFloat(transaction.amount) || 0;
+    }
+
+    return acc;
+  }, {});
+
+  const months = Object.keys(monthlyData);
+  const monthlyIncome = months.map(month => monthlyData[month].income);
+  const monthlyExpense = months.map(month => monthlyData[month].expense);
+
+
+  // Create data for Pie chart (Distribusi Pemasukan vs Pengeluaran)
+  const pieChartData = {
+    labels: ["Pemasukan", "Pengeluaran"],
+    datasets: [
+      {
+        data: [
+          Math.max(
+            transactionsWithSaldo
+              .filter((t) => t.type === "income")
+              .reduce((acc, t) => acc + t.amount, 0),
+            0.01
+          ),
+          Math.max(
+            transactionsWithSaldo
+              .filter((t) => t.type === "expense")
+              .reduce((acc, t) => acc + t.amount, 0),
+            0.01
+          ),
+        ],
+        backgroundColor: ["#4CAF50", "#FF5733"],
+        hoverBackgroundColor: ["#45a049", "#ff4731"],
+      },
+    ],
+  };
+
+  // Create data for Bar chart (Perbandingan Pemasukan dan Pengeluaran per Bulan)
+  const barChartData = {
+    labels: months,
+    datasets: [
+      {
+        label: "Pemasukan",
+        data: monthlyIncome,
+        backgroundColor: "#4CAF50",
+        borderColor: "#45a049",
+        borderWidth: 1,
+      },
+      {
+        label: "Pengeluaran",
+        data: monthlyExpense,
+        backgroundColor: "#FF5733",
+        borderColor: "#ff4731",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const doughnutOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "top",
+      },
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            let label = context.label || "";
+            if (label) {
+              label += ": ";
+            }
+            if (context.parsed !== null) {
+              label += formatRupiah(context.parsed);
+            }
+            return label;
+          },
+        },
+      },
+    },
+    hoverOffset: 8,
+  };
+
+  const barOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        stacked: false,
+      },
+      y: {
+        stacked: false,
+        ticks: {
+          callback: function (value) {
+            return formatRupiah(value);
+          },
+          stepSize: 200000, // Set tick increment to 200,000
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            let label = context.dataset.label || '';
+            if (label) {
+              label += ': ';
+            }
+            if (context.parsed.y !== null) {
+              label += formatRupiah(context.parsed.y);
+            }
+            return label;
+          }
+        }
+      }
+    }
+  };
+
+  const handlePrint = (type) => {
+    if (type === "csv") {
+      const header = [
+        "Keterangan",
+        "Metode",
+        "Pemasukan",
+        "Pengeluaran",
+        "Saldo",
+      ];
+
+      const dataRows = transactionsWithSaldo.map((item) =>
+        [
+          `"${item.description.replace(/"/g, '""')}"`,
+          `"${item.payment_method.replace(/"/g, '""')}"`,
+          item.type === "income" ? item.amount : 0,
+          item.type === "expense" ? item.amount : 0,
+          item.saldo,
+        ].join(",")
+      );
+
+      const csvContent = [header.join(","), ...dataRows].join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
+      saveAs(blob, "coffee_shop_finance.csv");
+    } else if (type === "pdf") {
+      window.print();
+    } else if (type === "excel") {
+      // Mencetak Excel menggunakan XLSX
+      const header = [
+        "Keterangan",
+        "Metode",
+        "Pemasukan",
+        "Pengeluaran",
+        "Saldo",
+      ];
+
+      const dataRows = transactionsWithSaldo.map((item) => ({
+        Keterangan: item.description,
+        Metode: item.payment_method,
+        Pemasukan: item.type === "income" ? item.amount : 0,
+        Pengeluaran: item.type === "expense" ? item.amount : 0,
+        Saldo: item.saldo,
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(dataRows, { header });
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Keuangan");
+
+      // Menyimpan file Excel
+      XLSX.writeFile(wb, "coffee_shop_finance.xlsx");
+    }
+  };
 
   return (
-    <div className="manage-coffee-shop-finance-container">
-      <header className="manage-coffee-shop-finance-header">
-        <FaArrowLeft className="back-icon" onClick={() => navigate('/dashboard')} />
-        <h2 className="manage-coffee-shop-finance-title">Manajemen Keuangan Coffee Shop</h2>
-      </header>
+    <ErrorBoundary>
+      <div className="manage-coffee-shop-finance-container">
+        <header className="manage-coffee-shop-finance-header">
+          <FaArrowLeft
+            className="back-icon"
+            onClick={() => navigate("/dashboard")}
+          />
+          <h2 className="manage-coffee-shop-finance-title">
+            Manajemen Keuangan Coffee Shop
+          </h2>
+        </header>
+        {loading && <p>Loading transactions...</p>}
+        {authError && <p className="error-message">{authError}</p>}
+        {error && <p>Error loading transactions: {error.message}</p>}
+        {!loading && !error && (
+          <>
+            <div className="finance-summary">
+              <div className="chart-container">
+                <h5>Distribusi Pemasukan vs Pengeluaran</h5>
+                <div className="donut-chart-placeholder">
+                  <Doughnut data={pieChartData} options={doughnutOptions} />
+                </div>
+              </div>
 
-      {loading && <p>Loading transactions...</p>}
-      {error && <p>Error loading transactions: {error.message}</p>}
-
-      {!loading && !error && (
-        <>
-          <div className="finance-summary">
-            <div className="chart-container">
-              <h5>Distribusi Pemasukan vs Pengeluaran</h5>
-              <div className="donut-chart-placeholder">
-                <Pie key={transactions.length} data={pieChartData} />
+              <div className="chart-container">
+                <h5>Perbandingan Pemasukan dan Pengeluaran per Bulan</h5>
+                <div className="bar-chart-placeholder">
+                  <Bar data={barChartData} options={barOptions} />
+                </div>
               </div>
             </div>
 
-            <div className="chart-container">
-              <h5>Perbandingan Pemasukan dan Pengeluaran</h5>
-              <div className="bar-chart-placeholder">
-                <Bar key={transactions.length} data={barChartData} />
-              </div>
-            </div>
-          </div>
-
-          <div className="action-buttons">
-            <Button variant="success" onClick={handleCreateModal} className="add-button">
-              <FaPlus /> Tambah Transaksi
-            </Button>
-            <div className="print-button-container">
-              <Button variant="primary" onClick={() => window.print()} className="print-button">
-                <FaPrint /> Cetak
-              </Button>
-            </div>
-          </div>
-
-          <div className="finance-table-container">
-            <table className="finance-table">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Keterangan</th>
-                  <th>Metode</th>
-                  <th>Pemasukan</th>
-                  <th>Pengeluaran</th>
-                  <th>Saldo</th>
-                </tr>
-              </thead>
-              <tbody>
-                {transactionsWithSaldo.map((item, index) => (
-                  <tr key={item.id}>
-                    <td>{index + 1}</td>
-                    <td>{item.description}</td>
-                    <td>{item.payment_method}</td>
-                    <td>{item.type === 'income' ? formatRupiah(item.amount) : 0}</td>
-                    <td>{item.type === 'expense' ? formatRupiah(item.amount) : 0}</td>
-                    <td>{formatRupiah(item.saldo)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
-
-      {/* Modal untuk menambah transaksi */}
-      <Modal show={showCreateModal} onHide={handleCloseCreateModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Tambah Transaksi</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>Jenis Transaksi</Form.Label>
-              <Form.Control
-                as="select"
-                name="type"
-                value={newTransaction.type}
-                onChange={handleNewTransactionInputChange}
+            <div className="action-buttons">
+              <Button
+                variant="success"
+                onClick={handleCreateModal}
+                className="add-button"
               >
-                <option value="income">Pemasukan</option>
-                <option value="expense">Pengeluaran</option>
-              </Form.Control>
-            </Form.Group>
+                <FaPlus /> Tambah Transaksi
+              </Button>
+              <div className="print-button-container">
+                <DropdownButton
+                  variant="primary"
+                  id="dropdown-print-button"
+                  onClick={() => setShowPrintOptions(!showPrintOptions)}
+                  className="print-button"
+                  title={
+                    <>
+                      <FaPrint /> Cetak
+                    </>
+                  }
+                  drop="down"
+                >
+                  <Dropdown.Item as="button" onClick={() => handlePrint("csv")}>
+                    Cetak CSV
+                  </Dropdown.Item>
+                  <Dropdown.Item as="button" onClick={() => handlePrint("pdf")}>
+                    Cetak PDF
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    as="button"
+                    onClick={() => handlePrint("excel")}
+                  >
+                    Cetak Excel
+                  </Dropdown.Item>
+                </DropdownButton>
+              </div>
+            </div>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Jumlah</Form.Label>
-              <Form.Control
-                type="number"
-                name="amount"
-                value={newTransaction.amount}
-                onChange={handleNewTransactionInputChange}
-                placeholder="Masukkan jumlah"
-              />
-            </Form.Group>
+            <div className="finance-table-container">
+              <table className="finance-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Keterangan</th>
+                    <th>Metode</th>
+                    <th>Waktu</th> {/* Added Waktu column */}
+                    <th>Pemasukan</th>
+                    <th>Pengeluaran</th>
+                    <th>Saldo</th>
+                    <th>Aksi</th> {/* Added Actions column */}
+                  </tr>
+                </thead>
+                <tbody>
+                  {transactionsWithSaldo.map((item, index) => (
+                    <tr key={item.id}>
+                      <td>{index + 1}</td>
+                      <td>{item.description}</td>
+                      <td>{item.payment_method}</td>
+                      <td>{item.formattedDate}</td>
+                      <td>
+                        {item.type === "income" ? formatRupiah(item.amount) : 0}
+                      </td>
+                      <td>
+                        {item.type === "expense"
+                          ? formatRupiah(item.amount)
+                          : 0}
+                      </td>
+                      <td>{formatRupiah(item.saldo)}</td>
+                      <td> {/* Actions buttons */}
+                        <Button variant="outline-primary" size="sm" onClick={() => handleEditModal(item)} style={{ marginRight: '5px' }}>
+                          <FaEdit />
+                        </Button>
+                        <Button variant="outline-danger" size="sm" onClick={() => handleDeleteModal(item.id)}>
+                          <FaTrash />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
 
-            <Form.Group className="mb-3">
-              <Form.Label>Deskripsi</Form.Label>
-              <Form.Control
-                type="text"
-                name="description"
-                value={newTransaction.description}
-                onChange={handleNewTransactionInputChange}
-                placeholder="Masukkan deskripsi"
-              />
-            </Form.Group>
+        {/* Modal untuk menambah transaksi */}
+        <Modal show={showCreateModal} onHide={handleCloseCreateModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Tambah Transaksi</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group className="mb-3">
+                <Form.Label>Jenis Transaksi</Form.Label>
+                <Form.Control
+                  as="select"
+                  name="type"
+                  value={newTransaction.type}
+                  onChange={handleNewTransactionInputChange}
+                >
+                  <option value="income">Pemasukan</option>
+                  <option value="expense">Pengeluaran</option>
+                </Form.Control>
+              </Form.Group>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Metode Pembayaran</Form.Label>
-              <Form.Control
-                type="text"
-                name="payment_method"
-                value={newTransaction.payment_method}
-                onChange={handleNewTransactionInputChange}
-                placeholder="Masukkan metode pembayaran"
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseCreateModal}>
-            Batal
-          </Button>
-          <Button variant="primary" onClick={handleCreateTransaction}>
-            Simpan
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+              <Form.Group className="mb-3">
+                <Form.Label>Jumlah</Form.Label>
+                <NumberFormatBase
+                  name="amount"
+                  value={newTransaction.amount}
+                  onValueChange={(values) => {
+                    const { formattedValue, value } = values;
+                    setNewTransaction({
+                      ...newTransaction,
+                      amount: value, // Simpan nilai mentah untuk pengolahan lebih lanjut
+                    });
+                  }}
+                  thousandSeparator="."
+                  decimalSeparator=","
+                  prefix="Rp. "
+                  placeholder="Masukkan jumlah"
+                  className="form-control"
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Deskripsi</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="description"
+                  value={newTransaction.description}
+                  onChange={handleNewTransactionInputChange}
+                  placeholder="Masukkan deskripsi"
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Metode Pembayaran</Form.Label>
+                <Form.Control
+                  as="select" // Menjadikan ini dropdown menu
+                  name="payment_method"
+                  value={newTransaction.payment_method}
+                  onChange={handleNewTransactionInputChange}
+                >
+                  <option value="cash">Tunai</option>{" "}
+                  {/* Contoh metode pembayaran Tunai */}
+                  <option value="qris">QRIS</option>{" "}
+                  {/* Contoh metode pembayaran QRIS */}
+                </Form.Control>
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseCreateModal}>
+              Batal
+            </Button>
+            <Button variant="primary" onClick={handleCreateTransaction}>
+              Simpan
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Modal untuk mengedit transaksi */}
+        <Modal show={showEditModal} onHide={handleCloseEditModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Edit Transaksi</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {editingTransaction && (
+              <Form>
+                <Form.Group className="mb-3">
+                  <Form.Label>Jenis Transaksi</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="type"
+                    value={editingTransaction.type}
+                    onChange={handleEditTransactionInputChange}
+                  >
+                    <option value="income">Pemasukan</option>
+                    <option value="expense">Pengeluaran</option>
+                  </Form.Control>
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Jumlah</Form.Label>
+                   <NumberFormatBase
+                      name="amount"
+                      value={editingTransaction.amount}
+                      onValueChange={(values) => {
+                        const { value } = values;
+                        setEditingTransaction({
+                          ...editingTransaction,
+                          amount: value,
+                        });
+                      }}
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      prefix="Rp. "
+                      placeholder="Masukkan jumlah"
+                      className="form-control"
+                    />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Deskripsi</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="description"
+                    value={editingTransaction.description}
+                    onChange={handleEditTransactionInputChange}
+                    placeholder="Masukkan deskripsi"
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Metode Pembayaran</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="payment_method"
+                    value={editingTransaction.payment_method}
+                    onChange={handleEditTransactionInputChange}
+                  >
+                    <option value="cash">Tunai</option>
+                    <option value="qris">QRIS</option>
+                  </Form.Control>
+                </Form.Group>
+              </Form>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseEditModal}>
+              Batal
+            </Button>
+            <Button variant="primary" onClick={handleUpdateTransaction}>
+              Simpan Perubahan
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+         {/* Modal Konfirmasi Hapus */}
+         <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Konfirmasi Hapus</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan.
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseDeleteModal}>
+              Batal
+            </Button>
+            <Button variant="danger" onClick={handleDeleteTransaction}>
+              Hapus
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+      </div>
+    </ErrorBoundary>
   );
 };
 

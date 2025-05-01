@@ -17,4 +17,10 @@ router.get('/detail', authenticateToken, keuanganController.getAllTransactionsDe
 // Endpoint untuk menambahkan transaksi baru (Hanya untuk Superadmin)
 router.post('/detail', authenticateToken, authorizeSuperAdmin, keuanganController.createTransactionDetail);
 
+// Endpoint untuk mengupdate transaksi (Hanya untuk Superadmin)
+router.put('/detail/:id', authenticateToken, authorizeSuperAdmin, keuanganController.updateTransactionDetail);
+
+// Endpoint untuk menghapus transaksi (Hanya untuk Superadmin)
+router.delete('/detail/:id', authenticateToken, authorizeSuperAdmin, keuanganController.deleteTransactionDetail);
+
 module.exports = router;

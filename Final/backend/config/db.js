@@ -1,16 +1,28 @@
 // config/db.js
+const { Pool } = require('pg'); // Import the Pool class from the pg library
 
-const mysql = require('mysql2/promise'); // Import promise wrapper
+// Create a connection pool to the PostgreSQL database
+const pool = new Pool({
+  user: 'postgres',     // Default PostgreSQL user (or replace if different)
+  host: 'localhost',    // Database host
+  database: 'smartbizadmin', // Database name
+  password: '1',        // Your PostgreSQL password
+  port: 5432,           // Default PostgreSQL port
+});
 
-// Membuat koneksi ke database MySQL
-const pool = mysql.createPool({
-  host: 'localhost', // Ganti dengan host database Anda
-  user: 'root',       // Ganti dengan username MySQL Anda
-  password: '', // Ganti dengan password MySQL Anda
-  database: 'smartbizadmin',  // Ganti dengan nama database Anda
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+// Optional: Test the connection
+pool.connect((err, client, release) => {
+  if (err) {
+    return console.error('Error acquiring client', err.stack);
+  }
+  console.log('Connected to PostgreSQL database successfully!');
+  client.query('SELECT NOW()', (err, result) => {
+    release(); // Release the client back to the pool
+    if (err) {
+      return console.error('Error executing query', err.stack);
+    }
+    console.log('Current time from DB:', result.rows[0].now);
+  });
 });
 
 module.exports = pool;

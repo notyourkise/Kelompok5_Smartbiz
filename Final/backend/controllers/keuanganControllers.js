@@ -4,20 +4,20 @@ const db = require('../config/db');
 const getAllTransactionsDetail = async (req, res) => {
   const category = req.query.category; // Mengambil kategori dari query parameter
 
-  const sql = `
+const sql = `
     SELECT t.id, t.type, t.amount, t.description, t.category, t.payment_method,
-           DATE_FORMAT(t.created_at, '%Y-%m-%d %H:%i:%s') as tanggal,
+           TO_CHAR(t.created_at, 'YYYY-MM-DD HH24:MI:SS') as created_at, -- PostgreSQL date format
            u.username as created_by
     FROM TRANSACTIONS t
     JOIN users u ON t.created_by = u.id
-    WHERE t.category = ?  -- Menggunakan kategori dari query
+    WHERE LOWER(t.category) = LOWER($1)  -- Case-insensitive comparison
     ORDER BY t.created_at ASC
   `;
 
   try {
     // Menggunakan await untuk menunggu hasil query
-    const [results] = await db.query(sql, [category]);  // Menggunakan Promise API
-    res.status(200).json(results);  // Kirimkan data transaksi ke frontend
+    const result = await db.query(sql, [category]);  // Use pg syntax
+    res.status(200).json(result.rows);  // Kirimkan data transaksi ke frontend using result.rows
   } catch (err) {
     console.error('❌ Error mengambil data transaksi:', err);
     res.status(500).json({ error: 'Gagal mengambil data transaksi' });
@@ -36,21 +36,22 @@ const createTransactionDetail = async (req, res) => {
   }
 
   const sql = `
-    INSERT INTO TRANSACTIONS 
+    INSERT INTO TRANSACTIONS
       (type, amount, description, category, payment_method, created_at, updated_at, created_by)
-    VALUES (?, ?, ?, ?, ?, NOW(), NOW(), ?)
+    VALUES ($1, $2, $3, $4, $5, NOW(), NOW(), $6) -- Use pg placeholders
+    RETURNING * -- Return the newly inserted row
   `;
 
   try {
     // Menambahkan transaksi
-    const [result] = await db.query(sql, [type, amount, description, category, payment_method, created_by]);
+    const result = await db.query(sql, [type, amount, description, category, payment_method, created_by]);
 
-    // Check if insert was successful
-    if (result.affectedRows > 0) {
-      res.status(201).json({
-        message: 'Transaksi berhasil ditambahkan',
-        id: result.insertId,
-      });
+    // Check if insert was successful and return the new transaction data
+    if (result.rows.length > 0) {
+      // Format the created_at date before sending
+      const newTransaction = result.rows[0];
+      newTransaction.created_at = new Date(newTransaction.created_at).toISOString().replace('T', ' ').substring(0, 19); // Format to 'YYYY-MM-DD HH:MI:SS'
+      res.status(201).json(newTransaction); // Send the full new transaction object
     } else {
       res.status(500).json({ error: 'Gagal menambahkan transaksi' });
     }
@@ -60,8 +61,61 @@ const createTransactionDetail = async (req, res) => {
   }
 };
 
+// Fungsi untuk mengupdate transaksi
+const updateTransactionDetail = async (req, res) => {
+  const transactionId = req.params.id;
+  const { type, amount, description, payment_method } = req.body;
+  const updated_by = req.user.id; // Assuming user ID is available from auth middleware
+
+  // Basic validation
+  if (!type || !amount || !description || !payment_method) {
+    return res.status(400).json({ error: 'Semua kolom wajib diisi untuk update' });
+  }
+
+  const sql = `
+    UPDATE TRANSACTIONS
+    SET type = $1, amount = $2, description = $3, payment_method = $4, updated_at = NOW(), updated_by = $5
+    WHERE id = $6
+  `;
+
+  try {
+    const result = await db.query(sql, [type, amount, description, payment_method, updated_by, transactionId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Transaksi tidak ditemukan' });
+    }
+
+    res.status(200).json({ message: 'Transaksi berhasil diperbarui' });
+  } catch (err) {
+    console.error('❌ Error saat mengupdate transaksi:', err);
+    res.status(500).json({ error: 'Gagal mengupdate transaksi' });
+  }
+};
+
+// Fungsi untuk menghapus transaksi
+const deleteTransactionDetail = async (req, res) => {
+  const transactionId = req.params.id;
+
+  const sql = `DELETE FROM TRANSACTIONS WHERE id = $1`;
+
+  try {
+    const result = await db.query(sql, [transactionId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Transaksi tidak ditemukan' });
+    }
+
+    res.status(200).json({ message: 'Transaksi berhasil dihapus' });
+  } catch (err) {
+    console.error('❌ Error saat menghapus transaksi:', err);
+    res.status(500).json({ error: 'Gagal menghapus transaksi' });
+  }
+};
+
 // Ekspor semua fungsi
 module.exports = {
   getAllTransactionsDetail,
   createTransactionDetail,
+  updateTransactionDetail, // Now defined before export
+  deleteTransactionDetail, // Now defined before export
 };

@@ -42,8 +42,9 @@ app.get('/', (req, res) => {
 // Uji koneksi ke database menggunakan async/await
 const testDatabaseConnection = async () => {
   try {
-    const [rows] = await pool.query('SELECT NOW()');
-    console.log('✅ Koneksi ke database berhasil:', rows[0]);
+    // pg pool.query returns a result object, access rows via result.rows
+    const result = await pool.query('SELECT NOW()');
+    console.log('✅ Koneksi ke database berhasil:', result.rows[0]);
   } catch (err) {
     console.error('❌ Koneksi ke database gagal:', err);
   }
