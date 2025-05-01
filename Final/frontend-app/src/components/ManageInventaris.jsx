@@ -162,25 +162,25 @@ const ManageInventaris = () => {
                   <td>{index + 1}</td>
                   <td>{item.item_name}</td>
                   {/* Add conditional class for stock warning */}
-                  <td className={item.stock <= item.minimum_stock ? 'stock-warning' : ''}> 
+                  <td className={item.stock <= item.minimum_stock ? 'stock-warning' : ''}>
                     {item.stock}
                     {item.stock <= item.minimum_stock && (
-                      <span className="warning-text"> (Stok menipis!)</span> 
+                      <span className="warning-text"> (Stok menipis!)</span>
                     )}
                   </td>
                   <td>{item.minimum_stock}</td>
                   <td>
-                    <Button 
-                      variant="outline-primary" 
-                      size="sm" 
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
                       className="me-2" // Margin end for spacing
                       onClick={() => handleEditClick(item)}
                     >
                       <FaEdit /> Edit
                     </Button>
-                    <Button 
-                      variant="outline-danger" 
-                      size="sm" 
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
                       onClick={() => handleDelete(item.id)}
                     >
                       <FaTrashAlt /> Hapus

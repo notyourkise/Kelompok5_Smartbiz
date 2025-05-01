@@ -1,0 +1,158 @@
+/* ManageKostFinance Styles */
+.manage-kost-finance-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1f2833 0%, #45a29e 100%);
+  padding: 2rem;
+  color: #c5c6c7;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header style similar to Dashboard */
+.manage-kost-finance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #4b5a6a;
+}
+
+.manage-kost-finance-title {
+  color: #66fcf1;
+  font-weight: bold;
+  font-size: 2rem;
+}
+
+/* Keep existing h2 style for now, will be replaced by header */
+.manage-kost-finance-container h2 {
+  color: #66fcf1; /* Accent color for title */
+  margin-bottom: 20px;
+}
+
+.finance-summary {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.chart-container {
+  background-color: #1f2833; /* Darker background */
+  border: 1px solid #4b5a6a; /* Subtle border */
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  margin: 10px; /* Add some margin */
+  flex: 1; /* Allow containers to grow */
+  min-width: 300px; /* Minimum width for chart containers */
+}
+
+.chart-container h5 {
+    color: #66fcf1; /* Accent color */
+    margin-bottom: 15px;
+}
+
+/* Placeholder styles for charts */
+.donut-chart-placeholder,
+.bar-chart-placeholder {
+    width: 100%; /* Take full width of container */
+    height: 200px; /* Fixed height for placeholders */
+    background-color: #4b5a6a; /* Placeholder background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c5c6c7;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+
+.action-buttons {
+  display: flex;
+  gap: 10px; /* Space between buttons */
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.print-button-container {
+  position: relative; /* For dropdown positioning */
+}
+
+.print-options {
+  position: absolute;
+  top: 100%; /* Position below the button */
+  left: 0;
+  background-color: #1f2833; /* Darker background */
+  border: 1px solid #4b5a6a;
+  border-radius: 5px;
+  z-index: 10; /* Ensure it's above other content */
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+  padding: 5px;
+}
+
+.print-option-button {
+  background-color: transparent !important; /* Override bootstrap background */
+  border: none !important; /* Override bootstrap border */
+  color: #c5c6c7 !important; /* Text color */
+  text-align: left;
+  padding: 8px 15px;
+  transition: background-color 0.3s ease;
+}
+
+.print-option-button:hover {
+  background-color: #4b5a6a !important; /* Highlight on hover */
+  color: #ffffff !important;
+}
+
+
+.finance-table-container {
+  overflow-x: auto; /* Add scroll for smaller screens */
+}
+
+.finance-table {
+  width: 100%;
+  border-collapse: collapse; /* Remove space between borders */
+  margin-top: 15px;
+  background-color: #2c3e50; /* Darker background for table */
+  color: #c5c6c7; /* Light text color */
+  border: 1px solid #4b5a6a; /* Border color */
+  border-radius: 8px; /* Rounded corners for the table container */
+  overflow: hidden; /* Ensures border-radius clips content */
+}
+
+.finance-table thead {
+  background-color: #1f2833; /* Even darker header */
+  color: #66fcf1; /* Accent color for header text */
+}
+
+.finance-table th,
+.finance-table td {
+  vertical-align: middle; /* Center content vertically */
+  padding: 0.8rem 1rem; /* Adjust padding */
+  border-color: #4b5a6a; /* Match border color */
+  text-align: left; /* Ensure text alignment is left */
+}
+
+.finance-table th {
+  /* background-color: #1f2833; */ /* Already set in thead */
+  /* color: #66fcf1; */ /* Already set in thead */
+  font-weight: bold;
+}
+
+/* Style for striped rows */
+.finance-table tbody tr:nth-of-type(odd) > * {
+  background-color: rgba(
+    75,
+    90,
+    106,
+    0.5
+  ); /* Slightly different shade for odd rows */
+  color: #c5c6c7;
+}
+
+/* Hover effect for rows */
+.finance-table tbody tr:hover > * {
+  background-color: #45a29e; /* Accent color on hover */
+  color: #1f2833; /* Dark text on hover */
+}

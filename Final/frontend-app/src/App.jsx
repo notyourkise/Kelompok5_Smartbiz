@@ -5,6 +5,8 @@ import Register from "./components/Register"; // Pastikan komponen Register diim
 import Dashboard from "./components/Dashboard";  // Komponen Dashboard
 import ManageUser from "./components/ManageUser";
 import ManageInventaris from "./components/ManageInventaris";  // Pastikan komponen ManageInventaris diimpor
+import ManageCoffeeShopFinance from "./components/ManageCoffeeShopFinance"; // Import komponen ManageCoffeeShopFinance
+import ManageKostFinance from "./components/ManageKostFinance"; // Import komponen ManageKostFinance
 import 'bootstrap/dist/css/bootstrap.min.css';  // Pastikan Bootstrap diimpor
 
 function App() {
@@ -17,7 +19,9 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/manage-user" element={<ManageUser />} /> {/* Route untuk Manage User */}
-          <Route path="/inventaris" element={<ManageInventaris />} /> {/* Route untuk Manage Inventaris */}
+          <Route path="/manage-inventaris" element={<ManageInventaris />} /> {/* Route untuk Manage Inventaris */}
+          <Route path="/finance/coffee-shop" element={<ManageCoffeeShopFinance />} /> {/* Route untuk Manajemen Keuangan Coffee Shop */}
+          <Route path="/finance/kost" element={<ManageKostFinance />} /> {/* Route untuk Manajemen Keuangan Kost */}
         </Routes>
       </div>
     </Router>

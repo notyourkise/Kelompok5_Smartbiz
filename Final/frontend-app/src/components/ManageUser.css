@@ -6,7 +6,7 @@
   background: linear-gradient(135deg, #1f2833 0%, #45a29e 100%);
   padding: 2rem;
   color: #c5c6c7;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Header style similar to Dashboard */
@@ -69,7 +69,8 @@
   margin-top: 2rem; /* Add space above the table */
 }
 
-.user-table { /* Use .user-table class */
+.user-table {
+  /* Use .user-table class */
   background-color: #2c3e50; /* Darker background for table */
   color: #c5c6c7; /* Light text color */
   border: 1px solid #4b5a6a; /* Border color */
@@ -77,13 +78,15 @@
   overflow: hidden; /* Ensures border-radius clips content */
 }
 
-.user-table thead { /* Use .user-table class */
+.user-table thead {
+  /* Use .user-table class */
   background-color: #1f2833; /* Even darker header */
   color: #66fcf1; /* Accent color for header text */
 }
 
 .user-table th, /* Use .user-table class */
-.user-table td { /* Use .user-table class */
+.user-table td {
+  /* Use .user-table class */
   vertical-align: middle; /* Center content vertically */
   padding: 0.8rem 1rem; /* Adjust padding */
   border-color: #4b5a6a; /* Match border color */
@@ -91,7 +94,12 @@
 
 /* Style for striped rows */
 .table-striped > tbody > tr:nth-of-type(odd) > * {
-  background-color: rgba(75, 90, 106, 0.5); /* Slightly different shade for odd rows */
+  background-color: rgba(
+    75,
+    90,
+    106,
+    0.5
+  ); /* Slightly different shade for odd rows */
   color: #c5c6c7;
 }
 
@@ -102,13 +110,14 @@
 }
 
 /* Ensure buttons in table cells have some space */
-.user-table td .btn { /* Use .user-table class */
+.user-table td .btn {
+  /* Use .user-table class */
   margin-right: 0.5rem; /* Add space between buttons */
 }
-.user-table td .btn:last-child { /* Use .user-table class */
+.user-table td .btn:last-child {
+  /* Use .user-table class */
   margin-right: 0; /* Remove margin from the last button */
 }
-
 
 /* Modal styles (Copied and adapted from Register.css) */
 .modal-content {
@@ -132,7 +141,7 @@
 }
 
 .modal-body .form-label {
- color: #c5c6c7;
+  color: #c5c6c7;
 }
 
 .modal-body .form-control {
@@ -152,7 +161,6 @@
   color: #ffffff;
   box-shadow: none;
 }
-
 
 .modal-footer {
   border-top: 1px solid #4b5a6a;
