@@ -110,8 +110,8 @@ const ManageCoffeeShopFinance = () => {
       const data = await response.json();
       console.log('Transaksi berhasil disimpan:', data);
 
-      // After successful creation, update state without needing to fetch again
-      setTransactions((prevTransactions) => [data, ...prevTransactions]);
+      // After successful creation, re-fetch data to update the table and charts
+      fetchTransactions();
 
       // Close Modal and reset form
       setShowCreateModal(false);
@@ -168,18 +168,22 @@ const pieChartData = {
   ]
 };
 
-// Create data for Bar chart (Perbandingan Pemasukan dan Pengeluaran)
+// Create data for Bar chart (Perbandingan Pemasukan dan Pengeluaran per Transaksi)
 const barChartData = {
-  labels: ['Pemasukan', 'Pengeluaran'],
+  labels: transactionsWithSaldo.map(item => item.description), // Use transaction description as labels
   datasets: [
     {
-      label: 'Pemasukan vs Pengeluaran',
-      data: [
-        transactionsWithSaldo.filter((t) => t.type === 'income').reduce((acc, t) => acc + t.amount, 0),
-        transactionsWithSaldo.filter((t) => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0)
-      ],
-      backgroundColor: ['#4CAF50', '#FF5733'],
-      borderColor: ['#45a049', '#ff4731'],
+      label: 'Pemasukan',
+      data: transactionsWithSaldo.map(item => item.type === 'income' ? item.amount : 0), // Data for income
+      backgroundColor: '#4CAF50',
+      borderColor: '#45a049',
+      borderWidth: 1
+    },
+    {
+      label: 'Pengeluaran',
+      data: transactionsWithSaldo.map(item => item.type === 'expense' ? item.amount : 0), // Data for expense
+      backgroundColor: '#FF5733',
+      borderColor: '#ff4731',
       borderWidth: 1
     }
   ]
@@ -218,7 +222,7 @@ const barChartData = {
               <FaPlus /> Tambah Transaksi
             </Button>
             <div className="print-button-container">
-              <Button variant="primary" onClick={() => setShowPrintOptions(!showPrintOptions)} className="print-button">
+              <Button variant="primary" onClick={() => window.print()} className="print-button">
                 <FaPrint /> Cetak
               </Button>
             </div>
