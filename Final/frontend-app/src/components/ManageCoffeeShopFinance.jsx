@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './ManageCoffeeShopFinance.css';
-import { Button } from 'react-bootstrap'; // Assuming Bootstrap buttons are still used
-import { FaPlus, FaPrint, FaArrowLeft } from 'react-icons/fa'; // Icons for Add, Print, and Back
-import { useNavigate } from 'react-router-dom'; // For navigation
+import { Button, Modal, Form } from 'react-bootstrap'; // Import Modal and Form
+import { FaPlus, FaPrint, FaArrowLeft } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { Pie, Bar } from 'react-chartjs-2';  // Import Chart.js components
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js';
 
-// Assuming chart libraries will be added later, using placeholders for now
-// import { Pie, Bar } from 'react-chartjs-2';
+// Register Chart.js components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement);
 
 const ManageCoffeeShopFinance = () => {
   const navigate = useNavigate();
@@ -14,23 +16,39 @@ const ManageCoffeeShopFinance = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // State for modal and form
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newTransaction, setNewTransaction] = useState({
+    type: 'income', // Default set to 'income'
+    amount: 0,
+    description: '',
+    category: 'Coffee Shop',
+    payment_method: '',
+  });
+
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        // Assuming an API endpoint for fetching transactions by category
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token'); // Ambil token dari localStorage
         if (!token) {
-          console.error("Authentication token not found. Cannot fetch transactions.");
-          return;
+          throw new Error('Token tidak ditemukan. Harap login terlebih dahulu.');
         }
-        const response = await fetch('http://localhost:3001/api/keuangan/coffee-shop', {
-          headers: { Authorization: `Bearer ${token}` },
+
+        const response = await fetch('http://localhost:3001/keuangan/detail?category=coffee shop', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          }
         });
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+
         const data = await response.json();
-        setTransactions(data);
+        // Sort data by created_at date
+        const sortedData = data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        setTransactions(sortedData);
       } catch (error) {
         setError(error);
         console.error('Error fetching transactions:', error);
@@ -42,76 +60,137 @@ const ManageCoffeeShopFinance = () => {
     fetchTransactions();
   }, []);
 
-  const handleAddData = () => {
-    // Logic to add new data - navigate to a new page or show a modal
-    console.log('Tambah data clicked');
+  // Handle form input change for new transaction
+  const handleNewTransactionInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewTransaction({
+      ...newTransaction,
+      [name]: value,
+    });
   };
 
-  const handlePrint = () => {
-    setShowPrintOptions(!showPrintOptions);
+  // Handle Create Modal
+  const handleCreateModal = () => {
+    setShowCreateModal(true); // Show Create Transaction Modal
   };
 
-  const handlePrintCSV = () => {
-    // Logic to print as CSV
-    console.log('Cetak CSV clicked');
-    setShowPrintOptions(false);
+  const handleCloseCreateModal = () => {
+    setShowCreateModal(false); // Close the modal
+    setNewTransaction({
+      type: 'income',
+      amount: 0,
+      description: '',
+      category: 'Coffee Shop',
+      payment_method: '',
+    }); // Reset the form
   };
 
-  const handlePrintExcel = () => {
-    // Logic to print as Excel
-    console.log('Cetak Excel clicked');
-    setShowPrintOptions(false);
+  // Handle creating a new transaction
+  const handleCreateTransaction = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token tidak ditemukan');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3001/keuangan/detail', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newTransaction),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Transaksi berhasil disimpan:', data);
+
+      // After successful creation, update state without needing to fetch again
+      setTransactions((prevTransactions) => [data, ...prevTransactions]);
+
+      // Close Modal and reset form
+      setShowCreateModal(false);
+      setNewTransaction({
+        type: 'income',
+        amount: 0,
+        description: '',
+        category: 'Coffee Shop',
+        payment_method: '',
+      });
+
+    } catch (error) {
+      console.error('Error creating transaction:', error);
+    }
   };
 
-  const handleBack = () => {
-    navigate('/dashboard'); // Navigate back to the dashboard
-  };
-
-  // Function to calculate saldo
+  // Calculate saldo
   const calculateSaldo = (transactions) => {
     let currentSaldo = 0;
     return transactions.map(transaction => {
-      if (transaction.type === 'pemasukan') {
-        currentSaldo += transaction.amount;
-      } else if (transaction.type === 'pengeluaran') {
-        currentSaldo -= transaction.amount;
+      if (transaction.type === 'income') {
+        currentSaldo += parseFloat(transaction.amount) || 0;
+      } else if (transaction.type === 'expense') {
+        currentSaldo -= parseFloat(transaction.amount) || 0;
       }
       return { ...transaction, saldo: currentSaldo };
     });
   };
 
-  const transactionsWithSaldo = calculateSaldo(transactions);
-
-
-  // Placeholder data for charts - will need to be calculated from fetched data
-  const chartData = {
-    pemasukan: 71.4, // Example percentage
-    pengeluaran: 28.6, // Example percentage
-    labels: ['Pemasukan', 'Pengeluaran'],
-    pemasukanAmount: 0, // Calculate from data
-    pengeluaranAmount: 0, // Calculate from data
+  // Format currency to Rupiah (IDR)
+  const formatRupiah = (amount) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+    }).format(amount);
   };
 
-  // Calculate chart data from transactions
-  if (transactions.length > 0) {
-      const totalPemasukan = transactions.filter(t => t.type === 'pemasukan').reduce((sum, t) => sum + t.amount, 0);
-      const totalPengeluaran = transactions.filter(t => t.type === 'pengeluaran').reduce((sum, t) => sum + t.amount, 0);
-      const total = totalPemasukan + totalPengeluaran;
-      chartData.pemasukan = total > 0 ? (totalPemasukan / total) * 100 : 0;
-      chartData.pengeluaran = total > 0 ? (totalPengeluaran / total) * 100 : 0;
-      chartData.pemasukanAmount = totalPemasukan;
-      chartData.pengeluaranAmount = totalPengeluaran;
-  }
+// Filter transaksi hanya dengan kategori 'coffee shop'
+const filteredTransactions = transactions.filter(transaction => transaction.category === 'Coffee Shop');
+const transactionsWithSaldo = calculateSaldo(filteredTransactions);
 
+// Create data for Pie chart (Distribusi Pemasukan vs Pengeluaran)
+const pieChartData = {
+  labels: ['Pemasukan', 'Pengeluaran'],
+  datasets: [
+    {
+      data: [
+        transactionsWithSaldo.filter((t) => t.type === 'income').reduce((acc, t) => acc + t.amount, 0),
+        transactionsWithSaldo.filter((t) => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0)
+      ],
+      backgroundColor: ['#4CAF50', '#FF5733'],
+      hoverBackgroundColor: ['#45a049', '#ff4731']
+    }
+  ]
+};
+
+// Create data for Bar chart (Perbandingan Pemasukan dan Pengeluaran)
+const barChartData = {
+  labels: ['Pemasukan', 'Pengeluaran'],
+  datasets: [
+    {
+      label: 'Pemasukan vs Pengeluaran',
+      data: [
+        transactionsWithSaldo.filter((t) => t.type === 'income').reduce((acc, t) => acc + t.amount, 0),
+        transactionsWithSaldo.filter((t) => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0)
+      ],
+      backgroundColor: ['#4CAF50', '#FF5733'],
+      borderColor: ['#45a049', '#ff4731'],
+      borderWidth: 1
+    }
+  ]
+};
 
   return (
     <div className="manage-coffee-shop-finance-container">
       <header className="manage-coffee-shop-finance-header">
-        <FaArrowLeft className="back-icon" onClick={handleBack} />
+        <FaArrowLeft className="back-icon" onClick={() => navigate('/dashboard')} />
         <h2 className="manage-coffee-shop-finance-title">Manajemen Keuangan Coffee Shop</h2>
-        <div></div> {/* Empty div for spacing */}
       </header>
-
 
       {loading && <p>Loading transactions...</p>}
       {error && <p>Error loading transactions: {error.message}</p>}
@@ -121,71 +200,122 @@ const ManageCoffeeShopFinance = () => {
           <div className="finance-summary">
             <div className="chart-container">
               <h5>Distribusi Pemasukan vs Pengeluaran</h5>
-              {/* Placeholder for Donut Chart */}
               <div className="donut-chart-placeholder">
-                 Donut Chart Placeholder ({chartData.pemasukan.toFixed(2)}% Pemasukan, {chartData.pengeluaran.toFixed(2)}% Pengeluaran)
+                <Pie key={transactions.length} data={pieChartData} />
               </div>
-              {/* Actual Donut Chart would go here */}
-              {/* <Pie data={{ labels: chartData.labels, datasets: [{ data: [chartData.pemasukan, chartData.pengeluaran], backgroundColor: ['#2ecc71', '#e74c3c'] }] }} /> */}
             </div>
 
             <div className="chart-container">
-               <h5>Perbandingan Pemasukan dan Pengeluaran</h5>
-               {/* Placeholder for Bar Chart */}
-               <div className="bar-chart-placeholder">
-                  Bar Chart Placeholder (Pemasukan: {chartData.pemasukanAmount}, Pengeluaran: {chartData.pengeluaranAmount})
-               </div>
-               {/* Actual Bar Chart would go here */}
-               {/* <Bar data={{ labels: chartData.labels, datasets: [{ label: 'Jumlah', data: [chartData.pemasukanAmount, chartData.pengeluaranAmount], backgroundColor: ['#2ecc71', '#e74c3c'] }] }} /> */}
+              <h5>Perbandingan Pemasukan dan Pengeluaran</h5>
+              <div className="bar-chart-placeholder">
+                <Bar key={transactions.length} data={barChartData} />
+              </div>
             </div>
           </div>
-
 
           <div className="action-buttons">
-            <Button variant="success" onClick={handleAddData} className="add-button">
-              <FaPlus /> Tambah
+            <Button variant="success" onClick={handleCreateModal} className="add-button">
+              <FaPlus /> Tambah Transaksi
             </Button>
             <div className="print-button-container">
-              <Button variant="primary" onClick={handlePrint} className="print-button">
+              <Button variant="primary" onClick={() => setShowPrintOptions(!showPrintOptions)} className="print-button">
                 <FaPrint /> Cetak
               </Button>
-              {showPrintOptions && (
-                <div className="print-options">
-                  <Button variant="light" onClick={handlePrintCSV} className="print-option-button">Cetak CSV</Button>
-                  <Button variant="light" onClick={handlePrintExcel} className="print-option-button">Cetak Excel</Button>
-                </div>
-              )}
             </div>
           </div>
 
-
           <div className="finance-table-container">
-            <table className="finance-table"><thead>
+            <table className="finance-table">
+              <thead>
                 <tr>
                   <th>No</th>
-                  <th>Tanggal</th>
                   <th>Keterangan</th>
                   <th>Metode</th>
                   <th>Pemasukan</th>
                   <th>Pengeluaran</th>
                   <th>Saldo</th>
                 </tr>
-              </thead><tbody>
+              </thead>
+              <tbody>
                 {transactionsWithSaldo.map((item, index) => (
                   <tr key={item.id}>
                     <td>{index + 1}</td>
-                    <td>{new Date(item.created_at).toLocaleDateString()}</td>
                     <td>{item.description}</td>
                     <td>{item.payment_method}</td>
-                    <td>{item.type === 'pemasukan' ? item.amount : 0}</td>
-                    <td>{item.type === 'pengeluaran' ? item.amount : 0}</td>
-                    <td>{item.saldo}</td>
+                    <td>{item.type === 'income' ? formatRupiah(item.amount) : 0}</td>
+                    <td>{item.type === 'expense' ? formatRupiah(item.amount) : 0}</td>
+                    <td>{formatRupiah(item.saldo)}</td>
                   </tr>
                 ))}
-              </tbody></table>
+              </tbody>
+            </table>
           </div>
         </>
       )}
+
+      {/* Modal untuk menambah transaksi */}
+      <Modal show={showCreateModal} onHide={handleCloseCreateModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Tambah Transaksi</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Jenis Transaksi</Form.Label>
+              <Form.Control
+                as="select"
+                name="type"
+                value={newTransaction.type}
+                onChange={handleNewTransactionInputChange}
+              >
+                <option value="income">Pemasukan</option>
+                <option value="expense">Pengeluaran</option>
+              </Form.Control>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Jumlah</Form.Label>
+              <Form.Control
+                type="number"
+                name="amount"
+                value={newTransaction.amount}
+                onChange={handleNewTransactionInputChange}
+                placeholder="Masukkan jumlah"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Deskripsi</Form.Label>
+              <Form.Control
+                type="text"
+                name="description"
+                value={newTransaction.description}
+                onChange={handleNewTransactionInputChange}
+                placeholder="Masukkan deskripsi"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Metode Pembayaran</Form.Label>
+              <Form.Control
+                type="text"
+                name="payment_method"
+                value={newTransaction.payment_method}
+                onChange={handleNewTransactionInputChange}
+                placeholder="Masukkan metode pembayaran"
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseCreateModal}>
+            Batal
+          </Button>
+          <Button variant="primary" onClick={handleCreateTransaction}>
+            Simpan
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

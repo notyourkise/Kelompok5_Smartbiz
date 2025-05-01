@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 30 Apr 2025 pada 12.18
+-- Waktu pembuatan: 01 Bulan Mei 2025 pada 13.18
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -65,6 +65,13 @@ CREATE TABLE `inventory` (
   `minimum_stock` int(11) NOT NULL,
   `last_updated` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `inventory`
+--
+
+INSERT INTO `inventory` (`id`, `item_name`, `stock`, `minimum_stock`, `last_updated`) VALUES
+(2, 'IKAN', 20, 1, '2025-05-01 09:15:28');
 
 -- --------------------------------------------------------
 
@@ -150,7 +157,7 @@ CREATE TABLE `transactions` (
   `type` enum('income','expense') NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   `description` text NOT NULL,
-  `category` varchar(255) DEFAULT NULL,
+  `category` enum('Coffee Shop','Kost') DEFAULT NULL,
   `payment_method` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT NULL,
@@ -162,13 +169,10 @@ CREATE TABLE `transactions` (
 --
 
 INSERT INTO `transactions` (`id`, `type`, `amount`, `description`, `category`, `payment_method`, `created_at`, `updated_at`, `created_by`) VALUES
-(1, '', 38000.00, 'Pembelian oleh Kamal', NULL, 'cash', '2025-03-02 09:34:42', NULL, 14),
-(2, '', 74000.00, 'Pembelian oleh ajeng', NULL, 'cash', '2025-03-02 09:46:57', NULL, 14),
-(3, '', 54000.00, 'Pembelian oleh 12', NULL, 'cash', '2025-03-02 09:47:48', NULL, 14),
-(4, '', 38000.00, 'Pembelian oleh Kamal', NULL, 'cash', '2025-03-02 10:17:04', NULL, 14),
-(5, '', 118000.00, 'Pembelian oleh kepeng', NULL, 'qris', '2025-04-13 07:21:36', NULL, 14),
-(6, '', 38000.00, 'Pembelian oleh Kamal', NULL, 'cash', '2025-04-13 08:44:00', NULL, 14),
-(7, '', 20000.00, 'Pembelian oleh kepeng', NULL, 'cash', '2025-04-13 09:29:24', NULL, 14);
+(55, 'income', 50000.00, 'Kopi', 'Coffee Shop', 'Qris', '2025-05-01 11:05:07', '2025-05-01 19:05:07', 44),
+(56, 'expense', 20000.00, 'angsul', 'Coffee Shop', 'cash', '2025-05-01 11:05:40', '2025-05-01 19:05:40', 44),
+(57, 'income', 9000.00, 'Cireng', 'Coffee Shop', 'Qris', '2025-05-01 11:06:00', '2025-05-01 19:06:00', 44),
+(58, 'income', 7000.00, 'AYAM', 'Coffee Shop', 'Qris', '2025-05-01 11:06:51', '2025-05-01 19:06:51', 44);
 
 -- --------------------------------------------------------
 
@@ -190,8 +194,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `password`, `role`, `created_at`) VALUES
 (14, 'haiikalll', '$2y$10$EWB0.ax8zXBp.bNiVyqrteDxTa81.z5LI9YO1KcRlzmJxr2sJVmaS', 'admin', '2025-03-01 17:53:27'),
-(44, 'SAD', '$2b$10$tJY3aZnlUVroKDnPOrOvK.YUfw4LCmqKT3c.8uCq2W.VVrf1351fK', 'superadmin', '2025-04-30 07:13:32'),
-(45, 'Ucup', '$2b$10$Q5IkFtXoLsuGuEjLKdygheoGzDvO8HYL1YllH3nipmzQBGrZtUVSi', 'admin', '2025-04-30 09:54:09');
+(44, 'SAD', '$2b$10$tJY3aZnlUVroKDnPOrOvK.YUfw4LCmqKT3c.8uCq2W.VVrf1351fK', 'superadmin', '2025-04-30 07:13:32');
 
 --
 -- Indexes for dumped tables
@@ -288,7 +291,7 @@ ALTER TABLE `cart`
 -- AUTO_INCREMENT untuk tabel `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `inventory_transactions`
@@ -324,7 +327,7 @@ ALTER TABLE `rooms`
 -- AUTO_INCREMENT untuk tabel `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT untuk tabel `users`

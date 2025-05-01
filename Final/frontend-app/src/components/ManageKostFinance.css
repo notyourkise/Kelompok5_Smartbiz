@@ -7,7 +7,6 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Header style similar to Dashboard */
 .manage-kost-finance-header {
   display: flex;
   justify-content: space-between;
@@ -23,136 +22,118 @@
   font-size: 2rem;
 }
 
-/* Keep existing h2 style for now, will be replaced by header */
-.manage-kost-finance-container h2 {
-  color: #66fcf1; /* Accent color for title */
-  margin-bottom: 20px;
-}
-
 .finance-summary {
   display: flex;
   justify-content: space-around;
   margin-bottom: 20px;
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  flex-wrap: wrap;
 }
 
 .chart-container {
-  background-color: #1f2833; /* Darker background */
-  border: 1px solid #4b5a6a; /* Subtle border */
+  background-color: #1f2833;
+  border: 1px solid #4b5a6a;
   border-radius: 10px;
   padding: 15px;
   text-align: center;
-  margin: 10px; /* Add some margin */
-  flex: 1; /* Allow containers to grow */
-  min-width: 300px; /* Minimum width for chart containers */
+  margin: 10px;
+  flex: 1;
+  min-width: 300px;
 }
 
 .chart-container h5 {
-    color: #66fcf1; /* Accent color */
-    margin-bottom: 15px;
+  color: #66fcf1;
+  margin-bottom: 15px;
 }
 
-/* Placeholder styles for charts */
 .donut-chart-placeholder,
 .bar-chart-placeholder {
-    width: 100%; /* Take full width of container */
-    height: 200px; /* Fixed height for placeholders */
-    background-color: #4b5a6a; /* Placeholder background */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #c5c6c7;
-    border-radius: 5px;
-    margin-bottom: 10px;
+  width: 100%;
+  height: 200px;
+  background-color: #d5eee9fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c5c6c7;
+  border-radius: 5px;
+  margin-bottom: 10px;
 }
-
 
 .action-buttons {
   display: flex;
-  gap: 10px; /* Space between buttons */
+  gap: 10px;
   margin-bottom: 20px;
   align-items: center;
 }
 
 .print-button-container {
-  position: relative; /* For dropdown positioning */
+  position: relative;
 }
 
 .print-options {
   position: absolute;
-  top: 100%; /* Position below the button */
+  top: 100%;
   left: 0;
-  background-color: #1f2833; /* Darker background */
+  background-color: #1f2833;
   border: 1px solid #4b5a6a;
   border-radius: 5px;
-  z-index: 10; /* Ensure it's above other content */
+  z-index: 10;
   display: flex;
-  flex-direction: column; /* Stack buttons vertically */
+  flex-direction: column;
   padding: 5px;
 }
 
 .print-option-button {
-  background-color: transparent !important; /* Override bootstrap background */
-  border: none !important; /* Override bootstrap border */
-  color: #c5c6c7 !important; /* Text color */
+  background-color: transparent !important;
+  border: none !important;
+  color: #c5c6c7 !important;
   text-align: left;
   padding: 8px 15px;
   transition: background-color 0.3s ease;
 }
 
 .print-option-button:hover {
-  background-color: #4b5a6a !important; /* Highlight on hover */
+  background-color: #4b5a6a !important;
   color: #ffffff !important;
 }
 
-
 .finance-table-container {
-  overflow-x: auto; /* Add scroll for smaller screens */
+  overflow-x: auto;
 }
 
 .finance-table {
   width: 100%;
-  border-collapse: collapse; /* Remove space between borders */
+  border-collapse: collapse;
   margin-top: 15px;
-  background-color: #2c3e50; /* Darker background for table */
-  color: #c5c6c7; /* Light text color */
-  border: 1px solid #4b5a6a; /* Border color */
-  border-radius: 8px; /* Rounded corners for the table container */
-  overflow: hidden; /* Ensures border-radius clips content */
+  background-color: #2c3e50;
+  color: #c5c6c7;
+  border: 1px solid #4b5a6a;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .finance-table thead {
-  background-color: #1f2833; /* Even darker header */
-  color: #66fcf1; /* Accent color for header text */
+  background-color: #1f2833;
+  color: #66fcf1;
 }
 
 .finance-table th,
 .finance-table td {
-  vertical-align: middle; /* Center content vertically */
-  padding: 0.8rem 1rem; /* Adjust padding */
-  border-color: #4b5a6a; /* Match border color */
-  text-align: left; /* Ensure text alignment is left */
+  vertical-align: middle;
+  padding: 0.8rem 1rem;
+  border-color: #4b5a6a;
+  text-align: left;
 }
 
 .finance-table th {
-  /* background-color: #1f2833; */ /* Already set in thead */
-  /* color: #66fcf1; */ /* Already set in thead */
   font-weight: bold;
 }
 
-/* Style for striped rows */
 .finance-table tbody tr:nth-of-type(odd) > * {
-  background-color: rgba(
-    75,
-    90,
-    106,
-    0.5
-  ); /* Slightly different shade for odd rows */
+  background-color: rgba(75, 90, 106, 0.5);
   color: #c5c6c7;
 }
 
-/* Hover effect for rows */
 .finance-table tbody tr:hover > * {
-  background-color: #45a29e; /* Accent color on hover */
-  color: #1f2833; /* Dark text on hover */
+  background-color: #45a29e;
+  color: #1f2833;
 }

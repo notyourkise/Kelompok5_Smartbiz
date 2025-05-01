@@ -11,6 +11,11 @@ const authenticateToken = (req, res, next) => {
   jwt.verify(token, 'your-secret-key', (err, user) => {
     if (err) {
       console.error('JWT Verification Error:', err.message);
+      
+      if (err.name === 'TokenExpiredError') {
+        return res.status(401).json({ error: 'Token telah kedaluwarsa. Silakan login kembali.' });
+      }
+
       return res.status(403).json({ error: "Token tidak valid atau kadaluarsa." });
     }
 
