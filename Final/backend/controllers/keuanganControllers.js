@@ -74,12 +74,12 @@ const updateTransactionDetail = async (req, res) => {
 
   const sql = `
     UPDATE TRANSACTIONS
-    SET type = $1, amount = $2, description = $3, payment_method = $4, updated_at = NOW(), updated_by = $5
-    WHERE id = $6
+    SET type = $1, amount = $2, description = $3, payment_method = $4, updated_at = NOW()
+    WHERE id = $5
   `;
 
   try {
-    const result = await db.query(sql, [type, amount, description, payment_method, updated_by, transactionId]);
+    const result = await db.query(sql, [type, amount, description, payment_method, transactionId]);
 
     if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Transaksi tidak ditemukan' });

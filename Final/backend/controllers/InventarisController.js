@@ -1,10 +1,22 @@
 // src/controllers/InventarisController.js
 const db = require('../config/db'); // Pastikan koneksi database sudah benar
 
-// Ambil semua data inventaris
+// Ambil semua data inventaris, filter by category if provided
 const getAllInventaris = async (req, res) => {
+  const category = req.query.category; // Get category from query parameter
+
+  let sql = 'SELECT * FROM inventory';
+  const params = [];
+
+  if (category) {
+    sql += ' WHERE LOWER(category) = LOWER($1)'; // Case-insensitive filter
+    params.push(category);
+  }
+
+  sql += ' ORDER BY item_name ASC'; // Optional: order results
+
   try {
-    const result = await db.query('SELECT * FROM inventory');
+    const result = await db.query(sql, params); // Use params array
     res.status(200).json(result.rows);
   } catch (err) {
     console.error("Error fetching inventaris:", err);
@@ -14,13 +26,13 @@ const getAllInventaris = async (req, res) => {
 
 // Menambahkan inventaris baru
 const createInventaris = async (req, res) => {
-  const { item_name, stock, minimum_stock } = req.body;
+  const { item_name, stock, minimum_stock, category } = req.body;
 
   try {
-    // pg returns a result object, no need to destructure. Success is implied if no error.
+    // Tambahkan category pada saat insert data
     await db.query(
-      'INSERT INTO inventory (item_name, stock, minimum_stock) VALUES ($1, $2, $3)',
-      [item_name, stock, minimum_stock]
+      'INSERT INTO inventory (item_name, stock, minimum_stock, category) VALUES ($1, $2, $3, $4)',
+      [item_name, stock, minimum_stock, category] // Include category here
     );
     res.status(201).json({ message: 'Inventaris created successfully' });
   } catch (err) {
@@ -32,14 +44,13 @@ const createInventaris = async (req, res) => {
 // Mengupdate inventaris
 const updateInventaris = async (req, res) => {
   const itemId = req.params.id;
-  const { item_name, stock, minimum_stock } = req.body;
+  const { item_name, stock, minimum_stock, category } = req.body; // Menambahkan kategori
 
   try {
     const result = await db.query(
-      'UPDATE inventory SET item_name = $1, stock = $2, minimum_stock = $3 WHERE id = $4',
-      [item_name, stock, minimum_stock, itemId]
+      'UPDATE inventory SET item_name = $1, stock = $2, minimum_stock = $3, category = $4 WHERE id = $5',
+      [item_name, stock, minimum_stock, category, itemId] // Menyertakan category
     );
-    // Use rowCount for pg
     if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Inventaris not found' });
     }
