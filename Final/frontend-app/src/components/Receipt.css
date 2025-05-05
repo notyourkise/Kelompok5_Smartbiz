@@ -1,0 +1,94 @@
+.receipt-container {
+    width: 300px; /* Ukuran struk kecil seperti kertas */
+    padding: 20px;
+    margin: 20px auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Courier New', Courier, monospace; /* Font mirip struk */
+    background-color: white;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.receipt-header h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.receipt-header p {
+    font-size: 14px;
+}
+
+.receipt-info p {
+    font-size: 12px;
+    margin: 5px 0;
+}
+
+.receipt-items table {
+    width: 100%;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    border-collapse: collapse;
+}
+
+.receipt-items th,
+.receipt-items td {
+    padding: 5px;
+    font-size: 14px;
+    text-align: left;
+}
+
+.receipt-items th {
+    border-bottom: 1px solid #000;
+}
+
+.total-row td {
+    font-weight: bold;
+    border-top: 1px solid #000;
+}
+
+.receipt-footer p {
+    font-size: 12px;
+    margin: 5px 0;
+}
+
+.button-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Menambahkan jarak antar tombol */
+}
+
+.print-button,
+.back-button {
+    padding: 12px 30px; /* Sesuaikan ukuran padding dengan tombol lainnya */
+    margin: 10px;
+    font-size: 16px; /* Ukuran font lebih besar */
+    cursor: pointer;
+    border-radius: 5px; /* Tombol lebih bulat */
+    font-weight: bold; /* Membuat teks lebih tegas */
+    background-color: #3498db; /* Warna tombol */
+    color: white; /* Warna teks putih */
+    border: none; /* Menghapus border default */
+    text-transform: uppercase; /* Menjadikan teks semua huruf kapital */
+}
+
+.print-button {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    text-transform: uppercase; /* Menjadikan teks semua huruf kapital */
+}
+
+.back-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    text-transform: uppercase;
+}
+
+.print-button:hover,
+.back-button:hover {
+    opacity: 0.8;
+}

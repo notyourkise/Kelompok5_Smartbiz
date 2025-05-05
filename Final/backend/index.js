@@ -19,7 +19,8 @@ app.use(express.json());  // Mengizinkan request dengan format JSON
 const authRoutes = require('./routes/auth');
 const keuanganRoutes = require('./routes/keuangan');
 const kosRoutes = require('./routes/kos');
-const coffeeShopRoutes = require('./routes/coffeeShop');
+// const coffeeShopRoutes = require('./routes/coffeeShop'); // Keep the old one commented or remove if sure
+const newCoffeeShopRoutes = require('./routes/coffeeShop'); // Use a distinct name for clarity
 const inventarisRoutes = require('./routes/InventarisRoutes'); // Corrected import path
 const UserRoutes = require('./routes/UserRoutes');
 const authenticateToken = require('./middleware/authMiddleware'); // Import authentication middleware
@@ -28,7 +29,8 @@ const authenticateToken = require('./middleware/authMiddleware'); // Import auth
 app.use('/auth', authRoutes);  // Rute untuk login dan registrasi
 app.use('/keuangan', keuanganRoutes);  // Rute untuk manajemen keuangan
 app.use('/kos', kosRoutes);  // Rute untuk manajemen kos
-app.use('/coffee', coffeeShopRoutes);  // Rute untuk manajemen coffee shop
+// app.use('/coffee', coffeeShopRoutes); // Keep the old one commented or remove if sure
+app.use('/coffee-shop', newCoffeeShopRoutes); // Use the new routes, maybe change path prefix? Let's use /coffee-shop
 // Corrected path and applied authentication middleware
 app.use('/api/inventaris', authenticateToken, inventarisRoutes); // Corrected path and added auth
 // Gunakan middleware otentikasi untuk rute pengguna

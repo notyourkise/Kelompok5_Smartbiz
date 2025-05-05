@@ -1,123 +1,103 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// Remove Bootstrap components Card, Row, Col. Keep Button for now or replace later if needed.
 import { Button } from 'react-bootstrap';
-import { FaDollarSign, FaBed, FaCoffee, FaUser, FaBox, FaArrowLeft } from 'react-icons/fa'; // Menggunakan React Icons
-import Footer from './Footer'; // Import the Footer component
-import './Dashboard.css'; // Import the new CSS file
+import { FaDollarSign, FaBed, FaCoffee, FaUser, FaBox, FaArrowLeft } from 'react-icons/fa';
+import Footer from './Footer';
+import './Dashboard.css';
+import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [showFinanceSubMenu, setShowFinanceSubMenu] = useState(false);
-  const [showInventarisSubMenu, setShowInventarisSubMenu] = useState(false); // State for inventory submenu
+  const [showInventarisSubMenu, setShowInventarisSubMenu] = useState(false);
 
-  // Ambil username dan role dari localStorage
   const username = localStorage.getItem('username');
-  const role = localStorage.getItem('role');  // Ambil role dari localStorage
+  const role = localStorage.getItem('role');
 
   const handleLogout = () => {
-    // Menghapus token, username, dan role dari localStorage
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     localStorage.removeItem('role');
-    // Arahkan ke halaman login
     navigate('/login');
   };
 
   const handleCoffeeShopClick = () => {
-    navigate('/finance/coffee-shop'); // Navigate to Coffee Shop Finance route
+    navigate('/finance/coffee-shop');
   };
 
   const handleKostClick = () => {
-    navigate('/finance/kost'); // Navigate to Kost Finance route
+    navigate('/finance/kost');
   };
-
-  // Removed duplicate handleCoffeeShopClick and handleKostClick
 
   const handleFinanceClick = () => {
     setShowFinanceSubMenu(true);
-    setShowInventarisSubMenu(false); // Close inventory submenu if open
+    setShowInventarisSubMenu(false);
   };
 
   const handleBackToDashboard = () => {
     setShowFinanceSubMenu(false);
-    setShowInventarisSubMenu(false); // Ensure both are closed
+    setShowInventarisSubMenu(false);
   };
 
   const handleInventarisClick = () => {
     setShowInventarisSubMenu(true);
-    setShowFinanceSubMenu(false); // Close finance submenu if open
+    setShowFinanceSubMenu(false);
   };
 
   const handleInventarisCoffeeShopClick = () => {
-    navigate('/inventaris/coffee-shop'); // Navigate to Coffee Shop Inventory route
+    navigate('/inventaris/coffee-shop');
   };
 
   const handleInventarisKostClick = () => {
-    navigate('/inventaris/kost'); // Navigate to Kost Inventory route
+    navigate('/inventaris/kost');
   };
 
   const handleBackToDashboardInventaris = () => {
     setShowInventarisSubMenu(false);
   };
 
-
   const handleManageUser = () => {
-    navigate('/manage-user'); // Navigate to Manage User route
+    navigate('/manage-user');
   };
 
-  // Removed handleInventaris as it's replaced by handleInventarisClick
-
   return (
-    // Use CSS classes instead of inline styles and Bootstrap container
     <div className="dashboard-container">
-      {/* Header */}
       <header className="dashboard-header">
-        {(showFinanceSubMenu || showInventarisSubMenu) && ( // Show back arrow if either submenu is active
+        {(showFinanceSubMenu || showInventarisSubMenu) && (
           <FaArrowLeft className="back-icon" onClick={showFinanceSubMenu ? handleBackToDashboard : handleBackToDashboardInventaris} />
         )}
         <h2 className="dashboard-title">Smartbiz Admin</h2>
-        {/* Tombol Logout with CSS class */}
         <Button
-          variant="danger" // Keep variant for base styling, override with class
+          variant="danger"
           onClick={handleLogout}
-          className="logout-button" // Apply CSS class
+          className="logout-button"
         >
           Logout
         </Button>
       </header>
 
-      {/* Welcome Message */}
       <h3 className="welcome-message">Selamat Datang, {username}!</h3>
       <h5 className="role-display">Role: {role}</h5>
 
-      {/* Grid Layout untuk Menu Dashboard - Use div with CSS class */}
       <div className={`dashboard-grid ${showFinanceSubMenu ? 'finance-submenu-active' : ''} ${showInventarisSubMenu ? 'inventaris-submenu-active' : ''}`}>
-        {/* Manajemen Keuangan Card - Hanya untuk Superadmin */}
-        {role === 'superadmin' && !showFinanceSubMenu && !showInventarisSubMenu && ( // Hide if any submenu is active
-          // Replace Col and Card with div and CSS classes
+        {role === 'superadmin' && !showFinanceSubMenu && !showInventarisSubMenu && (
           <div className="dashboard-card finance-main-card">
-            {/* Replace Card.Body */}
             <div>
-              {/* Apply icon class and specific color */}
-              <FaDollarSign className="card-icon" style={{ color: '#2ecc71' }} /> {/* Green for finance */}
+              <FaDollarSign className="card-icon" style={{ color: '#2ecc71' }} />
               <h4 className="card-title">Manajemen Keuangan</h4>
               <p className="card-text">
                 Kelola pemasukan dan pengeluaran bisnis Anda.
               </p>
-              {/* Apply button class */}
               <Button variant="outline-primary" className="card-button" onClick={handleFinanceClick}>Kelola</Button>
             </div>
           </div>
         )}
 
-        {/* Sub-menu for Manajemen Keuangan */}
         {role === 'superadmin' && showFinanceSubMenu && (
           <>
-            {/* Coffee Shop Finance Card */}
             <div className="dashboard-card finance-submenu-card">
               <div>
-                <FaCoffee className="card-icon" style={{ color: '#a0522d' }} /> {/* Brown for coffee */}
+                <FaCoffee className="card-icon" style={{ color: '#a0522d' }} />
                 <h4 className="card-title">Coffee Shop</h4>
                 <p className="card-text">
                   Kelola keuangan Coffee Shop.
@@ -126,10 +106,9 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Kost Finance Card */}
             <div className="dashboard-card finance-submenu-card">
               <div>
-                <FaBed className="card-icon" style={{ color: '#3498db' }} /> {/* Blue for rooms */}
+                <FaBed className="card-icon" style={{ color: '#3498db' }} />
                 <h4 className="card-title">Kost</h4>
                 <p className="card-text">
                   Kelola keuangan Kost.
@@ -140,13 +119,11 @@ const Dashboard = () => {
           </>
         )}
 
-        {/* Sub-menu for Manajemen Inventaris */}
         {role === 'superadmin' && showInventarisSubMenu && (
           <>
-            {/* Coffee Shop Inventaris Card */}
             <div className="dashboard-card inventaris-submenu-card">
               <div>
-                <FaCoffee className="card-icon" style={{ color: '#a0522d' }} /> {/* Brown for coffee */}
+                <FaCoffee className="card-icon" style={{ color: '#a0522d' }} />
                 <h4 className="card-title">Inventaris Coffee Shop</h4>
                 <p className="card-text">
                   Kelola inventaris Coffee Shop.
@@ -155,10 +132,9 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Kost Inventaris Card */}
             <div className="dashboard-card inventaris-submenu-card">
               <div>
-                <FaBed className="card-icon" style={{ color: '#3498db' }} /> {/* Blue for rooms */}
+                <FaBed className="card-icon" style={{ color: '#3498db' }} />
                 <h4 className="card-title">Inventaris Kost</h4>
                 <p className="card-text">
                   Kelola inventaris Kost.
@@ -169,13 +145,10 @@ const Dashboard = () => {
           </>
         )}
 
-
-        {/* Kamar Kos Card - Hanya untuk Superadmin */}
-        {role === 'superadmin' && !showFinanceSubMenu && !showInventarisSubMenu && ( // Hide if any submenu is active
+        {role === 'superadmin' && !showFinanceSubMenu && !showInventarisSubMenu && (
           <div className="dashboard-card">
             <div>
-              {/* Apply icon class and specific color */}
-              <FaBed className="card-icon" style={{ color: '#3498db' }} /> {/* Blue for rooms */}
+              <FaBed className="card-icon" style={{ color: '#3498db' }} />
               <h4 className="card-title">Kamar Kos</h4>
               <p className="card-text">
                 Kelola ketersediaan kamar dan pemesanan.
@@ -185,28 +158,30 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* Area 9 - Coffee Shop Card - Untuk Semua Role - Hide when any sub-menu is shown */}
-        {!showFinanceSubMenu && !showInventarisSubMenu && ( // Hide if any submenu is active
+{!showFinanceSubMenu && !showInventarisSubMenu && (
+  <div className="dashboard-card">
+    <div>
+      <FaCoffee className="card-icon" style={{ color: '#a0522d' }} />
+      <h4 className="card-title">Area 9 - Coffee Shop</h4>
+      <p className="card-text">
+        Klik untuk melihat menu kopi dan melakukan pemesanan.
+      </p>
+      {/* Mengarahkan ke halaman manage coffee shop menu */}
+      <Button 
+        variant="outline-primary" 
+        className="card-button" 
+        onClick={() => navigate('/manage-coffee-shop-menu')}
+      >
+        Lihat Menu
+      </Button>
+    </div>
+  </div>
+)}
+
+        {role === 'superadmin' && !showFinanceSubMenu && !showInventarisSubMenu && (
           <div className="dashboard-card">
             <div>
-              {/* Apply icon class and specific color */}
-              <FaCoffee className="card-icon" style={{ color: '#a0522d' }} /> {/* Brown for coffee */}
-              <h4 className="card-title">Area 9 - Coffee Shop</h4>
-              <p className="card-text">
-                Klik untuk melihat menu kopi dan melakukan pemesanan.
-              </p>
-              <Button variant="outline-primary" className="card-button">Lihat Menu</Button>
-            </div>
-          </div>
-        )}
-
-
-        {/* Manajemen User Card - Hanya untuk Superadmin */}
-        {role === 'superadmin' && !showFinanceSubMenu && !showInventarisSubMenu && ( // Hide if any submenu is active
-          <div className="dashboard-card">
-            <div>
-              {/* Apply icon class and specific color */}
-              <FaUser className="card-icon" style={{ color: '#f39c12' }} /> {/* Orange for users */}
+              <FaUser className="card-icon" style={{ color: '#f39c12' }} />
               <h4 className="card-title">Manajemen User</h4>
               <p className="card-text">
                 Kelola data pengguna anda .
@@ -216,23 +191,20 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* Inventaris Bisnis Card - Hanya untuk Superadmin */}
-        {role === 'superadmin' && !showFinanceSubMenu && !showInventarisSubMenu && ( // Hide if any submenu is active
-          <div className="dashboard-card inventaris-main-card"> {/* Added specific class */}
+        {role === 'superadmin' && !showFinanceSubMenu && !showInventarisSubMenu && (
+          <div className="dashboard-card inventaris-main-card">
             <div>
-              {/* Apply icon class and specific color */}
-              <FaBox className="card-icon" style={{ color: '#95a5a6' }} /> {/* Gray for inventory */}
-              <h4 className="card-title">Manajemen Inventaris</h4> {/* Changed title */}
+              <FaBox className="card-icon" style={{ color: '#95a5a6' }} />
+              <h4 className="card-title">Manajemen Inventaris</h4>
               <p className="card-text">
                 Kelola stok dan inventaris bisnis Anda.
               </p>
-              <Button variant="outline-primary" className="card-button" onClick={handleInventarisClick}>Kelola</Button> {/* Changed handler */}
+              <Button variant="outline-primary" className="card-button" onClick={handleInventarisClick}>Kelola</Button>
             </div>
           </div>
         )}
       </div>
 
-      {/* Include the Footer component */}
       <Footer />
     </div>
   );
