@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./ManageKostFinance.css";
-import { Button, Modal, Form, Dropdown } from "react-bootstrap";
+import { Button, Modal, Form, Dropdown, DropdownButton } from "react-bootstrap";
 import { FaPlus, FaPrint, FaArrowLeft, FaEdit, FaTrash } from "react-icons/fa"; // Add Edit and Trash icons
 import { useNavigate } from "react-router-dom";
 import { Doughnut, Bar } from "react-chartjs-2";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver"; // Import file-saver for CSV download
 import { NumberFormatBase } from "react-number-format"; // Correct import for Vite
-import PrintDropdown from "./PrintDropdown";
 
 import {
   Chart as ChartJS,
@@ -677,7 +676,33 @@ const ManageKostFinance = () => {
               >
                 <FaPlus /> Tambah Transaksi
               </Button>
-              <PrintDropdown handlePrint={handlePrint} />
+              <div className="print-button-container">
+                <DropdownButton
+                  variant="primary"
+                  id="dropdown-print-button"
+                  onClick={() => setShowPrintOptions(!showPrintOptions)}
+                  className="print-button"
+                  title={
+                    <>
+                      <FaPrint /> Cetak
+                    </>
+                  }
+                  drop="down"
+                >
+                  <Dropdown.Item as="button" onClick={() => handlePrint("csv")}>
+                    Cetak CSV
+                  </Dropdown.Item>
+                  <Dropdown.Item as="button" onClick={() => handlePrint("pdf")}>
+                    Cetak PDF
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    as="button"
+                    onClick={() => handlePrint("excel")}
+                  >
+                    Cetak Excel
+                  </Dropdown.Item>
+                </DropdownButton>
+              </div>
             </div>
 
             <div className="finance-table-container">
