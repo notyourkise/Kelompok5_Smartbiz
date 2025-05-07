@@ -28,7 +28,7 @@ const authenticateToken = require('./middleware/authMiddleware'); // Import auth
 // Gunakan routes
 app.use('/auth', authRoutes);  // Rute untuk login dan registrasi
 app.use('/keuangan', keuanganRoutes);  // Rute untuk manajemen keuangan
-app.use('/kos', kosRoutes);  // Rute untuk manajemen kos
+app.use('/api/kos', kosRoutes);  // Rute untuk manajemen kos
 // app.use('/coffee', coffeeShopRoutes); // Keep the old one commented or remove if sure
 app.use('/coffee-shop', newCoffeeShopRoutes); // Use the new routes, maybe change path prefix? Let's use /coffee-shop
 // Corrected path and applied authentication middleware

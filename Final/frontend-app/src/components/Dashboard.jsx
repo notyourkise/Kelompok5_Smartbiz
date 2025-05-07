@@ -153,7 +153,7 @@ const Dashboard = () => {
               <p className="card-text">
                 Kelola ketersediaan kamar dan pemesanan.
               </p>
-              <Button variant="outline-primary" className="card-button">Lihat</Button>
+              <Button variant="outline-primary" className="card-button" onClick={() => navigate('/manage-kos')}>Lihat</Button>
             </div>
           </div>
         )}
