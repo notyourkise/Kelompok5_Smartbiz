@@ -1,148 +1,410 @@
-/* Dashboard Styles */
-.dashboard-container {
-  min-height: 100vh; /* Use min-height instead of height */
-  background: linear-gradient(
-    135deg,
-    #1f2833 0%,
-    #45a29e 100%
-  ); /* Elegant gradient background */
-  padding: 2rem; /* More padding */
-  color: #c5c6c7; /* Softer text color */
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+/* Reset dasar & Font */
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font modern */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f8f9fa; /* Warna latar belakang netral */
+  color: #212529; /* Warna teks default */
 }
 
-.dashboard-header {
+/* Layout Utama */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: #1a202c; /* Warna gelap untuk sidebar */
+  color: #e2e8f0; /* Warna teks terang */
+  padding: 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  position: fixed; /* Sidebar tetap */
+  height: 100%;
+  top: 0;
+  left: 0;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  overflow-y: auto; /* Allow scrolling if content overflows */
+}
+
+.sidebar-header {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #2d3748; /* Garis pemisah */
+}
+
+.sidebar-title {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.sidebar .nav-link {
+  color: #cbd5e0; /* Slightly lighter grey for better contrast on dark bg */
+  padding: 0.85rem 1.75rem; /* Increased padding for a more spacious feel */
+  margin: 0.3rem 0; /* Add small vertical margin */
+  display: flex;
+  align-items: center;
+  gap: 0.85rem; /* Slightly increased gap */
+  font-size: 0.98rem; /* Slightly larger font */
+  font-weight: 500; /* Medium weight for elegance */
+  transition: background-color 0.25s ease, color 0.25s ease,
+              border-left-color 0.25s ease, transform 0.25s ease,
+              box-shadow 0.25s ease; /* Added box-shadow to transition */
+  border-left: 4px solid transparent; /* Thicker indicator */
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 0 8px 8px 0; /* Rounded corners on the right side */
+}
+
+.sidebar .nav-link:hover {
+  background-color: #354152; /* Darker, richer hover */
+  color: #ffffff;
+  border-left-color: #79c0ff; /* Brighter, more vibrant blue */
+  transform: translateX(6px) scale(1.02); /* More pronounced pop */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0,0,0,0.15); /* 3D shadow */
+}
+
+.sidebar .nav-link.active {
+  background-color: #2c3e50; /* Elegant dark blue/slate */
+  color: #ffffff;
+  font-weight: 600; /* Bolder for active state */
+  border-left-color: #5fa8d3; /* A distinct, premium blue */
+  transform: translateX(3px) scale(1.01); /* Subtle active pop */
+  box-shadow: inset 3px 0 8px rgba(0,0,0,0.1), 0 2px 5px rgba(0,0,0,0.1); /* Inner shadow for depth */
+}
+
+.sidebar .nav-link svg {
+  width: 18px; /* Ukuran ikon konsisten */
+  height: 18px;
+  flex-shrink: 0; /* Prevent icon shrinking */
+}
+
+/* Main Content Area */
+.main-content {
+  flex-grow: 1;
+  margin-left: 250px; /* Sesuaikan dengan lebar sidebar */
+  padding: 2rem;
+  background-color: #f8f9fa; /* Latar belakang konten */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Pastikan footer di bawah */
+}
+
+/* Header di dalam Main Content */
+.main-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #4b5a6a; /* Subtle border */
+  background-color: #ffffff; /* Header putih */
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.back-icon {
-  font-size: 1.8rem;
-  color: #66fcf1; /* Accent color */
+.header-welcome .welcome-message {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0;
+  text-align: left; /* Align left */
+}
+.header-welcome .role-display {
+  font-size: 0.85rem;
+  color: #718096;
+  margin: 0;
+  font-style: normal;
+  text-align: left; /* Align left */
+}
+
+/* Dropdown User Modern */
+.user-dropdown-modern .dropdown-toggle {
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  color: #4a5568; /* Warna ikon netral */
   cursor: pointer;
-  margin-right: 1rem;
-  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
 }
+.user-dropdown-modern .dropdown-toggle::after { display: none; }
+.user-dropdown-modern .dropdown-toggle:hover,
+.user-dropdown-modern .dropdown-toggle:focus { color: #2d3748; }
 
-.back-icon:hover {
-  color: #ffffff; /* White on hover */
+.user-dropdown-modern .dropdown-menu {
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  margin-top: 0.5rem !important;
+  min-width: 150px; /* Ensure minimum width */
 }
-
-
-.dashboard-title {
-  color: #66fcf1; /* Accent color for title */
-  font-weight: bold;
-  font-size: 2rem;
+.user-dropdown-modern .dropdown-item {
+  color: #4a5568;
+  padding: 0.6rem 1.2rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease, color 0.2s ease; /* Add transition */
 }
-
-.logout-button {
-  background-color: #e74c3c; /* Consistent red */
-  border: none;
-  color: white;
-  padding: 0.5rem 1.5rem;
-  border-radius: 20px; /* Rounded button */
-  font-weight: bold;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+.user-dropdown-modern .dropdown-item:hover,
+.user-dropdown-modern .dropdown-item:focus {
+  background-color: #f1f5f9;
+  color: #1a202c;
 }
-
-.logout-button:hover {
-  background-color: #c0392b; /* Darker red on hover */
-  transform: scale(1.05); /* Slight scale effect */
-}
-
-.welcome-message {
-  color: #ffffff; /* White for emphasis */
+.user-dropdown-modern .dropdown-icon {
+  margin-right: 0.75rem;
+  width: 16px;
   text-align: center;
-  margin-bottom: 0.5rem; /* Reduced margin */
-  font-size: 1.8rem;
+  color: #718096; /* Warna ikon di dropdown */
+  flex-shrink: 0; /* Prevent icon shrinking */
 }
-
-.role-display {
-  color: #c5c6c7; /* Softer color for role */
-  text-align: center;
-  margin-bottom: 2.5rem;
-  font-size: 1.1rem;
-  font-style: italic;
-}
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(250px, 1fr)
-  ); /* Responsive grid */
-  gap: 1.5rem; /* Spacing between cards */
-  justify-content: center;
-}
-
-.dashboard-grid.finance-submenu-active {
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjust as needed for sub-menu layout */
-  /* Ensure only finance sub-menu cards are displayed */
-  display: grid; /* Ensure grid is active */
-}
-
-.dashboard-grid .dashboard-card:not(.finance-main-card):not(.finance-submenu-card) {
-    display: block; /* Show by default */
-}
-
-.dashboard-grid.finance-submenu-active .dashboard-card:not(.finance-submenu-card) {
-  display: none; /* Hide all cards except finance sub-menu cards when finance sub-menu is active */
+.user-dropdown-modern .dropdown-item:hover .dropdown-icon,
+.user-dropdown-modern .dropdown-item:focus .dropdown-icon {
+  color: #1a202c;
 }
 
 
-.dashboard-card {
-  background-color: #1f2833; /* Darker card background */
-  border: 1px solid #4b5a6a; /* Subtle border */
-  border-radius: 10px; /* Slightly rounded corners */
-  padding: 1.5rem;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Softer shadow */
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; /* Smooth transitions */
-  cursor: pointer; /* Indicate interactivity */
-  color: #c5c6c7; /* Card text color */
+/* Area Konten Dinamis */
+.content-area {
+  flex-grow: 1;
 }
 
-.dashboard-card:hover {
-  transform: translateY(-10px) scale(1.03); /* Lift and scale effect */
-  box-shadow: 0 8px 25px rgba(102, 252, 241, 0.3); /* Accent shadow on hover */
-  border-color: #66fcf1; /* Accent border color on hover */
-}
-
-.card-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.dashboard-card .card-title {
-  color: #66fcf1; /* Accent color for card titles */
-  font-size: 1.3rem;
-  margin-bottom: 0.75rem;
-  font-weight: bold;
-}
-
-.dashboard-card .card-text {
-  font-size: 0.95rem;
+.content-area h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2d3748;
   margin-bottom: 1.5rem;
-  color: #a8b2b1; /* Slightly lighter text for description */
 }
 
-.card-button {
-  background-color: transparent;
-  border: 1px solid #66fcf1; /* Accent border */
-  color: #66fcf1; /* Accent text */
-  padding: 0.6rem 0; /* Adjust padding */
-  width: 100%;
-  border-radius: 20px; /* Rounded button */
-  font-weight: bold;
-  transition: background-color 0.3s ease, color 0.3s ease;
+/* Filter Dropdown */
+#dropdown-filter {
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.card-button:hover {
-  background-color: #66fcf1; /* Fill with accent color on hover */
-  color: #1f2833; /* Dark text on hover */
+/* Widget Statistik */
+.widget-card {
+  border: 1px solid #e9ecef; /* Softer border */
+  border-radius: 12px; /* Softer corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04); /* Softer, more subtle default shadow */
+  margin-bottom: 1.5rem; /* Increased spacing */
+  background-color: #ffffff; /* Widget background */
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+              box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+              border-color 0.3s ease-out; /* Smoother transition, added border-color */
+  overflow: hidden; /* Good practice if any inner elements might peek out during transform */
 }
-/* Removed Specific Icon Colors section */
+
+.widget-card:hover {
+  transform: scale(1.03) translateY(-7px); /* A balanced lift and scale */
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08), /* Main shadow */
+              0 8px 12px rgba(0, 0, 0, 0.06);   /* Secondary, closer shadow for depth */
+  border-color: #a0bfff; /* A soft, elegant blue accent for the border on hover */
+  z-index: 10; /* Ensure it's above other non-hovered cards */
+}
+
+.widget-card .card-body {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem; /* Increased padding */
+}
+.widget-icon {
+  width: 50px; /* Slightly larger */
+  height: 50px; /* Slightly larger */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1.25rem; /* Increased margin */
+  color: #ffffff;
+  font-size: 1.6rem; /* Slightly larger icon font */
+  flex-shrink: 0; /* Prevent icon shrinking */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for the icon container */
+}
+.widget-icon.bg-primary { background-color: #4299e1; }
+.widget-icon.bg-success { background-color: #48bb78; }
+.widget-icon.bg-info { background-color: #4fd1c5; }
+.widget-icon.bg-warning { background-color: #f6ad55; }
+
+.widget-content {
+  flex-grow: 1;
+}
+.widget-content .card-subtitle {
+  font-size: 0.825rem; /* Refined font size */
+  text-transform: uppercase;
+  letter-spacing: 0.6px; /* Adjusted letter spacing */
+  margin-bottom: 0.35rem; /* Adjusted margin */
+  color: #718096; /* Subtitle color */
+}
+.widget-content .widget-value {
+  font-size: 1.65rem; /* Refined font size */
+  font-weight: 600;
+  color: #1a202c; /* Darker, more impactful color */
+}
+
+/* Kartu Sub-menu (Keuangan/Inventaris) */
+.dashboard-card-modern {
+  border: 1px solid #e2e8f0; /* Subtle border for definition */
+  border-radius: 12px; /* Softer, more modern radius */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* Softer, slightly more pronounced default shadow */
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+              box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+              border-color 0.3s ease-out;
+  background-color: #ffffff;
+  overflow: hidden; /* Ensure content fits rounded corners and shadows behave */
+  position: relative; /* For z-index stacking context */
+}
+.dashboard-card-modern:hover {
+  transform: scale(1.04) translateY(-8px); /* More noticeable pop */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1),  /* Deeper main shadow */
+              0 8px 15px rgba(0, 0, 0, 0.07); /* Secondary shadow for richness */
+  border-color: #79c0ff; /* Elegant accent border on hover */
+  z-index: 15; /* Ensure it's above other elements */
+}
+.dashboard-card-modern .card-body {
+  text-align: center;
+  padding: 2rem 1.5rem; /* More vertical padding for a spacious feel */
+}
+.dashboard-card-modern .card-icon-modern {
+  font-size: 2.8rem; /* Slightly larger icon */
+  margin-bottom: 1.25rem;
+  color: #3b82f6; /* A richer blue, can be adjusted */
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.1); /* Subtle shadow for icon */
+}
+.dashboard-card-modern .card-title {
+  font-size: 1.2rem; /* Slightly larger title */
+  font-weight: 600; /* Bolder for emphasis */
+  margin-bottom: 0.75rem;
+  color: #1e293b; /* Darker, more premium title color */
+}
+.dashboard-card-modern .card-text {
+  font-size: 0.95rem; /* Slightly larger text */
+  color: #64748b; /* Softer grey for text */
+  margin-bottom: 1.5rem; /* More space before button */
+}
+.dashboard-card-modern .btn-primary {
+  background-color: #3b82f6; /* Match icon color or use a complementary one */
+  border-color: #3b82f6;
+  font-size: 0.95rem;
+  padding: 0.6rem 1.2rem; /* Slightly larger button */
+  font-weight: 500;
+  border-radius: 6px; /* Rounded button */
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.dashboard-card-modern .btn-primary:hover {
+  background-color: #2563eb; /* Darker shade on hover */
+  border-color: #2563eb;
+  transform: translateY(-2px); /* Slight lift on hover */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* Enhanced shadow on hover */
+}
+
+/* Footer */
+.main-content .footer {
+  margin-top: auto; /* Dorong footer ke bawah */
+  padding: 1.5rem 0 0.5rem 0; /* Adjust padding */
+  text-align: center;
+  font-size: 0.85rem;
+  color: #a0aec0; /* Lighter footer text */
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Responsiveness */
+@media (max-width: 992px) {
+  .sidebar {
+    width: 200px; /* Smaller sidebar on medium screens */
+  }
+  .main-content {
+    margin-left: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column; /* Stack layout on mobile */
+  }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static; /* Sidebar tidak fixed di mobile */
+    box-shadow: none;
+    border-bottom: 1px solid #e2e8f0;
+    overflow-y: visible; /* Reset overflow */
+  }
+  .main-content {
+    margin-left: 0;
+    padding: 1rem; /* Reduce padding on mobile */
+  }
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    border-radius: 0; /* Remove radius */
+  }
+  .header-welcome {
+    margin-bottom: 0.5rem;
+    width: 100%; /* Take full width */
+  }
+   .header-welcome .welcome-message,
+   .header-welcome .role-display {
+     text-align: center; /* Center text */
+   }
+  .user-dropdown-modern {
+    align-self: flex-end; /* Posisikan dropdown di kanan */
+    margin-top: 0.5rem; /* Add some space */
+  }
+  .content-area h3 {
+    font-size: 1.3rem; /* Smaller heading */
+  }
+  .widget-card .card-body {
+    padding: 1rem; /* Smaller padding */
+  }
+  .widget-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+  .widget-content .widget-value {
+    font-size: 1.3rem;
+  }
+}
+
+/* Sidebar Icon Styling */
+.sidebar-icon {
+  margin-right: 10px; /* Space between icon and text */
+  /* font-size: 1.1em; /* Optional: Adjust if needed */
+  vertical-align: middle; /* Better alignment with text */
+}
+
+.icon-dashboard {
+  color: #007bff; /* Bootstrap primary blue */
+}
+
+.icon-finance {
+  color: #28a745; /* Bootstrap success green */
+}
+
+.icon-kos {
+  color: #17a2b8; /* Bootstrap info teal */
+}
+
+.icon-coffee {
+  color: #6f4e37; /* Coffee brown */
+}
+
+.icon-user {
+  color: #ffc107; /* Bootstrap warning yellow/orange */
+}
+
+.icon-inventory {
+  color: #6c757d; /* Bootstrap secondary grey */
+}

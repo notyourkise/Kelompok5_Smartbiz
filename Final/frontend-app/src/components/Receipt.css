@@ -1,94 +1,238 @@
-.receipt-container {
-    width: 300px; /* Ukuran struk kecil seperti kertas */
-    padding: 20px;
-    margin: 20px auto;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    font-family: 'Courier New', Courier, monospace; /* Font mirip struk */
-    background-color: white;
-    text-align: center;
-    line-height: 1.5;
+/* General wrapper for the receipt page */
+.receipt-page-wrapper {
+  background-color: #e8f5e9; /* Light, calming green background, suggesting success/freshness */
+  min-height: 100vh;
+  padding-top: 20px;
+  padding-bottom: 40px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Clean, modern font */
+  position: relative; /* For positioning the animation overlay */
 }
 
-.receipt-header h2 {
-    font-size: 18px;
-    margin-bottom: 10px;
+/* Success Animation Overlay */
+.success-animation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent dark overlay */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000; /* Ensure it's on top */
+  opacity: 1;
+  transition: opacity 0.5s ease-out 2s; /* Fade out after 2s delay (animation duration + visibility) */
 }
 
-.receipt-header p {
-    font-size: 14px;
+.success-animation-overlay .success-icon {
+  font-size: 6rem; /* Large icon */
+  color: #4CAF50; /* Bright green for success */
+  margin-bottom: 20px;
+  animation: popIn 0.5s ease-out forwards, pulse 1.5s infinite 0.6s; /* Pop in, then pulse */
 }
 
-.receipt-info p {
-    font-size: 12px;
-    margin: 5px 0;
+.success-animation-overlay p {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 500;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  animation: fadeInText 0.8s ease-out 0.3s forwards;
+  opacity: 0;
 }
 
-.receipt-items table {
-    width: 100%;
-    margin-top: 15px;
-    margin-bottom: 20px;
-    border-collapse: collapse;
+/* Keyframes for animations */
+@keyframes popIn {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
-.receipt-items th,
-.receipt-items td {
-    padding: 5px;
-    font-size: 14px;
-    text-align: left;
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
-.receipt-items th {
-    border-bottom: 1px solid #000;
+@keyframes fadeInText {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
-.total-row td {
-    font-weight: bold;
-    border-top: 1px solid #000;
+
+/* Modern receipt container */
+.receipt-container-modern {
+  max-width: 700px; /* Control width for a receipt-like feel */
 }
 
-.receipt-footer p {
-    font-size: 12px;
-    margin: 5px 0;
+/* Main receipt card styling */
+.receipt-card-modern {
+  border: 1px solid #d1e7dd; /* Light green border */
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Softer shadow */
 }
 
-.button-container {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 20px; /* Menambahkan jarak antar tombol */
+.receipt-header-modern {
+  background-color: #f8f9fa; /* Very light grey, almost white */
+  color: #333;
+  padding: 20px;
+  border-bottom: 1px dashed #ced4da; /* Dashed line for a classic receipt touch */
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
-.print-button,
-.back-button {
-    padding: 12px 30px; /* Sesuaikan ukuran padding dengan tombol lainnya */
-    margin: 10px;
-    font-size: 16px; /* Ukuran font lebih besar */
-    cursor: pointer;
-    border-radius: 5px; /* Tombol lebih bulat */
-    font-weight: bold; /* Membuat teks lebih tegas */
-    background-color: #3498db; /* Warna tombol */
-    color: white; /* Warna teks putih */
-    border: none; /* Menghapus border default */
-    text-transform: uppercase; /* Menjadikan teks semua huruf kapital */
+.receipt-header-modern h3 {
+  font-weight: 600;
+  color: #28a745; /* Green to match success theme */
+  margin-bottom: 5px;
+}
+.receipt-header-modern h3 .svg-inline--fa {
+  margin-right: 10px;
+}
+.receipt-header-modern p {
+  font-size: 0.9rem;
+  color: #555;
+}
+.receipt-header-modern p .svg-inline--fa {
+  margin-right: 6px;
 }
 
-.print-button {
-    background-color: #2ecc71;
-    color: white;
-    border: none;
-    text-transform: uppercase; /* Menjadikan teks semua huruf kapital */
+
+/* Info section styling */
+.receipt-info-modern p {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  color: #495057;
+}
+.receipt-info-modern p strong {
+  color: #343a40;
+}
+.receipt-info-modern .svg-inline--fa {
+  margin-right: 8px;
+  color: #007bff; /* Primary color for info icons */
+  width: 16px; /* Ensure consistent icon width */
 }
 
-.back-button {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    text-transform: uppercase;
+/* Items title */
+.items-title-modern {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin-top: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #eee;
 }
 
-.print-button:hover,
-.back-button:hover {
-    opacity: 0.8;
+/* Table styling for receipt items */
+.receipt-table-modern th {
+  background-color: #f0f9f4; /* Very light green for table header */
+  color: #28a745; /* Green text for header */
+  font-weight: 600;
+  border-bottom: 2px solid #a3d9b8;
+}
+
+.receipt-table-modern td {
+  vertical-align: middle;
+  color: #454545;
+  font-size: 0.95rem;
+}
+.receipt-table-modern tfoot td {
+  font-size: 1rem;
+}
+
+.total-row-modern td {
+  border-top: 2px solid #333;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  color: #1d773f; /* Darker green for total */
+}
+.total-row-modern .fs-5 { /* Ensure this class is applied to the total amount cell */
+    font-size: 1.25rem !important; /* Bootstrap's fs-5 */
+}
+
+
+/* Footer section of the receipt content */
+.receipt-footer-modern {
+  border-top: 1px dashed #ced4da;
+  margin-top: 20px;
+  padding-top: 15px;
+}
+
+.receipt-footer-modern .thank-you-msg {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #28a745;
+}
+
+.receipt-footer-modern .tagline {
+  font-style: italic;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+/* Action buttons in card footer */
+.receipt-actions-modern {
+  background-color: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  padding: 15px;
+}
+
+.action-button-receipt {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+.action-button-receipt .svg-inline--fa {
+  margin-right: 8px;
+}
+
+/* Specific button styling */
+.action-button-receipt.btn-outline-secondary {
+  color: #007bff;
+  border-color: #007bff;
+}
+.action-button-receipt.btn-outline-secondary:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.action-button-receipt.btn-primary {
+  background-color: #28a745; /* Green for primary action */
+  border-color: #28a745;
+}
+.action-button-receipt.btn-primary:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+}
+
+
+/* Print-specific styles */
+@media print {
+  .receipt-page-wrapper {
+    background-color: #ffffff; /* White background for printing */
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .success-animation-overlay,
+  .receipt-actions-modern,
+  .navbar, /* Assuming you might have a navbar, hide it */
+  .sidebar /* Assuming you might have a sidebar, hide it */
+  {
+    display: none !important;
+  }
+  .receipt-container-modern {
+    max-width: 100%; /* Use full width for printing */
+    padding: 0;
+  }
+  .receipt-card-modern {
+    box-shadow: none;
+    border: 1px solid #ccc; /* Simple border for print */
+    margin: 0;
+  }
+  body, .receipt-page-wrapper, .receipt-container-modern, .receipt-card-modern {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
 }

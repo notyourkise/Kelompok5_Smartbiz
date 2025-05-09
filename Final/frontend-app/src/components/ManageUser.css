@@ -1,191 +1,278 @@
-/* src/components/ManageUser.css */
+/* src/components/ManageUser.css - White and Brown Elegant Theme */
 
-/* Base container style from Dashboard */
+/* Base container style - Elegant Light Theme */
 .manage-user-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1f2833 0%, #45a29e 100%);
-  padding: 2rem;
-  color: #c5c6c7;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9f6f2; /* Soft off-white/light beige */
+  padding: 2.5rem;
+  color: #4d403A; /* Dark warm brown for text */
+  font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif; /* Clean sans-serif */
+  display: flex;
+  flex-direction: column;
 }
 
-/* Header style similar to Dashboard */
+/* Header style - Clean and Classy */
 .manage-user-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #4b5a6a;
+  margin-bottom: 2.5rem;
+  padding: 1rem 0.5rem; /* Added slight horizontal padding for balance */
+  border-bottom: 1px solid #e0d8d0; /* Light brown/beige border */
+  /* box-shadow: 0 1px 3px rgba(0,0,0,0.03); /* Very subtle shadow */
 }
 
 .manage-user-title {
-  color: #66fcf1;
-  font-weight: bold;
-  font-size: 2rem;
+  color: #5d4037; /* Rich primary brown */
+  font-weight: 600; /* Elegant semi-bold */
+  font-size: 1.85rem; /* Classy title size */
+  letter-spacing: 0.5px;
+  /* text-shadow: 1px 1px 2px rgba(192, 160, 98, 0.2); /* Subtle gold text shadow */
 }
 
-/* Button styles */
-.action-button {
-  background-color: transparent;
-  border: 1px solid #66fcf1;
-  color: #66fcf1;
-  padding: 0.6rem 1.2rem;
-  border-radius: 20px;
-  font-weight: bold;
-  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
-  display: flex;
+/* Button Styles - White/Brown Elegant Theme with Gold Accents */
+/* Primary action button (e.g., "Tambah Pengguna") */
+.manage-user-header .btn-primary, 
+.action-button,
+.modal-footer .btn-primary { /* Apply to modal primary buttons too */
+  background-color: #6d4c41; /* Rich warm brown */
+  border: 1px solid #5d4037; /* Slightly darker brown border */
+  color: #f9f6f2; /* Off-white text */
+  padding: 0.7rem 1.4rem; /* Comfortable padding */
+  border-radius: 6px; /* Classy rounded corners */
+  font-weight: 500; /* Medium weight */
+  transition: background-color 0.2s ease-out, border-color 0.2s ease-out, 
+              transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem; /* Space between icon and text */
+  gap: 0.6rem; 
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(93, 64, 55, 0.15); /* Subtle brown shadow */
 }
 
-.action-button:hover {
-  background-color: #66fcf1;
-  color: #1f2833;
-  transform: scale(1.05);
+.manage-user-header .btn-primary:hover,
+.action-button:hover,
+.modal-footer .btn-primary:hover {
+  background-color: #5d4037; /* Darker brown on hover */
+  border-color: #4e342e; /* Even darker border */
+  color: #ffffff; /* Pure white text on hover */
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(93, 64, 55, 0.2), 0 0 0 2px rgba(192, 160, 98, 0.3); /* Gold glow on hover */
 }
 
-.back-button {
-  background-color: #4b5a6a; /* Different background for back button */
-  border: 1px solid #6c757d;
-  color: #c5c6c7;
-  padding: 0.6rem; /* Adjust padding for icon-only */
-  width: 45px; /* Fixed size */
-  height: 45px;
-  border-radius: 10px;
+/* Back Button Style - Subtle and Elegant */
+.back-button { 
+  background-color: transparent; 
+  border: 1px solid #a1887f; /* Light warm brown border */
+  color: #6d4c41; /* Warm brown icon */
+  padding: 0.6rem; 
+  width: 40px; 
+  height: 40px;
+  border-radius: 6px; /* Consistent radius */
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
 }
 
 .back-button:hover {
-  background-color: #6c757d;
-  transform: scale(1.1);
+  background-color: #efebe9; /* Very light beige hover */
+  border-color: #8d6e63; /* Slightly darker brown border */
+  color: #5d4037;
+  transform: scale(1.05);
 }
 
-/* Table Styles (Copied from ManageInventaris.css and adapted) */
+/* Secondary/Cancel Button for Modals */
+.modal-footer .btn-secondary {
+  background-color: #f9f6f2; /* Off-white background */
+  border: 1px solid #a1887f; /* Light warm brown border */
+  color: #6d4c41; /* Warm brown text */
+  padding: 0.7rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+.modal-footer .btn-secondary:hover {
+  background-color: #efebe9; /* Light beige hover */
+  border-color: #8d6e63;
+  color: #5d4037;
+  transform: translateY(-1px);
+}
+
+/* Table Styles - Elegant White/Brown Theme */
 .table-responsive {
-  margin-top: 2rem; /* Add space above the table */
+  margin-top: 2rem; 
+  background-color: #ffffff; /* Clean white background for table area */
+  padding: 1.5rem; 
+  border-radius: 8px; /* Classy radius */
+  box-shadow: 0 4px 12px rgba(93, 64, 55, 0.08); /* Soft brown shadow */
+  border: 1px solid #e0d8d0; /* Light brown/beige border */
+  overflow-x: auto;
 }
 
-.user-table {
-  /* Use .user-table class */
-  background-color: #2c3e50; /* Darker background for table */
-  color: #c5c6c7; /* Light text color */
-  border: 1px solid #4b5a6a; /* Border color */
-  border-radius: 8px; /* Rounded corners for the table container */
-  overflow: hidden; /* Ensures border-radius clips content */
+.user-table { 
+  width: 100%;
+  border-collapse: separate; 
+  border-spacing: 0; 
+  background-color: #ffffff; 
+  color: #4d403A; /* Dark warm brown text */
 }
 
 .user-table thead {
-  /* Use .user-table class */
-  background-color: #1f2833; /* Even darker header */
-  color: #66fcf1; /* Accent color for header text */
+  background-color: #f5f0eb; /* Very light beige/tan for header */
+  color: #a08454; /* Dark Gold for header text */
+  border-bottom: 2px solid #c0a062; /* Solid gold line for header bottom */
 }
 
-.user-table th, /* Use .user-table class */
+.user-table th, 
 .user-table td {
-  /* Use .user-table class */
-  vertical-align: middle; /* Center content vertically */
-  padding: 0.8rem 1rem; /* Adjust padding */
-  border-color: #4b5a6a; /* Match border color */
+  vertical-align: middle; 
+  padding: 0.9rem 1.2rem; /* Generous cell padding */
+  border-bottom: 1px solid #e0d8d0; /* Light brown/beige row separator */
+  text-align: left;
 }
 
-/* Style for striped rows */
-.table-striped > tbody > tr:nth-of-type(odd) > * {
-  background-color: rgba(
-    75,
-    90,
-    106,
-    0.5
-  ); /* Slightly different shade for odd rows */
-  color: #c5c6c7;
+.user-table th {
+  font-weight: 500; /* Medium weight for headers */
+  text-transform: uppercase; 
+  font-size: 0.78rem; 
+  letter-spacing: 0.8px;
+}
+
+.user-table tbody tr {
+  transition: background-color 0.15s ease-out;
+  color: #4d3e37;
+}
+
+/* Striped rows - white and brown */
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #4b3b06; /* Light brown for striping (odd rows) */
+}
+
+.table-striped > tbody > tr:nth-of-type(even) {
+  background-color: #ffffff; /* White for striping (even rows) */
 }
 
 /* Hover effect for rows */
-.table-hover > tbody > tr:hover > * {
-  background-color: #45a29e; /* Accent color on hover */
-  color: #1f2833; /* Dark text on hover */
+.table-hover > tbody > tr:hover { /* Target the tr directly for hover */
+  background-color: #947521; /* Very light creamy gold-tinged beige */
+  color: #3e2723; /* Darker brown text on hover */
 }
 
-/* Ensure buttons in table cells have some space */
+/* Ensure td/th backgrounds are transparent so tr background shows through */
+.user-table td,
+.user-table th {
+  background-color: transparent !important; /* Override potential Bootstrap styles */
+}
+
+
+/* Table Action Buttons (Edit/Delete) - Elegant Outline Style */
 .user-table td .btn {
-  /* Use .user-table class */
-  margin-right: 0.5rem; /* Add space between buttons */
+  margin-right: 0.5rem;
+  padding: 0.35rem 0.75rem; 
+  font-size: 0.8rem;
+  border-radius: 4px; 
+  font-weight: 500;
+  transition: all 0.2s ease-out;
 }
 .user-table td .btn:last-child {
-  /* Use .user-table class */
-  margin-right: 0; /* Remove margin from the last button */
+  margin-right: 0;
 }
 
-/* Modal styles (Copied and adapted from Register.css) */
+.user-table td .btn-outline-primary { /* Edit button - Blue */
+  border-color: #5472a4; /* Muted steel blue */
+  color: #5472a4;
+}
+.user-table td .btn-outline-primary:hover {
+  background-color: #5472a4; /* Muted steel blue background */
+  color: #ffffff;
+  border-color: #46618f; /* Slightly darker blue border */
+}
+
+.user-table td .btn-outline-danger { /* Delete button - Red */
+  border-color: #c62828; /* Deep red */
+  color: #c62828;
+}
+.user-table td .btn-outline-danger:hover {
+  background-color: #c62828; /* Deep red background */
+  color: #ffffff;
+  border-color: #b71c1c; /* Slightly darker red border */
+}
+.user-table td .btn svg { 
+  margin-right: 0.4rem; /* Slightly more space for icon */
+  vertical-align: middle; /* Align icon better */
+}
+
+
+/* Modal styles - Elegant White/Brown Theme */
 .modal-content {
-  background-color: #1f2833; /* Match card background */
-  color: #c5c6c7;
-  border: 1px solid #4b5a6a;
-  border-radius: 10px;
+  background-color: #fdfdfd; /* Clean, slightly off-white */
+  color: #4d403A;
+  border: 1px solid #d7ccc8; /* Light tan border */
+  border-radius: 8px; /* Classy radius */
+  box-shadow: 0 5px 15px rgba(93, 64, 55, 0.1); /* Soft brown shadow */
 }
 
 .modal-header {
-  border-bottom: 1px solid #4b5a6a;
-  color: #66fcf1; /* Accent title */
+  border-bottom: 1px solid #c0a062; /* Gold separator */
+  color: #5d4037; /* Rich brown title */
+  padding: 1.25rem 1.5rem; 
+}
+.modal-header .modal-title {
+  font-weight: 600; /* Bolder title */
+  font-size: 1.35rem;
+  color: #a08454; /* Dark Gold for modal title */
 }
 
-.modal-header .btn-close {
-  filter: invert(1) grayscale(100%) brightness(200%); /* Make close button visible */
+.modal-header .btn-close { /* Style for light background */
+  filter: none; /* Reset dark theme filter */
+  opacity: 0.6;
+}
+.modal-header .btn-close:hover {
+  opacity: 0.9;
 }
 
 .modal-body {
-  padding: 1.5rem;
+  padding: 1.75rem; /* More padding */
 }
 
 .modal-body .form-label {
-  color: #c5c6c7;
+  color: #6d4c41; /* Warm brown label */
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
 }
 
 .modal-body .form-control {
-  background-color: #2c3e50;
-  color: #ffffff;
-  border: 1px solid #4b5a6a;
-  border-radius: 5px; /* Standard radius for modal inputs */
+  background-color: #ffffff; /* White input background */
+  color: #4d403A; /* Dark brown text */
+  border: 1px solid #c8bca7; /* Light tan/beige border */
+  border-radius: 4px; 
+  padding: 0.7rem 1rem; 
+  transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
 }
-
 .modal-body .form-control::placeholder {
-  color: #8a9a9a;
+  color: #a1887f; /* Lighter brown placeholder */
 }
 
 .modal-body .form-control:focus {
-  border-color: #66fcf1;
-  background-color: #2c3e50; /* Keep background on focus */
-  color: #ffffff;
-  box-shadow: none;
+  border-color: #c0a062; /* Gold focus border */
+  background-color: #ffffff; 
+  color: #4d403A;
+  box-shadow: 0 0 0 3px rgba(192, 160, 98, 0.25); /* Gold focus ring */
 }
 
 .modal-footer {
-  border-top: 1px solid #4b5a6a;
+  border-top: 1px solid #e0d8d0; 
+  padding: 1.25rem 1.5rem; 
+  background-color: #f9f6f2; /* Light beige footer background */
+  border-bottom-left-radius: 8px; 
+  border-bottom-right-radius: 8px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
 }
 
-/* Style modal buttons */
-.modal-footer .btn-primary {
-  background-color: #66fcf1;
-  border-color: #66fcf1;
-  color: #1f2833;
-  font-weight: bold;
-}
-.modal-footer .btn-primary:hover {
-  background-color: #45a29e;
-  border-color: #45a29e;
-  color: #1f2833;
-}
-
-.modal-footer .btn-secondary {
-  color: #c5c6c7;
-  background-color: #4b5a6a;
-  border-color: #6c757d;
-  font-weight: bold;
-}
-.modal-footer .btn-secondary:hover {
-  background-color: #6c757d;
-  color: #ffffff;
-}
+/* Modal footer buttons already covered by general .modal-footer .btn-primary and .btn-secondary */

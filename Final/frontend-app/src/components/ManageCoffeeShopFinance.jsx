@@ -64,6 +64,8 @@ const ManageCoffeeShopFinance = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [authError, setAuthError] = useState(null); // New state for auth errors
+  const [timeFilter, setTimeFilter] = useState("all"); // State for time filter
+  const [displayedTransactions, setDisplayedTransactions] = useState([]); // State for transactions to display
 
   // State for modal and form
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -139,6 +141,117 @@ const ManageCoffeeShopFinance = () => {
   useEffect(() => {
     fetchTransactions();
   }, [fetchTransactions]); // Depend on the stable fetchTransactions function
+
+  const handleTimeFilterChange = (filter) => {
+    setTimeFilter(filter);
+  };
+
+  useEffect(() => {
+    if (!transactions) {
+      setDisplayedTransactions([]);
+      return;
+    }
+
+    let relevantTransactions = transactions.filter(t => t.category === "Coffee Shop");
+
+    let filteredForDate = relevantTransactions;
+    if (timeFilter !== "all") {
+      const now = new Date();
+      let startDate = new Date();
+      now.setHours(23, 59, 59, 999); // End of today
+
+      switch (timeFilter) {
+        case "1d":
+          startDate.setDate(now.getDate() - 1);
+          startDate.setHours(0, 0, 0, 0); // Start of yesterday
+          break;
+        case "3d":
+          startDate.setDate(now.getDate() - 3);
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case "7d":
+          startDate.setDate(now.getDate() - 7);
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case "1m":
+          startDate.setMonth(now.getMonth() - 1);
+          startDate.setDate(1); // Start of the month
+          startDate.setHours(0,0,0,0);
+          break;
+        case "2m":
+          startDate.setMonth(now.getMonth() - 2);
+          startDate.setDate(1);
+          startDate.setHours(0,0,0,0);
+          break;
+        case "3m":
+          startDate.setMonth(now.getMonth() - 3);
+          startDate.setDate(1);
+          startDate.setHours(0,0,0,0);
+          break;
+        case "6m":
+          startDate.setMonth(now.getMonth() - 6);
+          startDate.setDate(1);
+          startDate.setHours(0,0,0,0);
+          break;
+        case "1y":
+          startDate.setFullYear(now.getFullYear() - 1);
+          startDate.setMonth(0); // January
+          startDate.setDate(1);  // 1st
+          startDate.setHours(0,0,0,0);
+          break;
+        default:
+          // 'all' or unhandled
+          break;
+      }
+      
+      filteredForDate = relevantTransactions.filter(t => {
+        const transactionDate = new Date(t.created_at);
+        // For 'all', startDate might not be modified from 'now', so this check is important
+        if (timeFilter === "all") return true; 
+        return transactionDate >= startDate && transactionDate <= now;
+      });
+    }
+
+    // Recalculate saldo and formattedDate for the filtered transactions
+    const processedAndFiltered = filteredForDate.reduce((acc, transaction, index) => {
+      const previousSaldo = index === 0 ? 0 : acc[index - 1].saldo;
+      let currentSaldo = previousSaldo;
+      const amount = parseFloat(transaction.amount) || 0;
+
+      if (transaction.type === "income") {
+        currentSaldo += amount;
+      } else if (transaction.type === "expense") {
+        currentSaldo -= amount;
+      }
+
+      let formattedDate = "Tanggal tidak valid";
+      try {
+        if (transaction.created_at && typeof transaction.created_at === 'string') {
+          const [datePart, timePart] = transaction.created_at.split(" ");
+          if (datePart && timePart) {
+            const [year, month, day] = datePart.split("-").map(Number);
+            const [hour, minute, second] = timePart.split(":").map(Number);
+            if (!isNaN(year) && !isNaN(month) && !isNaN(day) && !isNaN(hour) && !isNaN(minute) && !isNaN(second)) {
+              const dateObj = new Date(year, month - 1, day, hour, minute, second);
+              if (!isNaN(dateObj.getTime())) {
+                formattedDate = dateObj.toLocaleString("id-ID", {
+                  weekday: "short", year: "numeric", month: "short", day: "numeric",
+                  hour: "numeric", minute: "numeric", second: "numeric", timeZone: "Asia/Makassar",
+                });
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error formatting date in filter useEffect:", err, transaction.created_at);
+      }
+
+      acc.push({ ...transaction, saldo: currentSaldo, formattedDate });
+      return acc;
+    }, []);
+
+    setDisplayedTransactions(processedAndFiltered);
+  }, [transactions, timeFilter]);
 
   // Handle form input change for new transaction
   const handleNewTransactionInputChange = (e) => {
@@ -269,42 +382,64 @@ const ManageCoffeeShopFinance = () => {
       !editingTransaction.description ||
       !editingTransaction.payment_method
     ) {
-      console.error("Amount, description, and payment method are required for update.");
+      console.error(
+        "Amount, description, and payment method are required for update."
+      );
       // Optionally set an error state to show in the modal
       return;
     }
 
-
     try {
-      const response = await fetch(`http://localhost:3001/keuangan/detail/${editingTransaction.id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...editingTransaction,
-          amount: parseFloat(editingTransaction.amount), // Ensure amount is a number
-        }),
-      });
+      const response = await fetch(
+        `http://localhost:3001/keuangan/detail/${editingTransaction.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...editingTransaction,
+            amount: parseFloat(editingTransaction.amount), // Ensure amount is a number
+          }),
+        }
+      );
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+        const errorData = await response
+          .json()
+          .catch(() => ({ message: `HTTP error! status: ${response.status}` }));
         if (response.status === 401 || response.status === 403) {
-          setAuthError("Authentication failed or insufficient permissions. Please log in again.");
+          setAuthError(
+            "Authentication failed or insufficient permissions. Please log in again."
+          );
         } else {
-          setError(new Error(errorData.message || `HTTP error! status: ${response.status}`));
+          setError(
+            new Error(
+              errorData.message || `HTTP error! status: ${response.status}`
+            )
+          );
         }
-        throw new Error(errorData.message || `Update failed with status ${response.status}`);
+        throw new Error(
+          errorData.message || `Update failed with status ${response.status}`
+        );
       }
 
       // Update the transaction in the local state
-      setTransactions(prevTransactions =>
-        prevTransactions.map(t =>
-          t.id === editingTransaction.id ? { ...editingTransaction, amount: parseFloat(editingTransaction.amount) } : t // Update the specific transaction
-        ).sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) // Re-sort after update
+      setTransactions(
+        (prevTransactions) =>
+          prevTransactions
+            .map(
+              (t) =>
+                t.id === editingTransaction.id
+                  ? {
+                      ...editingTransaction,
+                      amount: parseFloat(editingTransaction.amount),
+                    }
+                  : t // Update the specific transaction
+            )
+            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) // Re-sort after update
       );
-
 
       handleCloseEditModal(); // Close modal on success
     } catch (error) {
@@ -312,7 +447,6 @@ const ManageCoffeeShopFinance = () => {
       // Error state is set within the try block for specific errors
     }
   };
-
 
   // --- Delete Transaction Logic ---
 
@@ -336,32 +470,45 @@ const ManageCoffeeShopFinance = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3001/keuangan/detail/${deletingTransactionId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `http://localhost:3001/keuangan/detail/${deletingTransactionId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
-         const errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
-         if (response.status === 401 || response.status === 403) {
-           setAuthError("Authentication failed or insufficient permissions. Please log in again.");
-         } else {
-           setError(new Error(errorData.message || `HTTP error! status: ${response.status}`));
-         }
-         throw new Error(errorData.message || `Delete failed with status ${response.status}`);
+        const errorData = await response
+          .json()
+          .catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+        if (response.status === 401 || response.status === 403) {
+          setAuthError(
+            "Authentication failed or insufficient permissions. Please log in again."
+          );
+        } else {
+          setError(
+            new Error(
+              errorData.message || `HTTP error! status: ${response.status}`
+            )
+          );
+        }
+        throw new Error(
+          errorData.message || `Delete failed with status ${response.status}`
+        );
       }
 
       // Remove the transaction from the local state
-      setTransactions(prevTransactions =>
-        prevTransactions.filter(t => t.id !== deletingTransactionId)
+      setTransactions((prevTransactions) =>
+        prevTransactions.filter((t) => t.id !== deletingTransactionId)
       );
 
       handleCloseDeleteModal(); // Close modal on success
     } catch (error) {
       console.error("Error deleting transaction:", error);
-       // Error state is set within the try block for specific errors
+      // Error state is set within the try block for specific errors
     }
   };
 
@@ -373,87 +520,16 @@ const ManageCoffeeShopFinance = () => {
     }).format(amount);
   };
 
-  // Filter transaksi hanya dengan kategori 'coffee shop'
-  const filteredTransactions = transactions.filter(
-    (transaction) => transaction.category === "Coffee Shop"
-  );
+  // The `filteredTransactions` and `transactionsWithSaldo` logic is now handled by the useEffect that populates `displayedTransactions`.
+  // We will derive chart data from `displayedTransactions`.
 
-  // Ganti kode transactionsWithSaldo Anda dengan kode ini
-  const transactionsWithSaldo = filteredTransactions.reduce(
-    (acc, transaction, index) => {
-      console.log("Processing transaction:", transaction); // Log each transaction being processed
-      const previousSaldo = index === 0 ? 0 : acc[index - 1].saldo;
-      let currentSaldo = previousSaldo;
-
-      const amount = parseFloat(transaction.amount) || 0;
-      console.log("Transaction type and amount:", transaction.type, amount); // Log type and amount
-
-      if (transaction.type === "income") {
-        currentSaldo += amount;
-      } else if (transaction.type === "expense") {
-        currentSaldo -= amount;
-      }
-
-      // Perbaikan format tanggal
-      let formattedDate = "Tanggal tidak valid";
-
-      try {
-        console.log("Raw created_at:", transaction.created_at); // Log raw date string
-
-        // Pastikan transaction.created_at ada dan merupakan string
-        if (transaction.created_at && typeof transaction.created_at === 'string') {
-          const [datePart, timePart] = transaction.created_at.split(" ");
-
-          // Pastikan datePart dan timePart ada
-          if (datePart && timePart) {
-            const [year, month, day] = datePart.split("-").map(Number);
-            const [hour, minute, second] = timePart.split(":").map(Number);
-
-            // Pastikan semua komponen tanggal dan waktu adalah angka valid
-            if (!isNaN(year) && !isNaN(month) && !isNaN(day) && !isNaN(hour) && !isNaN(minute) && !isNaN(second)) {
-              // Month is 0-indexed in JavaScript Date objects, so subtract 1
-              const dateObj = new Date(year, month - 1, day, hour, minute, second);
-
-              // Cek apakah tanggal valid
-              if (!isNaN(dateObj.getTime())) {
-                formattedDate = dateObj.toLocaleString("id-ID", {
-                  weekday: "short",
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                  second: "numeric",
-                  timeZone: "Asia/Makassar", // WITA timezone
-                });
-              }
-            } else {
-              console.error("Invalid date or time components:", { year, month, day, hour, minute, second });
-            }
-          } else {
-            console.error("Invalid date or time format:", transaction.created_at);
-          }
-        } else {
-          console.error("created_at is not a valid string:", transaction.created_at);
-        }
-      } catch (err) {
-        console.error("Error formatting date:", err, transaction.created_at);
-      }
-
-      acc.push({
-        ...transaction,
-        saldo: currentSaldo,
-        formattedDate: formattedDate,
-      });
-      return acc;
-    },
-    []
-  );
-
-  // Aggregate data by month for the bar chart
-  const monthlyData = transactionsWithSaldo.reduce((acc, transaction) => {
+  // Aggregate data by month for the bar chart using displayedTransactions
+  const monthlyData = displayedTransactions.reduce((acc, transaction) => {
     const date = new Date(transaction.created_at);
-    const monthYear = date.toLocaleString("id-ID", { month: "long", year: "numeric" });
+    const monthYear = date.toLocaleString("id-ID", {
+      month: "long",
+      year: "numeric",
+    });
 
     if (!acc[monthYear]) {
       acc[monthYear] = { income: 0, expense: 0 };
@@ -469,30 +545,29 @@ const ManageCoffeeShopFinance = () => {
   }, {});
 
   const months = Object.keys(monthlyData);
-  const monthlyIncome = months.map(month => monthlyData[month].income);
-  const monthlyExpense = months.map(month => monthlyData[month].expense);
+  const monthlyIncome = months.map((month) => monthlyData[month].income);
+  const monthlyExpense = months.map((month) => monthlyData[month].expense);
 
-
-  // Create data for Pie chart (Distribusi Pemasukan vs Pengeluaran)
+  // Create data for Pie chart (Distribusi Pemasukan vs Pengeluaran) using displayedTransactions
   const pieChartData = {
     labels: ["Pemasukan", "Pengeluaran"],
     datasets: [
       {
         data: [
           Math.max(
-            transactionsWithSaldo
+            displayedTransactions
               .filter((t) => t.type === "income")
-              .reduce((acc, t) => acc + t.amount, 0),
+              .reduce((acc, t) => acc + (parseFloat(t.amount) || 0), 0),
             0.01
           ),
           Math.max(
-            transactionsWithSaldo
+            displayedTransactions
               .filter((t) => t.type === "expense")
-              .reduce((acc, t) => acc + t.amount, 0),
+              .reduce((acc, t) => acc + (parseFloat(t.amount) || 0), 0),
             0.01
           ),
         ],
-        backgroundColor: ["#4CAF50", "#FF5733"],
+        backgroundColor: ["#4CAF50", "#FF5733"], // Colors can be updated with theme
         hoverBackgroundColor: ["#45a049", "#ff4731"],
       },
     ],
@@ -563,23 +638,23 @@ const ManageCoffeeShopFinance = () => {
     },
     plugins: {
       legend: {
-        position: 'top',
+        position: "top",
       },
       tooltip: {
         callbacks: {
-          label: function(context) {
-            let label = context.dataset.label || '';
+          label: function (context) {
+            let label = context.dataset.label || "";
             if (label) {
-              label += ': ';
+              label += ": ";
             }
             if (context.parsed.y !== null) {
               label += formatRupiah(context.parsed.y);
             }
             return label;
-          }
-        }
-      }
-    }
+          },
+        },
+      },
+    },
   };
 
   const handlePrint = (type) => {
@@ -592,7 +667,7 @@ const ManageCoffeeShopFinance = () => {
         "Saldo",
       ];
 
-      const dataRows = transactionsWithSaldo.map((item) =>
+      const dataRows = displayedTransactions.map((item) => // Use displayedTransactions
         [
           `"${item.description.replace(/"/g, '""')}"`,
           `"${item.payment_method.replace(/"/g, '""')}"`,
@@ -618,7 +693,7 @@ const ManageCoffeeShopFinance = () => {
         "Saldo",
       ];
 
-      const dataRows = transactionsWithSaldo.map((item) => ({
+      const dataRows = displayedTransactions.map((item) => ({ // Use displayedTransactions
         Keterangan: item.description,
         Metode: item.payment_method,
         Pemasukan: item.type === "income" ? item.amount : 0,
@@ -652,6 +727,34 @@ const ManageCoffeeShopFinance = () => {
         {error && <p>Error loading transactions: {error.message}</p>}
         {!loading && !error && (
           <>
+            <div className="filter-controls-container" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'flex-end', paddingRight: '2.5rem' }}>
+              <DropdownButton
+                id="time-filter-dropdown"
+                title={`Filter: ${timeFilter === 'all' ? 'Semua Waktu' : 
+                                      timeFilter === '1d' ? '1 Hari Terakhir' :
+                                      timeFilter === '3d' ? '3 Hari Terakhir' :
+                                      timeFilter === '7d' ? '7 Hari Terakhir' :
+                                      timeFilter === '1m' ? '1 Bulan Terakhir' :
+                                      timeFilter === '2m' ? '2 Bulan Terakhir' :
+                                      timeFilter === '3m' ? '3 Bulan Terakhir' :
+                                      timeFilter === '6m' ? '6 Bulan Terakhir' :
+                                      timeFilter === '1y' ? '1 Tahun Terakhir' : 'Semua Waktu'
+                                    }`}
+                onSelect={handleTimeFilterChange}
+                variant="info" // Will be styled by CSS later
+              >
+                <Dropdown.Item eventKey="all">Semua Waktu</Dropdown.Item>
+                <Dropdown.Item eventKey="1d">1 Hari Terakhir</Dropdown.Item>
+                <Dropdown.Item eventKey="3d">3 Hari Terakhir</Dropdown.Item>
+                <Dropdown.Item eventKey="7d">7 Hari Terakhir</Dropdown.Item>
+                <Dropdown.Item eventKey="1m">1 Bulan Terakhir</Dropdown.Item>
+                <Dropdown.Item eventKey="2m">2 Bulan Terakhir</Dropdown.Item>
+                <Dropdown.Item eventKey="3m">3 Bulan Terakhir</Dropdown.Item>
+                <Dropdown.Item eventKey="6m">6 Bulan Terakhir</Dropdown.Item>
+                <Dropdown.Item eventKey="1y">1 Tahun Terakhir</Dropdown.Item>
+              </DropdownButton>
+            </div>
+
             <div className="finance-summary">
               <div className="chart-container">
                 <h5>Distribusi Pemasukan vs Pengeluaran</h5>
@@ -720,7 +823,7 @@ const ManageCoffeeShopFinance = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {transactionsWithSaldo.map((item, index) => (
+                  {displayedTransactions.map((item, index) => ( // Use displayedTransactions
                     <tr key={item.id}>
                       <td>{index + 1}</td>
                       <td>{item.description}</td>
@@ -735,11 +838,22 @@ const ManageCoffeeShopFinance = () => {
                           : 0}
                       </td>
                       <td>{formatRupiah(item.saldo)}</td>
-                      <td> {/* Actions buttons */}
-                        <Button variant="outline-primary" size="sm" onClick={() => handleEditModal(item)} style={{ marginRight: '5px' }}>
+                      <td>
+                        {" "}
+                        {/* Actions buttons */}
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          onClick={() => handleEditModal(item)}
+                          style={{ marginRight: "5px" }}
+                        >
                           <FaEdit />
                         </Button>
-                        <Button variant="outline-danger" size="sm" onClick={() => handleDeleteModal(item.id)}>
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => handleDeleteModal(item.id)}
+                        >
                           <FaTrash />
                         </Button>
                       </td>
@@ -851,22 +965,22 @@ const ManageCoffeeShopFinance = () => {
 
                 <Form.Group className="mb-3">
                   <Form.Label>Jumlah</Form.Label>
-                   <NumberFormatBase
-                      name="amount"
-                      value={editingTransaction.amount}
-                      onValueChange={(values) => {
-                        const { value } = values;
-                        setEditingTransaction({
-                          ...editingTransaction,
-                          amount: value,
-                        });
-                      }}
-                      thousandSeparator="."
-                      decimalSeparator=","
-                      prefix="Rp. "
-                      placeholder="Masukkan jumlah"
-                      className="form-control"
-                    />
+                  <NumberFormatBase
+                    name="amount"
+                    value={editingTransaction.amount}
+                    onValueChange={(values) => {
+                      const { value } = values;
+                      setEditingTransaction({
+                        ...editingTransaction,
+                        amount: value,
+                      });
+                    }}
+                    thousandSeparator="."
+                    decimalSeparator=","
+                    prefix="Rp. "
+                    placeholder="Masukkan jumlah"
+                    className="form-control"
+                  />
                 </Form.Group>
 
                 <Form.Group className="mb-3">
@@ -905,13 +1019,14 @@ const ManageCoffeeShopFinance = () => {
           </Modal.Footer>
         </Modal>
 
-         {/* Modal Konfirmasi Hapus */}
-         <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered>
+        {/* Modal Konfirmasi Hapus */}
+        <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered>
           <Modal.Header closeButton>
             <Modal.Title>Konfirmasi Hapus</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan.
+            Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak
+            dapat dibatalkan.
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseDeleteModal}>
@@ -922,7 +1037,6 @@ const ManageCoffeeShopFinance = () => {
             </Button>
           </Modal.Footer>
         </Modal>
-
       </div>
     </ErrorBoundary>
   );

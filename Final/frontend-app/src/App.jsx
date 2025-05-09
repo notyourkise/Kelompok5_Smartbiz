@@ -1,7 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Login from "./components/Login";
-import Register from "./components/Register"; // Pastikan komponen Register diimpor dengan benar
+// import Login from "./components/Login"; // No longer directly used here
+// import Register from "./components/Register"; // No longer directly used here
+import AuthPage from "./components/AuthPage"; // Import the new AuthPage component
 import Dashboard from "./components/Dashboard";  // Komponen Dashboard
 import ManageUser from "./components/ManageUser";
 import ManageInventaris from "./components/ManageInventaris";  // Pastikan komponen ManageInventaris diimpor
@@ -21,8 +22,8 @@ function App() {
       <div>
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="/register" element={<AuthPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/manage-user" element={<ManageUser />} /> {/* Route untuk Manage User */}
           <Route path="/manage-inventaris" element={<ManageInventaris />} /> {/* Route untuk Manage Inventaris */}

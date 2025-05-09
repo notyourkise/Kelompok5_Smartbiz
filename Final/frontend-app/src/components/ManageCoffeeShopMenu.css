@@ -1,235 +1,340 @@
-/* src/components/ManageCoffeeShopMenu.css */
+/* src/components/ManageCoffeeShopMenu.css - Elegant & Interactive Theme */
 
+/* Base Container */
 .manage-coffee-menu-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1f2833 0%, #45a29e 100%);
-  padding: 2rem;
-  color: #c5c6c7;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9f6f2; /* Soft off-white/light beige from theme */
+  padding: 2.5rem;
+  color: #4d403A; /* Dark warm brown text from theme */
+  font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
 }
 
+/* Header */
 .manage-coffee-menu-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #4b5a6a;
-  gap: 1rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e0d8d0; /* Light brown/beige border */
+}
+
+.manage-coffee-menu-header .back-button {
+  background-color: transparent;
+  border: 1px solid #a1887f; /* Light warm brown border */
+  color: #6d4c41; /* Warm brown icon */
+  padding: 0.6rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.manage-coffee-menu-header .back-button:hover {
+  background-color: #efebe9; /* Very light beige hover */
+  border-color: #8d6e63;
+  color: #5d4037;
 }
 
 .manage-coffee-title {
-  color: #66fcf1;
-  font-weight: bold;
-  font-size: 2rem;
+  color: #5d4037; /* Rich primary brown */
+  font-weight: 600;
+  font-size: 1.85rem;
+  text-align: center;
+  flex-grow: 1;
 }
 
-.menu-cards-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: flex-start;
-}
-
-.menu-card {
-    background-color: #2c3e50;
-    border: 1px solid #4b5a6a;
-    border-radius: 8px;
-    padding: 15px;
-    width: 200px;
-    text-align: center;
-    transition: transform 0.3s ease;
-}
-
-.menu-card:hover {
-    transform: translateY(-5px);
-}
-
-.menu-card h5 {
-    color: #66fcf1;
-    margin-bottom: 10px;
-}
-
-.menu-card p {
-    color: #c5c6c7;
-    font-size: 1.1em;
+.cart-container {
+  position: relative;
+  cursor: pointer;
 }
 
 .cart-icon {
-    font-size: 2em;
-    color: #66fcf1;
-    cursor: pointer;
-    transition: color 0.3s ease;
+  font-size: 1.8rem;
+  color: #6d4c41; /* Warm brown */
+  transition: color 0.2s ease;
 }
-
 .cart-icon:hover {
-    color: #ffffff;
-}
-
-.cart-container {
-    position: relative;
-    display: inline-block;
-    margin-left: auto; /* Push cart to the right */
+  color: #5d4037; /* Darker brown */
 }
 
 .cart-badge {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: #e74c3c;
-    color: white;
-    border-radius: 50%;
-    padding: 2px 6px;
-    font-size: 0.7em;
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background-color: #c62828; /* Red for notifications */
+  color: white;
+  border-radius: 50%;
+  padding: 0.2em 0.5em;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border: 1px solid white;
 }
 
-/* Modal styles (Copied from ManageInventarisCoffeeShop.css) */
+/* Main Action Button (Tambah Menu Baru) */
+.action-button.mb-3 { /* More specific selector */
+  background-color: #6d4c41; /* Rich warm brown */
+  border: 1px solid #5d4037;
+  color: #f9f6f2;
+  padding: 0.7rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 2rem !important; /* Ensure spacing */
+}
+
+.action-button.mb-3:hover {
+  background-color: #5d4037;
+  border-color: #4e342e;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Menu Cards Container */
+.menu-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Responsive grid */
+  gap: 2rem;
+}
+
+/* Individual Menu Card */
+.menu-card {
+  background-color: #ffffff;
+  border-radius: 12px; /* More rounded corners */
+  box-shadow: 0 6px 18px rgba(93, 64, 55, 0.1); /* Softer, more spread shadow */
+  padding: 1.5rem;
+  text-align: center;
+  position: relative; /* For absolute positioning of icons */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden; /* Ensures icons don't overflow weirdly during transitions */
+}
+
+.menu-card:hover {
+  transform: translateY(-8px) scale(1.02); /* Lift and slightly scale */
+  box-shadow: 0 10px 25px rgba(93, 64, 55, 0.15);
+}
+
+.menu-card h5 {
+  color: #5d4037; /* Rich brown for title */
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1rem; /* Space below icons */
+  margin-bottom: 0.5rem;
+}
+
+.menu-card p {
+  color: #a08454; /* Dark gold for price */
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+/* Edit Icon */
+.edit-icon {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 1.1rem;
+  color: #8d6e63; /* Muted brown */
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+}
+.edit-icon:hover {
+  color: #5d4037; /* Darker brown */
+  transform: scale(1.1);
+}
+
+/* Info Icon */
+.info-icon {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.2rem;
+  color: #8d6e63; /* Muted brown */
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+}
+.info-icon:hover {
+  color: #5d4037; /* Darker brown */
+  transform: scale(1.1);
+}
+
+/* Buttons within Menu Card */
+.menu-card-actions {
+  display: flex;
+  justify-content: space-around; /* Evenly space buttons */
+  gap: 0.5rem; /* Space between buttons */
+}
+
+.menu-card .btn {
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  flex-grow: 1; /* Allow buttons to grow */
+}
+
+.menu-card .btn-add-to-cart {
+  background-color: #6d4c41; /* Rich warm brown */
+  border-color: #5d4037;
+  color: #f9f6f2;
+}
+.menu-card .btn-add-to-cart:hover {
+  background-color: #5d4037;
+  border-color: #4e342e;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.menu-card .btn-delete {
+  background-color: transparent;
+  border: 1px solid #c62828; /* Deep red border */
+  color: #c62828; /* Deep red text */
+}
+.menu-card .btn-delete:hover {
+  background-color: #c62828;
+  border-color: #b71c1c;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+
+/* Modal Styling (General - applies to all modals unless overridden) */
 .modal-content {
-  background-color: #1f2833;
-  color: #c5c6c7;
-  border: 1px solid #4b5a6a;
-  border-radius: 10px;
+  background-color: #fdfdfd; /* Clean, slightly off-white */
+  color: #4d403A;
+  border: 1px solid #d7ccc8; /* Light tan border */
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(93, 64, 55, 0.1);
 }
 
 .modal-header {
-  border-bottom: 1px solid #4b5a6a;
-  color: #66fcf1;
+  border-bottom: 1px solid #c0a062; /* Gold separator */
+  color: #5d4037; /* Rich brown title */
+  padding: 1.25rem 1.5rem;
+}
+.modal-header .modal-title {
+  font-weight: 600;
+  font-size: 1.35rem;
+  color: #a08454; /* Dark Gold for modal title */
 }
 
 .modal-header .btn-close {
-  filter: invert(1) grayscale(100%) brightness(200%);
+  filter: none;
+  opacity: 0.6;
+}
+.modal-header .btn-close:hover {
+  opacity: 0.9;
 }
 
 .modal-body {
-  padding: 1.5rem;
+  padding: 1.75rem;
 }
 
+/* Ensure description text flows downwards */
+.modal-body p {
+  white-space: pre-wrap; /* Ensures line breaks and spaces are preserved, and text wraps */
+  word-break: break-word; /* Helps break long words if necessary */
+  display: block; /* Default for p, but good to be explicit */
+}
+
+
 .modal-body .form-label {
- color: #0080ff;
+  color: #6d4c41; /* Warm brown label */
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
 }
 
 .modal-body .form-control {
-  background-color: #2c3e50;
-  color: #ffffff;
-  border: 1px solid #4b5a6a;
-  border-radius: 5px;
+  background-color: #ffffff;
+  color: #4d403A;
+  border: 1px solid #c8bca7; /* Light tan/beige border */
+  border-radius: 4px;
+  padding: 0.7rem 1rem;
+  transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
 }
-
 .modal-body .form-control::placeholder {
-  color: #8a9a9a;
+  color: #a1887f; /* Lighter brown placeholder */
 }
-
 .modal-body .form-control:focus {
-  border-color: #00ffee;
-  background-color: #2c3e50;
-  color: #ffffff;
-  box-shadow: none;
+  border-color: #c0a062; /* Gold focus border */
+  box-shadow: 0 0 0 3px rgba(192, 160, 98, 0.25); /* Gold focus ring */
 }
-
 
 .modal-footer {
-  border-top: 1px solid #4b5a6a;
+  border-top: 1px solid #e0d8d0;
+  padding: 1.25rem 1.5rem;
+  background-color: #f9f6f2; /* Light beige footer background */
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: 0.75rem; /* Space between footer buttons */
 }
 
-.modal-footer .btn-primary {
-  background-color: #66fcf1;
-  border-color: #66fcf1;
-  color: #1f2833;
-  font-weight: bold;
+/* Specific modal button styling if needed, otherwise .action-button class can be used */
+.modal-footer .action-button { /* For cancel/close buttons */
+  background-color: #f9f6f2;
+  border: 1px solid #a1887f;
+  color: #6d4c41;
 }
+.modal-footer .action-button:hover {
+  background-color: #efebe9;
+  border-color: #8d6e63;
+  color: #5d4037;
+}
+.modal-footer button[type="submit"], /* For primary save/update buttons */
+.modal-footer .btn-primary { /* If Bootstrap class is used */
+  background-color: #6d4c41;
+  border-color: #5d4037;
+  color: #f9f6f2;
+}
+.modal-footer button[type="submit"]:hover,
 .modal-footer .btn-primary:hover {
-  background-color: #45a29e;
-  border-color: #45a29e;
-  color: #1f2833;
-}
-
-.modal-footer .btn-secondary {
-  color: #c5c6c7;
-  background-color: #4b5a6a;
-  border-color: #ffffff;
-  font-weight: bold;
-}
-.modal-footer .btn-secondary:hover {
-  background-color: #6c757d;
+  background-color: #5d4037;
+  border-color: #4e342e;
   color: #ffffff;
 }
 
-.modal-footer .action-button {
-    margin: 0 0.5rem;
+
+/* Cart Modal Specifics */
+.cart-modal .modal-dialog {
+  max-width: 600px; /* Wider cart modal */
+}
+.cart-modal .table {
+  margin-bottom: 0; /* Remove default table margin in modal */
+}
+.cart-modal .quantity-buttons button {
+  margin: 0 0.3rem;
+  padding: 0.2rem 0.5rem;
+  line-height: 1;
+}
+.cart-modal .quantity-buttons span {
+  display: inline-block;
+  min-width: 20px;
+  text-align: center;
 }
 
-.quantity-buttons {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Alerts */
+.alert {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
 }
 
-.quantity-buttons button {
-    margin: 0 0.25rem;
-}
-
-.action-button {
-  background-color: transparent;
-  border: 1px solid #66fcf1;
-  color: #66fcf1;
-  padding: 0.6rem 1.2rem;
-  border-radius: 20px;
-  font-weight: bold;
-  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem; /* Space between icon and text */
-}
-
-.action-button:hover {
-  background-color: #66fcf1;
-  color: #1f2833;
-  transform: scale(1.05);
-}
-
-.cart-container {
-    position: relative;
-    display: inline-block;
-}
-
-.cart-badge {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: #e74c3c;
-    color: white;
-    border-radius: 50%;
-    padding: 2px 6px;
-    font-size: 0.7em;
-}
-
-.delete-button {
-    background-color: #e74c3c;
-    border-color: #c0392b;
-    color: #fff;
-}
-
-.delete-button:hover {
-    background-color: #c0392b;
-    border-color: #a93226;
-}
-
-.back-button {
-    background-color: transparent;
-    border: 1px solid #66fcf1;
-    color: #66fcf1;
-    padding: 0.6rem 1.2rem;
-    border-radius: 20px;
-    font-weight: bold;
-    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem; /* Space between icon and text */
-    margin-right: 1rem;
-}
-
-.back-button:hover {
-    background-color: #66fcf1;
-    color: #1f2833;
-    transform: scale(1.05);
+/* Spinner */
+.text-center .spinner-border {
+  color: #6d4c41; /* Brown spinner */
+  width: 3rem;
+  height: 3rem;
+  margin-top: 3rem;
 }

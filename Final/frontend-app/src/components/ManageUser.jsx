@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 // Import Table component from react-bootstrap
-import { Button, Modal, Form, Table } from "react-bootstrap"; 
+import { Button, Modal, Form, Table } from "react-bootstrap";
 import { FaTrashAlt, FaEdit, FaPlus, FaArrowLeft } from "react-icons/fa"; // Import necessary icons
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Footer from "./Footer"; // Import the Footer component
-import './ManageUser.css'; // Import the new CSS file
+import "./ManageUser.css"; // Import the new CSS file
 
 const ManageUser = () => {
   const navigate = useNavigate(); // Initialize navigate
@@ -147,7 +147,7 @@ const ManageUser = () => {
 
   return (
     // Use the new container class
-    <div className="manage-user-container"> 
+    <div className="manage-user-container">
       {/* Header with Back Button and Title */}
       <header className="manage-user-header">
         {/* Back Button with CSS class */}
@@ -158,9 +158,10 @@ const ManageUser = () => {
         >
           <FaArrowLeft />
         </Button>
-        <h2 className="manage-user-title">Manajemen Pengguna</h2> {/* Add title */}
+        <h2 className="manage-user-title">Manajemen Pengguna</h2>{" "}
+        {/* Add title */}
         {/* Create User Button */}
-         <Button
+        <Button
           variant="primary" // Keep variant for base styling, override with class
           onClick={() => setShowCreateModal(true)}
           className="action-button" // Apply CSS class
@@ -170,8 +171,12 @@ const ManageUser = () => {
       </header>
 
       {/* User Table */}
-      <div className="table-responsive"> {/* Make table responsive */}
-        <Table striped bordered hover className="user-table"> {/* Add class for potential styling */}
+      <div className="table-responsive">
+        {" "}
+        {/* Make table responsive */}
+        <Table striped bordered hover className="user-table">
+          {" "}
+          {/* Add class for potential styling */}
           <thead>
             <tr>
               <th>#</th>
@@ -188,17 +193,17 @@ const ManageUser = () => {
                   <td>{user.username}</td>
                   <td>{user.role}</td>
                   <td>
-                    <Button 
-                      variant="outline-primary" 
-                      size="sm" 
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
                       className="me-2" // Margin end for spacing
                       onClick={() => handleEditClick(user)}
                     >
                       <FaEdit /> Edit
                     </Button>
-                    <Button 
-                      variant="outline-danger" 
-                      size="sm" 
+                    <Button
+                      variant="outline-danger"
+                      size="sm"
                       onClick={() => handleDelete(user.id)}
                     >
                       <FaTrashAlt /> Hapus
@@ -208,7 +213,9 @@ const ManageUser = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="text-center">Tidak ada data pengguna.</td>
+                <td colSpan="4" className="text-center">
+                  Tidak ada data pengguna.
+                </td>
               </tr>
             )}
           </tbody>

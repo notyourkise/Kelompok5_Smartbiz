@@ -1,139 +1,360 @@
-/* ManageCoffeeShopFinance Styles */
+/* src/components/ManageCoffeeShopFinance.css - White and Brown Elegant Theme */
+
+/* Base container style */
 .manage-coffee-shop-finance-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1f2833 0%, #45a29e 100%);
-  padding: 2rem;
-  color: #c5c6c7;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #ffffff; /* White background */
+  padding: 2.5rem;
+  color: #4d403A; /* Dark warm brown for text */
+  font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Header style */
 .manage-coffee-shop-finance-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #4b5a6a;
+  border-bottom: 1px solid #e0d8d0; /* Light brown/beige border */
 }
 
 .manage-coffee-shop-finance-title {
-  color: #66fcf1;
-  font-weight: bold;
-  font-size: 2rem;
+  color: #5d4037; /* Rich primary brown */
+  font-weight: 600;
+  font-size: 1.85rem;
+  margin-left: 1rem; /* Space after back icon */
+  flex-grow: 1; /* Allow title to take available space */
 }
 
-.finance-summary {
+.back-icon {
+  font-size: 1.5rem;
+  color: #6d4c41; /* Warm brown icon */
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.back-icon:hover {
+  color: #5d4037; /* Darker brown on hover */
+}
+
+/* Filter controls container */
+.filter-controls-container {
+  margin-bottom: 1.5rem;
   display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
+  justify-content: flex-end; /* Align filter to the right */
+}
+
+.filter-controls-container .dropdown-toggle {
+  background-color: #8d6e63; /* Muted brown for filter button */
+  border-color: #795548;
+  color: #f9f6f2;
+  font-weight: 500;
+}
+
+.filter-controls-container .dropdown-toggle:hover,
+.filter-controls-container .dropdown-toggle:focus {
+  background-color: #6d4c41; /* Darker brown */
+  border-color: #5d4037;
+}
+
+.filter-controls-container .dropdown-menu {
+  background-color: #fdfdfd;
+  border: 1px solid #e0d8d0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.filter-controls-container .dropdown-item {
+  color: #4d403A;
+}
+
+.filter-controls-container .dropdown-item:hover,
+.filter-controls-container .dropdown-item:focus {
+  background-color: #efebe9; /* Light beige hover */
+  color: #3e2723;
+}
+
+
+/* Finance Summary (Charts) */
+.finance-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 .chart-container {
-  background-color: #1f2833;
-  border: 1px solid #4b5a6a;
-  border-radius: 10px;
-  padding: 15px;
-  text-align: center;
-  margin: 10px;
-  flex: 1;
-  min-width: 300px;
+  background-color: #ffffff; /* White background for charts */
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(93, 64, 55, 0.08); /* Soft brown shadow */
+  border: 1px solid #e0d8d0;
 }
 
 .chart-container h5 {
-  color: #66fcf1;
-  margin-bottom: 15px;
+  color: #5d4037; /* Rich primary brown */
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: 500;
 }
 
 .donut-chart-placeholder,
 .bar-chart-placeholder {
-  width: 100%;
-  height: 200px;
-  background-color: #4b5a6a;
+  height: 300px; /* Fixed height for chart areas */
   display: flex;
-  align-items: center;
   justify-content: center;
-  color: #c5c6c7;
-  border-radius: 5px;
-  margin-bottom: 10px;
+  align-items: center;
 }
 
+/* Action Buttons Area */
 .action-buttons {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  justify-content: space-between; /* Pushes buttons to opposite ends */
   align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem; /* Adds space between buttons if they wrap or are close */
 }
 
-.print-button-container {
-  position: relative;
+.action-buttons .add-button {
+  background-color: #6d4c41; /* Rich warm brown */
+  border: 1px solid #5d4037; /* Slightly darker brown border */
+  color: #f9f6f2; /* Off-white text */
+  padding: 0.7rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.2s ease-out, border-color 0.2s ease-out, transform 0.2s ease-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
 }
 
-.print-options {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: #1f2833;
-  border: 1px solid #4b5a6a;
-  border-radius: 5px;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  padding: 5px;
+.action-buttons .print-button .dropdown-toggle {
+  background-color: #a1887f; /* Lighter warm brown for print button */
+  border: 1px solid #8d6e63; /* Slightly darker border for print button */
+  color: #f9f6f2; /* Off-white text */
+  padding: 0.7rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.2s ease-out, border-color 0.2s ease-out, transform 0.2s ease-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
 }
 
-.print-option-button {
-  background-color: transparent !important;
-  border: none !important;
-  color: #c5c6c7 !important;
-  text-align: left;
-  padding: 8px 15px;
-  transition: background-color 0.3s ease;
+.action-buttons .add-button:hover {
+  background-color: #5d4037; /* Darker brown on hover */
+  border-color: #4e342e;
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
-.print-option-button:hover {
-  background-color: #4b5a6a !important;
-  color: #ffffff !important;
+.action-buttons .print-button .dropdown-toggle:hover {
+  background-color: #8d6e63; /* Darker shade of the lighter brown on hover */
+  border-color: #795548;
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
+.action-buttons .print-button .dropdown-menu {
+  background-color: #fdfdfd;
+  border: 1px solid #e0d8d0;
+}
+.action-buttons .print-button .dropdown-item {
+  color: #4d403A;
+}
+.action-buttons .print-button .dropdown-item:hover {
+  background-color: #efebe9;
+}
+
+
+/* Table Styles */
 .finance-table-container {
-  overflow-x: auto;
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(93, 64, 55, 0.08);
+  border: 1px solid #e0d8d0;
+  overflow-x: auto; /* For responsive tables */
 }
 
 .finance-table {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-  background-color: #2c3e50;
-  color: #c5c6c7;
-  border: 1px solid #4b5a6a;
-  border-radius: 8px;
-  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: #4d403A;
 }
 
 .finance-table thead {
-  background-color: #1f2833;
-  color: #66fcf1;
+  background-color: #f5f0eb; /* Very light beige/tan for header */
+  color: #a08454; /* Dark Gold for header text */
+  border-bottom: 2px solid #c0a062; /* Solid gold line */
 }
 
 .finance-table th,
 .finance-table td {
   vertical-align: middle;
-  padding: 0.8rem 1rem;
-  border-color: #4b5a6a;
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid #e0d8d0; /* Light brown/beige row separator */
   text-align: left;
 }
 
 .finance-table th {
-  font-weight: bold;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.8px;
 }
 
-.finance-table tbody tr:nth-of-type(odd) > * {
-  background-color: rgba(75, 90, 106, 0.5);
-  color: #c5c6c7;
+.finance-table tbody tr {
+  transition: background-color 0.15s ease-out;
 }
 
-.finance-table tbody tr:hover > * {
-  background-color: #45a29e;
-  color: #1f2833;
+/* Striped rows for the table - light brown and white */
+.finance-table tbody tr:nth-of-type(odd) {
+  background-color: #efebe9; /* Light brown for odd rows */
+}
+.finance-table tbody tr:nth-of-type(even) {
+  background-color: #ffffff; /* White for even rows */
+}
+
+
+.finance-table tbody tr:hover {
+  background-color: #fdf6e3; /* Very light creamy gold-tinged beige on hover */
+  color: #3e2723;
+}
+
+/* Table Action Buttons (Edit/Delete) */
+.finance-table td .btn {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.2s ease-out;
+}
+
+.finance-table td .btn-outline-primary {
+  border-color: #5472a4; /* Muted steel blue */
+  color: #5472a4;
+}
+.finance-table td .btn-outline-primary:hover {
+  background-color: #5472a4;
+  color: #ffffff;
+  border-color: #46618f;
+}
+
+.finance-table td .btn-outline-danger {
+  border-color: #c62828; /* Deep red */
+  color: #c62828;
+}
+.finance-table td .btn-outline-danger:hover {
+  background-color: #c62828;
+  color: #ffffff;
+  border-color: #b71c1c;
+}
+.finance-table td .btn svg {
+  margin-right: 0.4rem;
+  vertical-align: text-bottom; /* Better alignment for icons in buttons */
+}
+
+
+/* Modal styles - Consistent with ManageUser.css */
+.modal-content {
+  background-color: #fdfdfd;
+  color: #4d403A;
+  border: 1px solid #d7ccc8;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(93, 64, 55, 0.1);
+}
+
+.modal-header {
+  border-bottom: 1px solid #c0a062; /* Gold separator */
+  color: #5d4037;
+  padding: 1.25rem 1.5rem;
+}
+.modal-header .modal-title {
+  font-weight: 600;
+  font-size: 1.35rem;
+  color: #a08454; /* Dark Gold for modal title */
+}
+
+.modal-header .btn-close {
+  filter: none;
+  opacity: 0.6;
+}
+.modal-header .btn-close:hover {
+  opacity: 0.9;
+}
+
+.modal-body {
+  padding: 1.75rem;
+}
+
+.modal-body .form-label {
+  color: #6d4c41;
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+}
+
+.modal-body .form-control {
+  background-color: #ffffff;
+  color: #4d403A;
+  border: 1px solid #c8bca7; /* Light tan/beige border */
+  border-radius: 4px;
+  padding: 0.7rem 1rem;
+  transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+.modal-body .form-control::placeholder {
+  color: #a1887f;
+}
+
+.modal-body .form-control:focus {
+  border-color: #c0a062; /* Gold focus border */
+  box-shadow: 0 0 0 3px rgba(192, 160, 98, 0.25);
+}
+
+.modal-footer {
+  border-top: 1px solid #e0d8d0;
+  padding: 1.25rem 1.5rem;
+  background-color: #f9f6f2; /* Light beige footer background */
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.modal-footer .btn-primary {
+  background-color: #6d4c41;
+  border-color: #5d4037;
+  color: #f9f6f2;
+}
+.modal-footer .btn-primary:hover {
+  background-color: #5d4037;
+  border-color: #4e342e;
+  color: #ffffff;
+}
+
+.modal-footer .btn-secondary {
+  background-color: #f9f6f2;
+  border: 1px solid #a1887f;
+  color: #6d4c41;
+}
+.modal-footer .btn-secondary:hover {
+  background-color: #efebe9;
+  border-color: #8d6e63;
+  color: #5d4037;
+}
+
+/* Loading and Error Messages */
+.manage-coffee-shop-finance-container > p { /* Direct children p tags for loading/error */
+  text-align: center;
+  font-size: 1.1rem;
+  padding: 1rem;
+  color: #757575;
+}
+.error-message {
+  color: #c62828 !important; /* Deep red for errors */
+  background-color: #ffcdd2; /* Light red background */
+  border: 1px solid #ef9a9a;
+  border-radius: 4px;
+  padding: 0.75rem 1rem !important;
 }

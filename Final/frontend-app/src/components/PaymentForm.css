@@ -1,88 +1,202 @@
-.payment-form-container {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #1f2833 0%, #45a29e 100%);
-    padding: 2rem;
-    color: #c5c6c7;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* General container for the payment page */
+.payment-form-elegant-container {
+  background-color: #f0f2f5; /* Light, sophisticated background */
+  min-height: 100vh;
+  padding-top: 20px;
+  padding-bottom: 40px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Elegant font */
 }
 
-.payment-form-container h2 {
-    color: #66fcf1;
-    font-weight: bold;
-    font-size: 2rem;
-    margin-bottom: 1rem;
+/* Back to Menu link button */
+.back-link-button {
+  color: #555;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
 }
 
-.payment-form-container h3 {
-    color: #66fcf1;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
+.back-link-button:hover {
+  color: #007bff; /* Or your primary theme color */
+  text-decoration: none;
 }
 
-.payment-form-container h4 {
-    color: #66fcf1;
-    margin-top: 1rem;
+/* Main payment card styling */
+.payment-card {
+  border: none; /* Remove default border */
+  border-radius: 15px; /* Softer, more modern corners */
+  background-color: #ffffff; /* Clean white background */
+  /* Consider a subtle gradient or texture if desired */
+  /* background-image: linear-gradient(to top right, #ffffff, #fdfdfd); */
 }
 
-.payment-form-container .form-label {
-    color: #0080ff;
+.payment-card-header {
+  background-color: #343a40; /* Dark, elegant header */
+  color: #ffffff;
+  padding: 20px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  font-size: 1.75rem; /* Larger header text */
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
-.payment-form-container .form-control {
-    background-color: #2c3e50;
-    color: #ffffff;
-    border: 1px solid #4b5a6a;
-    border-radius: 5px;
+.payment-card-header .svg-inline--fa { /* Icon styling in header */
+  margin-right: 12px;
+  color: #ffc107; /* Gold-like color for icon */
 }
 
-.payment-form-container .form-control::placeholder {
-    color: #8a9a9a;
+/* Section titles within the card body */
+.section-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #495057; /* Dark grey for titles */
+  border-bottom: 2px solid #e9ecef; /* Subtle separator */
+  padding-bottom: 10px;
+  margin-bottom: 25px !important; /* Ensure consistent spacing */
 }
 
-.payment-form-container .form-control:focus {
-    border-color: #00ffee;
-    background-color: #2c3e50;
-    color: #ffffff;
-    box-shadow: none;
+.section-title .svg-inline--fa {
+  margin-right: 10px;
+  color: #007bff; /* Primary color for icons in section titles */
 }
 
-.payment-form-container .table {
-    color: #c5c6c7;
+/* Styling for form groups and labels */
+.form-group-elegant .form-label {
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 8px;
 }
 
-.payment-form-container .table thead th {
-    background-color: #2c3e50;
-    border-bottom: 2px solid #4b5a6a;
+.form-group-elegant .form-label .svg-inline--fa {
+  margin-right: 8px;
+  color: #6c757d; /* Muted icon color for labels */
 }
 
-.payment-form-container .table tbody td {
-    border-top: 1px solid #4b5a6a;
+/* Styling for form controls (input, select) */
+.form-control-elegant {
+  border-radius: 8px; /* Softer corners for inputs */
+  border: 1px solid #ced4da;
+  padding: 10px 15px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-.payment-form-container .button-container {
-    margin-top: 2rem;
-    display: flex;
-    justify-content: space-between;
-    width: 50%;
+.form-control-elegant:focus {
+  border-color: #80bdff; /* Highlight color on focus */
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Glow effect */
 }
 
-.payment-form-container .back-button,
-.payment-form-container .pay-now-button {
-    background-color: transparent;
-    border: 1px solid #66fcf1;
-    color: #66fcf1;
-    padding: 0.3rem 0.6rem;
-    border-radius: 20px;
-    font-weight: bold;
-    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+/* Order summary box */
+.order-summary-box {
+  background-color: #f8f9fa; /* Slightly off-white for contrast */
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+  min-height: 200px; /* Ensure it has some height even if empty */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.payment-form-container .back-button:hover,
-.payment-form-container .pay-now-button:hover {
-    background-color: #66fcf1;
-    color: #1f2833;
-    transform: scale(1.05);
+/* Table styling for order details */
+.order-table-elegant {
+  margin-bottom: 0; /* Remove default bottom margin from table */
+}
+
+.order-table-elegant th {
+  background-color: #e9ecef; /* Light grey for table header */
+  color: #495057;
+  font-weight: 600;
+  border-bottom-width: 2px;
+}
+
+.order-table-elegant td {
+  vertical-align: middle;
+  color: #333;
+}
+
+.order-table-elegant tbody tr:hover {
+  background-color: #e2e6ea; /* Subtle hover for table rows */
+}
+
+/* Total amount section */
+.total-section {
+  border-top: 1px dashed #adb5bd !important; /* Dashed line for a bit of flair */
+}
+
+.total-amount {
+  font-size: 1.5rem; /* Larger total */
+  color: #28a745; /* Green for total, or your primary success color */
+  font-weight: 700 !important;
+}
+
+/* Action buttons styling */
+.payment-actions {
+  border-top: 1px solid #e9ecef !important; /* Separator for actions */
+}
+
+.action-button-elegant {
+  padding: 12px 25px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+.action-button-elegant .svg-inline--fa {
+  margin-right: 8px;
+}
+
+.back-button-elegant {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: white;
+}
+
+.back-button-elegant:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+.pay-now-button-elegant {
+  background-color: #007bff; /* Primary theme color */
+  border-color: #007bff;
+  color: white;
+  /* box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2); */ /* Subtle shadow for primary button */
+}
+
+.pay-now-button-elegant:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+  /* transform: translateY(-2px); */ /* Slight lift on hover */
+}
+
+.pay-now-button-elegant:disabled {
+  background-color: #a1cfff;
+  border-color: #a1cfff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  .customer-payment-section, .order-summary-section {
+    border-right: none;
+    padding-right: 15px; /* Reset padding for Col */
+    padding-left: 15px; /* Reset padding for Col */
+  }
+  .payment-card-header {
+    font-size: 1.5rem;
+  }
+  .section-title {
+    font-size: 1.15rem;
+  }
+  .total-amount {
+    font-size: 1.3rem;
+  }
+  .action-button-elegant {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .action-button-elegant.me-sm-3 {
+    margin-right: 0 !important;
+  }
 }

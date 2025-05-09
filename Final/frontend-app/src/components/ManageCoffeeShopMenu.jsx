@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Modal, Button, Form, Table, Alert, Spinner } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart, faPlus, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faShoppingCart, faPlus, faArrowLeft, faInfoCircle, faEdit } from '@fortawesome/free-solid-svg-icons'; // Added faEdit and faInfoCircle
 import './ManageCoffeeShopMenu.css';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
@@ -17,6 +17,9 @@ function ManageCoffeeShopMenu() {
     const [showCartModal, setShowCartModal] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
+    const [showDescriptionModal, setShowDescriptionModal] = useState(false); // State for description modal
+    const [currentDescriptionItem, setCurrentDescriptionItem] = useState(null); // State for item in description modal
+    const cartIconRef = useRef(null); // Ref for the cart icon
 
     const increaseQuantity = (item) => {
         const updatedCart = cart.map((cartItem) =>
@@ -74,13 +77,81 @@ function ManageCoffeeShopMenu() {
         }
     };
 
-    const addToCart = (menuItem) => {
-        const existingItem = cart.find(item => item.id === menuItem.id);
-        if (existingItem) {
-            existingItem.quantity += 1;
-            setCart([...cart]);
+    const handleShowDescriptionModal = (item) => {
+        setCurrentDescriptionItem(item);
+        setShowDescriptionModal(true);
+    };
+
+    const handleCloseDescriptionModal = () => {
+        setShowDescriptionModal(false);
+        setCurrentDescriptionItem(null);
+    };
+
+    const addToCart = (menuItem, event) => {
+        let updatedCart;
+        const existingItemIndex = cart.findIndex(item => item.id === menuItem.id);
+
+        if (existingItemIndex > -1) {
+            updatedCart = cart.map((item, index) =>
+                index === existingItemIndex ? { ...item, quantity: item.quantity + 1 } : item
+            );
         } else {
-            setCart([...cart, { ...menuItem, quantity: 1 }]);
+            updatedCart = [...cart, { ...menuItem, quantity: 1 }];
+        }
+        setCart(updatedCart);
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
+
+        // Animation logic
+        if (event && cartIconRef.current) {
+            const sourceElement = event.currentTarget; // The button that was clicked
+            const cartElement = cartIconRef.current;
+
+            const sourceRect = sourceElement.getBoundingClientRect();
+            const cartRect = cartElement.getBoundingClientRect();
+
+            const flyingEl = document.createElement('div');
+            flyingEl.classList.add('flying-item');
+            flyingEl.textContent = menuItem.name; // Set text to menu item name
+            document.body.appendChild(flyingEl);
+
+            // Get dimensions of the flying element AFTER it has content and is in the DOM
+            const flyingElRect = flyingEl.getBoundingClientRect();
+
+            // Initial position (center of the source button, adjusted by half of flyingEl's actual size)
+            const initialLeft = sourceRect.left + sourceRect.width / 2 - flyingElRect.width / 2;
+            const initialTop = sourceRect.top + sourceRect.height / 2 - flyingElRect.height / 2;
+
+            flyingEl.style.left = `${initialLeft}px`;
+            flyingEl.style.top = `${initialTop}px`;
+            flyingEl.style.opacity = '1'; // Make it visible
+
+            // Force a reflow to apply initial styles before transitioning
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    // Target position (center of the cart icon, adjusted by half of flyingEl's scaled size)
+                    // The scale is 0.2, so the final visual size will be flyingElRect.width * 0.2
+                    const targetCenterX = cartRect.left + cartRect.width / 2;
+                    const targetCenterY = cartRect.top + cartRect.height / 2;
+
+                    const finalFlyingElWidth = flyingElRect.width * 0.2;
+                    const finalFlyingElHeight = flyingElRect.height * 0.2;
+                    
+                    const targetVisualLeft = targetCenterX - finalFlyingElWidth / 2;
+                    const targetVisualTop = targetCenterY - finalFlyingElHeight / 2;
+                    
+                    const deltaX = targetVisualLeft - initialLeft;
+                    const deltaY = targetVisualTop - initialTop;
+
+                    flyingEl.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.2)`;
+                    flyingEl.style.opacity = '0';
+                });
+            });
+
+            setTimeout(() => {
+                if (flyingEl.parentNode) {
+                    flyingEl.parentNode.removeChild(flyingEl);
+                }
+            }, 500); // Should match CSS transition duration
         }
     };
 
@@ -196,7 +267,7 @@ function ManageCoffeeShopMenu() {
                 </Button>
                 <h2 className="manage-coffee-title">Manage Coffee Shop Menu</h2>
                 <div className="cart-container">
-                    <FontAwesomeIcon icon={faShoppingCart} className="cart-icon" onClick={() => setShowCartModal(true)} />
+                    <FontAwesomeIcon ref={cartIconRef} icon={faShoppingCart} className="cart-icon" onClick={() => setShowCartModal(true)} />
                     {cart.length > 0 && (
                         <span className="cart-badge">{cart.length}</span>
                     )}
@@ -215,13 +286,44 @@ function ManageCoffeeShopMenu() {
                 <div className="menu-cards-container">
                     {menus.map((item, index) => (
                         <div className="menu-card" key={item.id}>
+                            <FontAwesomeIcon
+                                icon={faEdit}
+                                className="edit-icon" // Class for styling
+                                onClick={() => handleShowModal(item)} // Reuses existing modal for editing
+                                title="Edit Menu Item"
+                            />
+                            <FontAwesomeIcon 
+                                icon={faInfoCircle} 
+                                className="info-icon" 
+                                onClick={() => handleShowDescriptionModal(item)} 
+                                title="View Description"
+                            />
                             <h5>{item.name}</h5>
                             <p>Rp {parseFloat(item.price).toLocaleString('id-ID')}</p>
-                            <Button className="action-button mr-2" onClick={() => addToCart(item)}>Tambah</Button>
-                            <Button className="action-button delete-button" onClick={() => handleDelete(item.id)}>Hapus</Button>
+                            <div className="menu-card-actions"> {/* Wrapper for buttons */}
+                                <Button className="btn btn-add-to-cart" onClick={(e) => addToCart(item, e)}>Tambah</Button>
+                                <Button className="btn btn-delete" onClick={() => handleDelete(item.id)}>Hapus</Button>
+                            </div>
                         </div>
                     ))}
                 </div>
+            )}
+
+            {/* Description Modal */}
+            {currentDescriptionItem && (
+                <Modal show={showDescriptionModal} onHide={handleCloseDescriptionModal} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>{currentDescriptionItem.name} - Deskripsi</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <p>{currentDescriptionItem.description || 'Tidak ada deskripsi untuk item ini.'}</p>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleCloseDescriptionModal} className="action-button">
+                            Tutup
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             )}
 
             {/* Keranjang Popup */}
