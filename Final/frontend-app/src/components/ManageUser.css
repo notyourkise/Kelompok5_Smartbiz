@@ -276,3 +276,153 @@
 }
 
 /* Modal footer buttons already covered by general .modal-footer .btn-primary and .btn-secondary */
+
+/* Dark Theme Adjustments for ManageUser when inside Dashboard */
+.dark-theme-body .manage-user-container {
+  background-color: #1e1e1e; /* Match Dashboard's .main-content dark background */
+  color: #e0e0e0; /* Match Dashboard's .main-content dark text color */
+}
+
+.dark-theme-body .manage-user-header {
+  border-bottom: 1px solid #3a3a3a; /* Darker border */
+}
+
+.dark-theme-body .manage-user-title {
+  color: #ffffff; /* Adjusted title color for dark theme */
+}
+
+.dark-theme-body .back-button {
+  border: 1px solid #555;
+  color: #ccc;
+}
+.dark-theme-body .back-button:hover {
+  background-color: #333;
+  border-color: #777;
+  color: #fff;
+}
+
+.dark-theme-body .table-responsive {
+  background-color: #2a2a2a; /* Darker background for table area */
+  border: 1px solid #3a3a3a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.dark-theme-body .user-table {
+  background-color: #2a2a2a;
+  /* color: #e0e0e0;  Warna teks umum untuk tabel akan diatur oleh th dan td */
+}
+
+.dark-theme-body .user-table thead {
+  background-color: #333; /* Darker header for table */
+  border-bottom: 2px solid #107bc7;
+}
+
+.dark-theme-body .user-table th { /* Aturan spesifik untuk header cells */
+  color: #ffffff !important; /* Putih untuk teks header */
+}
+
+.dark-theme-body .user-table td { /* Aturan spesifik untuk data cells */
+  color: #e0e0e0 !important; /* Warna terang untuk teks sel data */
+  border-bottom: 1px solid #3a3a3a; /* Darker row separator */
+}
+
+.dark-theme-body .user-table tbody tr {
+  /* color: #d0d0d0; Tidak perlu jika td sudah diatur */
+}
+
+.dark-theme-body .table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #252525; /* Darker stripe */
+}
+
+.dark-theme-body .table-striped > tbody > tr:nth-of-type(even) {
+  background-color: #2a2a2a; /* Base dark for even rows */
+}
+
+.dark-theme-body .table-hover > tbody > tr:hover {
+  background-color: #383838; /* Darker hover for rows */
+  color: #f0f0f0;
+}
+
+.dark-theme-body .user-table td .btn-outline-primary {
+  border-color: #17a2b8;
+  color: #17a2b8;
+}
+.dark-theme-body .user-table td .btn-outline-primary:hover {
+  background-color: #17a2b8;
+  color: #ffffff;
+  border-color: #138496;
+}
+
+.dark-theme-body .user-table td .btn-outline-danger {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+.dark-theme-body .user-table td .btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: #ffffff;
+  border-color: #c82333;
+}
+
+.dark-theme-body .modal-content {
+  background-color: #2c2c2c;
+  color: #e0e0e0;
+  border: 1px solid #3a3a3a;
+}
+
+.dark-theme-body .modal-header {
+  border-bottom: 1px solid #107bc7;
+  color: #107bc7;
+}
+.dark-theme-body .modal-header .modal-title {
+  color: #107bc7;
+}
+
+.dark-theme-body .modal-header .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%); /* Make close button white */
+}
+
+.dark-theme-body .modal-body .form-label {
+  color: #c0c0c0;
+}
+
+.dark-theme-body .modal-body .form-control {
+  background-color: #333;
+  color: #e0e0e0;
+  border: 1px solid #555;
+}
+.dark-theme-body .modal-body .form-control::placeholder {
+  color: #888;
+}
+
+.dark-theme-body .modal-body .form-control:focus {
+  border-color: #107bc7;
+  background-color: #383838;
+  color: #e0e0e0;
+  box-shadow: 0 0 0 3px rgba(16, 123, 199, 0.25);
+}
+
+.dark-theme-body .modal-footer {
+  border-top: 1px solid #3a3a3a;
+  background-color: #252525;
+}
+
+/* Primary and Secondary buttons in modal footer for dark theme */
+.dark-theme-body .modal-footer .btn-primary {
+  background-color: #107bc7; /* Blue for dark theme primary */
+  border-color: #0d6aad;
+  color: #ffffff;
+}
+.dark-theme-body .modal-footer .btn-primary:hover {
+  background-color: #0d6aad;
+  border-color: #0b5a93;
+}
+
+.dark-theme-body .modal-footer .btn-secondary {
+  background-color: #444; /* Darker grey for secondary */
+  border-color: #555;
+  color: #e0e0e0;
+}
+.dark-theme-body .modal-footer .btn-secondary:hover {
+  background-color: #555;
+  border-color: #666;
+}

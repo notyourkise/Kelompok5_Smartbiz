@@ -2,11 +2,11 @@
 const express = require('express');
 const router = express.Router();
 const coffeeShopController = require('../controllers/coffeeShopController');
-const authenticateToken = require('../middleware/authMiddleware');
+const { protect: authenticateToken } = require('../middleware/authMiddleware'); // Changed this line
 // const checkRole = require('../middleware/roleMiddleware'); // Placeholder for role checking middleware
 
 // Middleware to apply authentication to all coffee shop routes
-router.use(authenticateToken);
+router.use(authenticateToken); // This will now correctly use the 'protect' function
 
 // Middleware for role checking (Admin and Superadmin) - Placeholder
 const checkAdminOrSuperAdmin = (req, res, next) => {

@@ -1,410 +1,568 @@
-/* Reset dasar & Font */
-body {
-  margin: 0;
-  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Font modern */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #f8f9fa; /* Warna latar belakang netral */
-  color: #212529; /* Warna teks default */
-}
-
-/* Layout Utama */
+/* General Dashboard Layout */
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
+  background-color: #f0f2f5; /* Light grey background for the whole page */
 }
 
-/* Sidebar */
+/* Sidebar Styling */
 .sidebar {
-  width: 250px;
-  background-color: #1a202c; /* Warna gelap untuk sidebar */
-  color: #e2e8f0; /* Warna teks terang */
-  padding: 1.5rem 0;
-  display: flex;
-  flex-direction: column;
-  position: fixed; /* Sidebar tetap */
-  height: 100%;
-  top: 0;
-  left: 0;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-  overflow-y: auto; /* Allow scrolling if content overflows */
+  width: 260px; /* Increased width for better spacing */
+  background-color: #001529; /* Dark blue, common for admin panels */
+  color: #fff;
+  padding-top: 0; /* Remove default padding */
+  position: fixed; /* Fixed position */
+  height: 100%; /* Full height */
+  overflow-y: auto; /* Scroll if content exceeds height */
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1); /* Subtle shadow */
 }
 
 .sidebar-header {
-  padding: 0 1.5rem 1.5rem 1.5rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #2d3748; /* Garis pemisah */
+  padding: 20px 15px; /* Consistent padding */
+  text-align: center;
+  border-bottom: 1px solid #00274e; /* Separator line */
+  margin-bottom: 10px; /* Space below header */
 }
 
 .sidebar-title {
-  color: #ffffff;
-  font-size: 1.5rem;
-  font-weight: 600;
-  text-align: center;
+  margin: 0;
+  font-size: 1.8rem; /* Larger title */
+  font-weight: bold;
+  color: #1890ff; /* Accent color for title */
 }
 
 .sidebar .nav-link {
-  color: #cbd5e0; /* Slightly lighter grey for better contrast on dark bg */
-  padding: 0.85rem 1.75rem; /* Increased padding for a more spacious feel */
-  margin: 0.3rem 0; /* Add small vertical margin */
-  display: flex;
-  align-items: center;
-  gap: 0.85rem; /* Slightly increased gap */
-  font-size: 0.98rem; /* Slightly larger font */
-  font-weight: 500; /* Medium weight for elegance */
-  transition: background-color 0.25s ease, color 0.25s ease,
-              border-left-color 0.25s ease, transform 0.25s ease,
-              box-shadow 0.25s ease; /* Added box-shadow to transition */
-  border-left: 4px solid transparent; /* Thicker indicator */
-  text-decoration: none;
-  cursor: pointer;
-  border-radius: 0 8px 8px 0; /* Rounded corners on the right side */
+  color: rgba(255, 255, 255, 0.8); /* Lighter text for links */
+  padding: 12px 20px; /* Increased padding */
+  display: flex; /* Align icon and text */
+  align-items: center; /* Vertically center icon and text */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border-left: 3px solid transparent; /* For active state indicator */
 }
 
 .sidebar .nav-link:hover {
-  background-color: #354152; /* Darker, richer hover */
-  color: #ffffff;
-  border-left-color: #79c0ff; /* Brighter, more vibrant blue */
-  transform: translateX(6px) scale(1.02); /* More pronounced pop */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0,0,0,0.15); /* 3D shadow */
+  background-color: #00274e; /* Darker shade on hover */
+  color: #fff; /* White text on hover */
 }
 
 .sidebar .nav-link.active {
-  background-color: #2c3e50; /* Elegant dark blue/slate */
-  color: #ffffff;
-  font-weight: 600; /* Bolder for active state */
-  border-left-color: #5fa8d3; /* A distinct, premium blue */
-  transform: translateX(3px) scale(1.01); /* Subtle active pop */
-  box-shadow: inset 3px 0 8px rgba(0,0,0,0.1), 0 2px 5px rgba(0,0,0,0.1); /* Inner shadow for depth */
+  background-color: #1890ff; /* Accent color for active link */
+  color: #fff; /* White text for active link */
+  border-left: 3px solid #fff; /* Active state indicator */
+  font-weight: 500; /* Slightly bolder for active link */
 }
 
-.sidebar .nav-link svg {
-  width: 18px; /* Ukuran ikon konsisten */
-  height: 18px;
-  flex-shrink: 0; /* Prevent icon shrinking */
+.sidebar-icon {
+  margin-right: 12px; /* Space between icon and text */
+  font-size: 1.1rem; /* Slightly larger icons */
 }
+
+/* Specific Icon Colors (Optional - for visual distinction) */
+.icon-dashboard { color: #ff6b6b; }
+.icon-finance { color: #4caf50; }
+.icon-kos { color: #2196f3; }
+.icon-coffee { color: #ff9800; }
+.icon-user { color: #9c27b0; }
+.icon-inventory { color: #795548; }
+.icon-about { color: #00bcd4; } /* Color for About icon */
 
 /* Main Content Area */
 .main-content {
+  margin-left: 260px; /* Same as sidebar width */
   flex-grow: 1;
-  margin-left: 250px; /* Sesuaikan dengan lebar sidebar */
-  padding: 2rem;
-  background-color: #f8f9fa; /* Latar belakang konten */
+  padding: 25px; /* Ample padding */
+  background-color: #fff; /* White background for content area */
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Pastikan footer di bawah */
 }
 
-/* Header di dalam Main Content */
+/* Header within Main Content */
 .main-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  background-color: #ffffff; /* Header putih */
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 15px 20px; /* Padding for header */
+  background-color: #fff; /* White background */
+  border-bottom: 1px solid #e8e8e8; /* Light separator */
+  margin-bottom: 25px; /* Space below header */
+  border-radius: 4px; /* Rounded corners */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Subtle shadow */
 }
 
 .header-welcome .welcome-message {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #2d3748;
-  margin: 0;
-  text-align: left; /* Align left */
-}
-.header-welcome .role-display {
-  font-size: 0.85rem;
-  color: #718096;
-  margin: 0;
-  font-style: normal;
-  text-align: left; /* Align left */
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 0.25rem; /* Reduced margin */
 }
 
-/* Dropdown User Modern */
-.user-dropdown-modern .dropdown-toggle {
-  background: none !important;
-  border: none !important;
-  padding: 0 !important;
-  box-shadow: none !important;
-  color: #4a5568; /* Warna ikon netral */
-  cursor: pointer;
-  display: flex;
-  align-items: center;
+.header-welcome .role-display {
+  font-size: 0.9rem;
+  color: #777;
+  font-style: italic;
 }
-.user-dropdown-modern .dropdown-toggle::after { display: none; }
-.user-dropdown-modern .dropdown-toggle:hover,
-.user-dropdown-modern .dropdown-toggle:focus { color: #2d3748; }
+
+.user-dropdown-modern .dropdown-toggle::after {
+  display: none; /* Hide default caret */
+}
+
+.user-dropdown-modern .dropdown-toggle {
+  padding: 0; /* Remove padding around icon */
+  border: none;
+  background: transparent;
+}
+
+.user-dropdown-modern .dropdown-toggle:focus {
+  box-shadow: none; /* Remove focus outline */
+}
 
 .user-dropdown-modern .dropdown-menu {
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border-radius: 6px;
-  margin-top: 0.5rem !important;
-  min-width: 150px; /* Ensure minimum width */
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Softer shadow */
+  border: none; /* Remove default border */
 }
+
 .user-dropdown-modern .dropdown-item {
-  color: #4a5568;
-  padding: 0.6rem 1.2rem;
   display: flex;
   align-items: center;
-  font-size: 0.9rem;
-  transition: background-color 0.2s ease, color 0.2s ease; /* Add transition */
+  padding: 10px 15px;
+  font-size: 0.95rem;
 }
-.user-dropdown-modern .dropdown-item:hover,
-.user-dropdown-modern .dropdown-item:focus {
-  background-color: #f1f5f9;
-  color: #1a202c;
-}
+
 .user-dropdown-modern .dropdown-icon {
-  margin-right: 0.75rem;
-  width: 16px;
-  text-align: center;
-  color: #718096; /* Warna ikon di dropdown */
-  flex-shrink: 0; /* Prevent icon shrinking */
-}
-.user-dropdown-modern .dropdown-item:hover .dropdown-icon,
-.user-dropdown-modern .dropdown-item:focus .dropdown-icon {
-  color: #1a202c;
+  margin-right: 10px;
+  color: #555;
 }
 
-
-/* Area Konten Dinamis */
+/* Content Area (where dynamic content is rendered) */
 .content-area {
-  flex-grow: 1;
+  flex-grow: 1; /* Takes up remaining space */
 }
 
 .content-area h3 {
-  font-size: 1.5rem;
+  margin-bottom: 20px; /* Space below section titles */
+  font-size: 1.6rem;
+  color: #333;
+  border-bottom: 2px solid #1890ff; /* Accent border for titles */
+  padding-bottom: 8px; /* Space for the border */
+  display: inline-block; /* To make border only as wide as text */
+}
+
+/* Modern Card Styling for Sub-menus (Finance, Inventory) */
+.dashboard-card-modern {
+  border: none; /* Remove default border */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Softer shadow */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  margin-bottom: 20px; /* Space between cards */
+}
+
+.dashboard-card-modern:hover {
+  transform: translateY(-5px); /* Slight lift on hover */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.dashboard-card-modern .card-body {
+  padding: 25px; /* More padding */
+  text-align: center; /* Center content */
+}
+
+.card-icon-modern {
+  font-size: 2.5rem; /* Larger icon */
+  margin-bottom: 15px;
+  color: #b46710; /* Accent color */
+}
+
+.dashboard-card-modern .card-title {
+  font-size: 1.3rem;
   font-weight: 600;
-  color: #2d3748;
-  margin-bottom: 1.5rem;
+  margin-bottom: 10px;
 }
 
-/* Filter Dropdown */
-#dropdown-filter {
+.dashboard-card-modern .card-text {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.dashboard-card-modern .btn {
+  padding: 10px 20px;
   font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  border-radius: 20px; /* Pill-shaped buttons */
 }
 
-/* Widget Statistik */
+/* Widget Card Styling (for Dashboard Stats) */
 .widget-card {
-  border: 1px solid #e9ecef; /* Softer border */
-  border-radius: 12px; /* Softer corners */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04); /* Softer, more subtle default shadow */
-  margin-bottom: 1.5rem; /* Increased spacing */
-  background-color: #ffffff; /* Widget background */
-  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
-              box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
-              border-color 0.3s ease-out; /* Smoother transition, added border-color */
-  overflow: hidden; /* Good practice if any inner elements might peek out during transform */
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  margin-bottom: 20px;
+  overflow: hidden; /* To contain the icon background */
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Added transition */
 }
 
 .widget-card:hover {
-  transform: scale(1.03) translateY(-7px); /* A balanced lift and scale */
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08), /* Main shadow */
-              0 8px 12px rgba(0, 0, 0, 0.06);   /* Secondary, closer shadow for depth */
-  border-color: #a0bfff; /* A soft, elegant blue accent for the border on hover */
-  z-index: 10; /* Ensure it's above other non-hovered cards */
+  transform: translateY(-5px); /* Lift effect on hover */
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12); /* Enhanced shadow on hover */
 }
 
 .widget-card .card-body {
   display: flex;
   align-items: center;
-  padding: 1.5rem; /* Increased padding */
+  padding: 20px;
 }
+
 .widget-icon {
-  width: 50px; /* Slightly larger */
-  height: 50px; /* Slightly larger */
-  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%; /* Circular icon background */
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 1.25rem; /* Increased margin */
-  color: #ffffff;
-  font-size: 1.6rem; /* Slightly larger icon font */
-  flex-shrink: 0; /* Prevent icon shrinking */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for the icon container */
+  margin-right: 20px;
+  color: #fff;
+  font-size: 1.8rem;
 }
-.widget-icon.bg-primary { background-color: #4299e1; }
-.widget-icon.bg-success { background-color: #48bb78; }
-.widget-icon.bg-info { background-color: #4fd1c5; }
-.widget-icon.bg-warning { background-color: #f6ad55; }
 
-.widget-content {
-  flex-grow: 1;
-}
+/* Icon background colors */
+.bg-primary { background-color: #007bff !important; }
+.bg-success { background-color: #28a745 !important; }
+.bg-danger { background-color: #dc3545 !important; } /* For expense */
+.bg-info { background-color: #17a2b8 !important; }
+.bg-warning { background-color: #ffc107 !important; }
+
+
 .widget-content .card-subtitle {
-  font-size: 0.825rem; /* Refined font size */
-  text-transform: uppercase;
-  letter-spacing: 0.6px; /* Adjusted letter spacing */
-  margin-bottom: 0.35rem; /* Adjusted margin */
-  color: #718096; /* Subtitle color */
-}
-.widget-content .widget-value {
-  font-size: 1.65rem; /* Refined font size */
-  font-weight: 600;
-  color: #1a202c; /* Darker, more impactful color */
-}
-
-/* Kartu Sub-menu (Keuangan/Inventaris) */
-.dashboard-card-modern {
-  border: 1px solid #e2e8f0; /* Subtle border for definition */
-  border-radius: 12px; /* Softer, more modern radius */
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* Softer, slightly more pronounced default shadow */
-  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
-              box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
-              border-color 0.3s ease-out;
-  background-color: #ffffff;
-  overflow: hidden; /* Ensure content fits rounded corners and shadows behave */
-  position: relative; /* For z-index stacking context */
-}
-.dashboard-card-modern:hover {
-  transform: scale(1.04) translateY(-8px); /* More noticeable pop */
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1),  /* Deeper main shadow */
-              0 8px 15px rgba(0, 0, 0, 0.07); /* Secondary shadow for richness */
-  border-color: #79c0ff; /* Elegant accent border on hover */
-  z-index: 15; /* Ensure it's above other elements */
-}
-.dashboard-card-modern .card-body {
-  text-align: center;
-  padding: 2rem 1.5rem; /* More vertical padding for a spacious feel */
-}
-.dashboard-card-modern .card-icon-modern {
-  font-size: 2.8rem; /* Slightly larger icon */
-  margin-bottom: 1.25rem;
-  color: #3b82f6; /* A richer blue, can be adjusted */
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.1); /* Subtle shadow for icon */
-}
-.dashboard-card-modern .card-title {
-  font-size: 1.2rem; /* Slightly larger title */
-  font-weight: 600; /* Bolder for emphasis */
-  margin-bottom: 0.75rem;
-  color: #1e293b; /* Darker, more premium title color */
-}
-.dashboard-card-modern .card-text {
-  font-size: 0.95rem; /* Slightly larger text */
-  color: #64748b; /* Softer grey for text */
-  margin-bottom: 1.5rem; /* More space before button */
-}
-.dashboard-card-modern .btn-primary {
-  background-color: #3b82f6; /* Match icon color or use a complementary one */
-  border-color: #3b82f6;
-  font-size: 0.95rem;
-  padding: 0.6rem 1.2rem; /* Slightly larger button */
-  font-weight: 500;
-  border-radius: 6px; /* Rounded button */
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.dashboard-card-modern .btn-primary:hover {
-  background-color: #2563eb; /* Darker shade on hover */
-  border-color: #2563eb;
-  transform: translateY(-2px); /* Slight lift on hover */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* Enhanced shadow on hover */
-}
-
-/* Footer */
-.main-content .footer {
-  margin-top: auto; /* Dorong footer ke bawah */
-  padding: 1.5rem 0 0.5rem 0; /* Adjust padding */
-  text-align: center;
   font-size: 0.85rem;
-  color: #a0aec0; /* Lighter footer text */
-  border-top: 1px solid #e2e8f0;
+  margin-bottom: 5px;
+  color: #6c757d; /* Muted text color */
 }
 
-/* Responsiveness */
-@media (max-width: 992px) {
-  .sidebar {
-    width: 200px; /* Smaller sidebar on medium screens */
-  }
-  .main-content {
-    margin-left: 200px;
-  }
+.widget-value {
+  font-size: 1.75rem; /* Larger value text */
+  font-weight: bold;
+  color: #343a40; /* Darker text for value */
 }
 
+/* Filter Dropdown */
+#dropdown-filter {
+  font-size: 0.85rem;
+}
+
+/* Alert Styling */
+.alert-danger {
+  font-size: 0.9rem;
+}
+
+/* Footer Styling */
+.footer {
+  text-align: center;
+  padding: 15px 0;
+  margin-top: auto; /* Pushes footer to the bottom of flex container */
+  border-top: 1px solid #e8e8e8;
+  font-size: 0.9rem;
+  color: #777;
+  background-color: #f8f9fa; /* Light background for footer */
+}
+
+/* About Page Specific Styling */
+.about-card {
+  margin-top: 20px;
+}
+
+.about-card .card-icon-modern {
+  color: #00bcd4; /* Specific color for About icon */
+}
+
+.about-card .card-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  text-align: left; /* Align text to left for readability */
+}
+
+.about-card h5 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #333;
+  text-align: left;
+}
+
+.contact-info p {
+  font-size: 1rem;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  text-align: left;
+}
+
+.contact-info p svg {
+  margin-right: 10px;
+  /* Default color removed, will be set by specific classes */
+}
+
+.contact-info p svg.whatsapp-icon {
+  color: #25D366; /* Green for WhatsApp */
+}
+
+.contact-info p svg.instagram-icon {
+  color: #000000; /* Black for Instagram */
+}
+
+.contact-info p svg.email-icon {
+  color: #D44638; /* Gmail-like red for Email */
+}
+
+.contact-info a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.contact-info a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .dashboard-layout {
-    flex-direction: column; /* Stack layout on mobile */
-  }
   .sidebar {
     width: 100%;
     height: auto;
-    position: static; /* Sidebar tidak fixed di mobile */
+    position: relative;
     box-shadow: none;
-    border-bottom: 1px solid #e2e8f0;
-    overflow-y: visible; /* Reset overflow */
   }
   .main-content {
     margin-left: 0;
-    padding: 1rem; /* Reduce padding on mobile */
+    padding: 15px;
   }
   .main-header {
     flex-direction: column;
     align-items: flex-start;
-    padding: 1rem;
-    border-radius: 0; /* Remove radius */
   }
   .header-welcome {
-    margin-bottom: 0.5rem;
-    width: 100%; /* Take full width */
+    margin-bottom: 10px;
   }
-   .header-welcome .welcome-message,
-   .header-welcome .role-display {
-     text-align: center; /* Center text */
-   }
   .user-dropdown-modern {
-    align-self: flex-end; /* Posisikan dropdown di kanan */
-    margin-top: 0.5rem; /* Add some space */
-  }
-  .content-area h3 {
-    font-size: 1.3rem; /* Smaller heading */
+    align-self: flex-end;
   }
   .widget-card .card-body {
-    padding: 1rem; /* Smaller padding */
+    flex-direction: column;
+    align-items: flex-start;
   }
   .widget-icon {
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
-  }
-  .widget-content .widget-value {
-    font-size: 1.3rem;
+    margin-right: 0;
+    margin-bottom: 10px;
   }
 }
 
-/* Sidebar Icon Styling */
-.sidebar-icon {
-  margin-right: 10px; /* Space between icon and text */
-  /* font-size: 1.1em; /* Optional: Adjust if needed */
-  vertical-align: middle; /* Better alignment with text */
+/* Dark Theme Styles */
+.dark-theme-body {
+  background-color: #1a1a1a; /* Dark background for the body */
+  color: #e0e0e0; /* Lighter text color for readability */
 }
 
-.icon-dashboard {
-  color: #007bff; /* Bootstrap primary blue */
+.dark-theme-body .dashboard-layout {
+  background-color: #121212; /* Slightly different dark for layout if needed */
 }
 
-.icon-finance {
-  color: #28a745; /* Bootstrap success green */
+.dark-theme-body .sidebar {
+  background-color: #001021; /* Slightly darker sidebar */
+  color: #c0c0c0; /* Adjust sidebar text color */
+  border-right: 1px solid #00203f; /* Darker border */
 }
 
-.icon-kos {
-  color: #17a2b8; /* Bootstrap info teal */
+.dark-theme-body .sidebar-header {
+  border-bottom: 1px solid #00203f; /* Darker separator */
 }
 
-.icon-coffee {
-  color: #6f4e37; /* Coffee brown */
+.dark-theme-body .sidebar-title {
+  color: #107bc7; /* Adjusted accent color for title */
 }
 
-.icon-user {
-  color: #ffc107; /* Bootstrap warning yellow/orange */
+.dark-theme-body .sidebar .nav-link {
+  color: rgba(220, 220, 220, 0.75); /* Lighter text for links */
 }
 
-.icon-inventory {
-  color: #6c757d; /* Bootstrap secondary grey */
+.dark-theme-body .sidebar .nav-link:hover {
+  background-color: #001f3d; /* Darker shade on hover */
+  color: #f0f0f0;
+}
+
+.dark-theme-body .sidebar .nav-link.active {
+  background-color: #107bc7; /* Adjusted accent color for active link */
+  color: #ffffff;
+  border-left: 3px solid #e0e0e0; /* Lighter active state indicator */
+}
+
+.dark-theme-body .main-content {
+  background-color: #1e1e1e; /* Dark background for content area */
+  color: #e0e0e0;
+}
+
+.dark-theme-body .main-header {
+  background-color: #2a2a2a; /* Darker header background */
+  border-bottom: 1px solid #3a3a3a; /* Darker separator */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.dark-theme-body .header-welcome .welcome-message {
+  color: #e0e0e0;
+}
+
+.dark-theme-body .header-welcome .role-display {
+  color: #b0b0b0;
+}
+
+.dark-theme-body .user-dropdown-modern .dropdown-menu {
+  background-color: #2c2c2c; /* Dark dropdown menu */
+  border: 1px solid #3a3a3a;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.dark-theme-body .user-dropdown-modern .dropdown-item {
+  color: #d0d0d0;
+}
+
+.dark-theme-body .user-dropdown-modern .dropdown-item:hover {
+  background-color: #383838;
+  color: #f0f0f0;
+}
+
+.dark-theme-body .user-dropdown-modern .dropdown-icon {
+  color: #b0b0b0;
+}
+
+.dark-theme-body .content-area h3 {
+  color: #e0e0e0;
+  border-bottom: 2px solid #107bc7; /* Adjusted accent border */
+}
+
+.dark-theme-body .dashboard-card-modern {
+  background-color: #252525; /* Darker card background */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.dark-theme-body .dashboard-card-modern:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+.dark-theme-body .card-icon-modern {
+  color: #107bc7; /* Adjusted accent color */
+}
+
+.dark-theme-body .dashboard-card-modern .card-title {
+  color: #e8e8e8;
+}
+
+.dark-theme-body .dashboard-card-modern .card-text {
+  color: #b0b0b0;
+}
+
+.dark-theme-body .widget-card {
+  background-color: #282828; /* Darker widget card background */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.dark-theme-body .widget-card:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
+
+/* Ensure general text within widget cards is light */
+.dark-theme-body .widget-card .card-body,
+.dark-theme-body .widget-card .widget-content {
+  color: #e0e0e0; /* General light text for widget content, changed from #ffffff to avoid all white */
+}
+
+.dark-theme-body .widget-content .card-subtitle,
+.dark-theme-body .widget-content .card-subtitle.text-muted { /* Targeting .text-muted specifically */
+  color: #e0e0e0 !important; /* Lighter color for subtitle and ensure it overrides Bootstrap */
+}
+
+.dark-theme-body .widget-value {
+  color: #ffffff; /* Brightest white for the main value for max contrast */
+}
+
+.dark-theme-body #dropdown-filter {
+  background-color: #333;
+  color: #e0e0e0;
+  border-color: #555;
+}
+.dark-theme-body #dropdown-filter:hover {
+  background-color: #444;
+}
+
+.dark-theme-body .dropdown-menu { /* General dropdown menu for filter */
+  background-color: #2c2c2c;
+  border: 1px solid #3a3a3a;
+}
+.dark-theme-body .dropdown-menu .dropdown-item {
+  color: #d0d0d0;
+}
+.dark-theme-body .dropdown-menu .dropdown-item:hover {
+  background-color: #383838;
+  color: #f0f0f0;
+}
+
+
+.dark-theme-body .alert-danger {
+  background-color: #521c22; /* Darker red for alerts */
+  color: #f8d7da;
+  border-color: #843534;
+}
+
+.dark-theme-body .footer {
+  background-color: #222; /* Darker footer */
+  color: #a0a0a0;
+  border-top: 1px solid #3a3a3a;
+}
+
+/* About Page Specific Styling in Dark Mode */
+.dark-theme-body .about-card {
+  background-color: #252525;
+}
+
+.dark-theme-body .about-card .card-icon-modern {
+  color: #00a8b5; /* Adjusted About icon color */
+}
+
+.dark-theme-body .about-card .card-text {
+  color: #c0c0c0;
+}
+
+.dark-theme-body .about-card h5 {
+  color: #d0d0d0;
+}
+
+.dark-theme-body .contact-info p {
+  color: #c0c0c0;
+}
+
+.dark-theme-body .contact-info a {
+  color: #17a2b8; /* Lighter blue for links */
+}
+
+/* Theme toggle button icon color in dark mode */
+.dark-theme-body .theme-toggle-btn .theme-icon {
+  color: #ffd700; /* Gold for Sun icon in dark mode */
+}
+
+/* Ensure Moon icon is visible in light mode if it was white */
+.theme-toggle-btn .theme-icon { /* Default for light mode */
+  color: #4a4a4a; /* Dark grey for Moon icon in light mode */
+}
+
+/* Ensure profile icon is visible */
+.dark-theme-body .profile-icon {
+    color: #e0e0e0; /* Light color for profile icon in dark mode */
+}
+.profile-icon { /* Default for light mode */
+    color: #333; /* Dark color for profile icon in light mode */
+}
+
+/* Clock Display Styling */
+.clock-display {
+  font-size: 0.9rem; /* Adjust size as needed */
+  color: #333; /* Default color for light theme */
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+.dark-theme-body .clock-display {
+  color: #e0e0e0; /* Light color for dark theme */
 }

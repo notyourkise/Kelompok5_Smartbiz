@@ -151,13 +151,7 @@ const ManageUser = () => {
       {/* Header with Back Button and Title */}
       <header className="manage-user-header">
         {/* Back Button with CSS class */}
-        <Button
-          variant="secondary" // Keep variant for base styling, override with class
-          onClick={handleBack}
-          className="back-button" // Apply CSS class
-        >
-          <FaArrowLeft />
-        </Button>
+        
         <h2 className="manage-user-title">Manajemen Pengguna</h2>{" "}
         {/* Add title */}
         {/* Create User Button */}

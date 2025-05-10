@@ -1,257 +1,690 @@
-/* src/components/ManageKos.css */
-
-/* Base container style from ManageInventaris.css */
-.manage-kost-finance-container {
+/* General Page Styling */
+.manage-kos-page {
+  background-color: #f8f9fa; /* Light grey background for the entire page */
   min-height: 100vh;
-  background-color: #ffffff; /* White background */
-  padding: 2.5rem;
-  color: #4d403A; /* Dark warm brown for text */
-  font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
+  font-family: "Poppins", sans-serif; /* A modern, clean font */
 }
 
-/* Header style similar to ManageInventaris.css */
-.manage-kost-finance-header {
+.py-4 {
+  padding-top: 2rem !important;
+  padding-bottom: 2rem !important;
+}
+
+/* Page Title */
+.page-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #343a40; /* Dark grey for titles */
+  margin-bottom: 0; /* Adjusted by Row alignment */
+}
+
+/* Back Button */
+.back-button {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #495057;
+  border: 1px solid #ced4da;
+  background-color: #fff;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #e9ecef;
+  color: #343a40;
+}
+
+.back-button svg {
+  margin-right: 8px;
+}
+
+/* Main Content Card */
+.main-content-card {
+  border: none;
+  border-radius: 12px; /* Softer, more modern radius */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* Elegant shadow */
+  background-color: #ffffff; /* Clean white background */
+  overflow: hidden; /* Ensures child elements respect border radius */
+}
+
+.card-header-flex {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #4b5a6a;
+  padding: 1.25rem 1.5rem; /* Generous padding */
+  background-color: #ffffff; /* Header background */
+  border-bottom: 1px solid #e9ecef; /* Subtle separator */
 }
 
-.manage-kost-finance-title {
-  color: #5d4037;
-  font-weight: bold;
-  font-size: 2rem;
+.card-title-custom {
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #007bff; /* Primary color for card titles */
+  margin-bottom: 0;
 }
 
-/* Button styles from ManageInventaris.css */
-.action-button,
-.manage-kost-finance-header .btn-success { /* Target "Tambah Kamar" specifically if it uses .btn-success */
-  background-color: transparent;
-  border: 1px solid #66fcf1;
-  color: #66fcf1;
-  padding: 0.6rem 1.2rem;
-  border-radius: 20px;
-  font-weight: bold;
-  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
-  display: inline-flex; /* Ensure flex for icon alignment */
+.add-room-button {
+  font-size: 0.9rem;
+  border-radius: 20px; /* Pill shape */
+  padding: 0.5rem 1.25rem;
+  display: flex;
   align-items: center;
-  gap: 0.5rem; 
-  text-decoration: none;
-  cursor: pointer;
+  gap: 0.5rem;
+  background-color: #007bff;
+  border-color: #007bff;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.action-button:hover,
-.manage-kost-finance-header .btn-success:hover {
-  background-color: #66fcf1;
-  color: #1f2833;
-  transform: scale(1.05);
+.add-room-button:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
 }
 
-.back-icon { /* This is the FaArrowLeft component */
-  background-color: #4b5a6a; 
-  border: 1px solid #6c757d;
-  color: #c5c6c7;
-  padding: 0.6rem; 
-  width: 45px; 
-  height: 45px;
-  border-radius: 10px;
-  display: flex; /* Use flex for centering icon */
-  justify-content: center;
-  align-items: center;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  cursor: pointer; /* Add cursor pointer */
+.main-content-card .card-body {
+  padding: 1.5rem; /* Consistent padding */
 }
 
-.back-icon:hover {
-  background-color: #6c757d;
-  transform: scale(1.1);
-}
-
-/* Table Styles (Adapted from .inventaris-table in ManageInventaris.css) */
-.table-responsive {
-  margin-top: 2rem; 
-  /* Remove card-like background from previous attempt to match ManageInventaris.css */
-}
-
-.finance-table { /* Using finance-table class from ManageKos.jsx */
+/* Table Styling */
+.kos-table {
+  border-collapse: separate; /* Allows for border-radius on cells if needed */
+  border-spacing: 0;
   width: 100%;
-  border-collapse: collapse; /* As per typical table styling */
-  margin-top: 15px; /* From original ManageKos.css */
-  background-color: #2c3e50; /* From .inventaris-table */
-  color: #c5c6c7; /* From .inventaris-table */
-  border: 1px solid #4b5a6a; /* From .inventaris-table */
-  border-radius: 8px; /* From .inventaris-table */
-  overflow: hidden; /* From .inventaris-table */
+  margin-bottom: 0; /* Remove default table margin */
 }
 
-.finance-table thead {
-  background-color: #1f2833; /* From .inventaris-table thead */
-  color: #66fcf1; /* From .inventaris-table thead */
-}
-
-.finance-table th,
-.finance-table td {
+.table-header-custom tr th {
+  background-color: #e9ecef; /* Light header background */
+  color: #495057; /* Header text color */
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #dee2e6; /* Stronger bottom border for header */
+  padding: 0.9rem 1rem;
   vertical-align: middle;
-  padding: 0.8rem 1rem; /* From .inventaris-table cells */
-  border-color: #4b5a6a; /* From .inventaris-table cells */
-  text-align: left; /* Common default */
 }
 
-.finance-table th {
-  font-weight: bold; /* Common for table headers */
+.kos-table tbody tr {
+  transition: background-color 0.15s ease-in-out;
 }
 
-/* Striped rows from .inventaris-table */
-.finance-table tbody tr:nth-of-type(odd) > * {
-  background-color: rgba(75, 90, 106, 0.5);
-  color: #c5c6c7; /* Ensure text color remains consistent */
+.kos-table tbody tr:hover {
+  background-color: #f1f3f5; /* Subtle hover effect for rows */
 }
 
-/* Hover effect for rows from .inventaris-table */
-.finance-table tbody tr:hover > * {
-  background-color: #45a29e;
-  color: #1f2833;
+.kos-table td {
+  padding: 0.9rem 1rem;
+  vertical-align: middle;
+  font-size: 0.95rem;
+  color: #495057;
+  border-bottom: 1px solid #e9ecef; /* Light border for rows */
 }
 
-/* Table Action Buttons (Edit/Delete) */
-.finance-table td .btn {
-  margin-right: 0.5rem;
-  padding: 0.4rem 0.8rem; /* Make them a bit smaller */
-  font-size: 0.85rem;
-  border-radius: 15px; /* Match .action-button style more closely */
-  font-weight: normal; /* Default bootstrap outline buttons are not bold */
-}
-.finance-table td .btn:last-child {
-  margin-right: 0;
+.kos-table tbody tr:last-child td {
+  border-bottom: none; /* Remove border for the last row */
 }
 
-.finance-table td .btn-outline-primary { /* Edit Button - Blue */
-  border-color: #3498db; /* Bright blue */
-  color: #3498db;
-}
-.finance-table td .btn-outline-primary:hover {
-  background-color: #3498db;
-  color: #ffffff; /* White text on blue background */
-}
-
-.finance-table td .btn-outline-danger { /* Delete Button - Red */
-  border-color: #e74c3c; 
-  color: #e74c3c;
-}
-.finance-table td .btn-outline-danger:hover {
-  background-color: #e74c3c;
-  color: #ffffff;
-  border-color: #c0392b; /* Slightly darker red border on hover */
-}
-.finance-table td .btn svg { 
-  margin-right: 0.3rem;
+/* Availability Status */
+.availability-status {
+  padding: 0.3rem 0.75rem;
+  border-radius: 15px; /* Pill shape */
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-block;
 }
 
-
-/* Modal styles (From ManageInventaris.css) */
-.modal-content {
-  background-color: #1f2833; 
-  color: #c5c6c7;
-  border: 1px solid #4b5a6a;
-  border-radius: 10px;
+.availability-status.available {
+  background-color: rgba(40, 167, 69, 0.1); /* Light green */
+  color: #28a745; /* Green text */
 }
 
-.modal-header {
-  border-bottom: 1px solid #4b5a6a;
-  color: #66fcf1; 
+.availability-status.unavailable {
+  background-color: rgba(220, 53, 69, 0.1); /* Light red */
+  color: #dc3545; /* Red text */
 }
 
-.modal-header .btn-close {
-  filter: invert(1) grayscale(100%) brightness(200%); 
+/* Action Buttons in Table */
+.action-buttons .btn {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 6px; /* Slightly rounded buttons */
 }
 
-.modal-body {
+.action-button-edit {
+  color: #17a2b8;
+  border-color: #17a2b8;
+}
+.action-button-edit:hover {
+  background-color: #17a2b8;
+  color: #fff;
+}
+
+.action-button-delete {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+.action-button-delete:hover {
+    background-color: #c82333; /* Darker red on hover */
+    border-color: #bd2130;
+}
+
+/* Styling untuk ikon info riwayat pembayaran */
+.kos-room-payment-history-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5rem; /* Sesuaikan ukuran ikon */
+    color: #007bff; /* Warna ikon, bisa disesuaikan */
+    cursor: pointer;
+    z-index: 10; /* Pastikan ikon di atas elemen lain */
+}
+
+.kos-room-payment-history-icon:hover {
+    color: #0056b3; /* Warna ikon saat hover */
+}
+
+/* Styling untuk tabel riwayat pembayaran */
+.payment-history-table th,
+.payment-history-table td {
+    vertical-align: middle;
+    text-align: center;
+}
+
+.payment-history-table thead th {
+    background-color: #f8f9fa; /* Warna header tabel */
+}
+
+/* Styling untuk badge status pembayaran */
+.payment-status-badge {
+    padding: 0.3em 0.6em;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    font-size: 0.85em;
+    color: #fff;
+}
+
+.payment-status-badge.status-lunas {
+    background-color: #28a745; /* Hijau untuk Lunas */
+}
+
+.payment-status-badge.status-belum-bayar {
+    background-color: #dc3545; /* Merah untuk Belum Bayar */
+}
+
+.payment-status-badge.status-pending,
+.payment-status-badge.status-menunggu-konfirmasi {
+    background-color: #ffc107; /* Kuning untuk status lain */
+    color: #212529; /* Teks gelap untuk kontras */
+}
+
+.no-data-message {
+  color: #6c757d;
+  font-style: italic;
+  padding: 2rem !important;
+}
+
+/* Modal Styling */
+.modal-header-custom {
+  background-color: #007bff; /* Primary color for modal header */
+  color: #fff;
+  border-bottom: none;
+  padding: 1rem 1.5rem;
+}
+
+.modal-header-custom .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%); /* White close button */
+}
+
+.modal-title-custom {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.modal-body-custom {
   padding: 1.5rem;
+  background-color: #fff;
 }
 
-.modal-body .form-label {
-  color: #c5c6c7; /* Default text color for modal, not #0080ff from ManageInventaris */
+.form-label-custom {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
 }
 
-.modal-body .form-control {
-  background-color: #2c3e50;
-  color: #ffffff;
-  border: 1px solid #4b5a6a;
-  border-radius: 5px; 
+.form-control-custom {
+  border-radius: 6px; /* Consistent border radius */
+  border: 1px solid #ced4da;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.modal-body .form-control::placeholder {
-  color: #8a9a9a;
+.form-control-custom:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-.modal-body .form-control:focus {
-  border-color: #66fcf1; /* Using #66fcf1 for consistency, not #00ffee */
-  background-color: #2c3e50; 
-  color: #ffffff;
-  box-shadow: none;
+.form-check-custom .form-check-input {
+  border-radius: 0.25em; /* Standard switch radius */
 }
-.modal-body .form-check-input { /* Basic styling for checkbox */
-  border-color: #4b5a6a;
-}
-.modal-body .form-check-input:checked {
-  background-color: #66fcf1;
-  border-color: #66fcf1;
-}
-.modal-body .form-check-label {
-  color: #c5c6c7;
+.form-check-custom .form-check-label {
+  font-size: 0.95rem;
+  color: #495057;
 }
 
-
-.modal-footer {
-  border-top: 1px solid #4b5a6a;
+.modal-footer-custom {
+  background-color: #f8f9fa; /* Light grey footer */
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
 }
 
-/* Modal footer buttons from ManageInventaris.css */
-.modal-footer .btn-primary {
-  background-color: #66fcf1;
-  border-color: #66fcf1;
-  color: #1f2833;
-  font-weight: bold;
-  border-radius: 20px; /* Match .action-button */
-  padding: 0.6rem 1.2rem;
-}
-.modal-footer .btn-primary:hover {
-  background-color: #45a29e; /* Slightly different hover from .action-button, as per ManageInventaris */
-  border-color: #45a29e;
-  color: #1f2833; /* Keep text color consistent on hover */
+.modal-footer-custom .button-cancel,
+.modal-footer-custom .button-save {
+  font-size: 0.9rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 20px; /* Pill shape */
 }
 
-.modal-footer .btn-secondary {
-  color: #c5c6c7;
-  background-color: #4b5a6a;
-  border-color: #6c757d; /* ManageInventaris has #ffffff, using #6c757d for consistency */
-  font-weight: bold;
-  border-radius: 20px; /* Match .action-button */
-  padding: 0.6rem 1.2rem;
+.modal-footer-custom .button-cancel {
+  border-color: #6c757d;
+  color: #6c757d;
 }
-.modal-footer .btn-secondary:hover {
+.modal-footer-custom .button-cancel:hover {
   background-color: #6c757d;
-  color: #ffffff;
+  color: #fff;
 }
 
-/* Loading and Error Message Styles */
-.loading {
-  text-align: center;
-  font-size: 1.2em;
-  color: #66fcf1; /* Accent color for loading */
-  margin-top: 20px;
+.modal-footer-custom .button-save {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+.modal-footer-custom .button-save:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
 }
 
-.error-message {
-  background-color: #dc3545; /* Red background for errors */
-  color: white;
-  border: 1px solid #c82333;
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 15px;
-  text-align: center;
+/* Error Message */
+.alert-danger {
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+/* Footer (if you have a global footer style, this might not be needed or can be adjusted) */
+/* Assuming Footer component has its own styling, or you can add specific styles here if needed */
+
+/* Kos Room Card Styling */
+.kos-room-card {
+  border: 1px solid #e0e0e0; /* Lighter border */
+  border-top: 4px solid #007bff; /* Accent top border */
+  border-radius: 10px; /* Slightly less rounded for a sharper look */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* Softer, more subtle shadow */
+  transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Ensures top border is contained */
+  position: relative; /* Needed for absolute positioning of info icon */
+}
+
+.kos-room-info-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5rem; /* Ukuran ikon */
+  color: #007bff; /* Warna ikon, bisa disesuaikan */
+  cursor: pointer;
+  z-index: 10; /* Pastikan ikon di atas elemen lain */
+  transition: color 0.2s ease-in-out;
+}
+
+.kos-room-info-icon:hover {
+  color: #0056b3; /* Warna ikon saat hover */
+}
+
+.kos-room-card:hover {
+  transform: translateY(-5px); /* Slightly more lift */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Enhanced shadow on hover */
+}
+
+.kos-room-card .card-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 1.5rem; /* Increased padding */
+}
+
+.kos-room-card-title {
+  font-size: 1.25rem; /* Slightly larger title */
+  font-weight: 600;
+  color: #212529; /* Darker title for better contrast */
+  margin-bottom: 0.6rem;
+}
+
+.kos-room-card-price {
+  font-size: 1.3rem; /* More prominent price */
+  color: #212529; /* Theme-based text color */
+  font-weight: 700; /* Bolder price */
+  margin-bottom: 1rem;
+}
+
+.kos-room-card-availability-label {
+  color: #212529; /* Theme-based text color */
+  font-weight: 600; /* Consistent with other labels */
+}
+
+.kos-room-card-facilities {
+  font-size: 0.9rem; /* Slightly larger facility text */
+  color: #5a6268; /* Slightly darker muted text */
+  margin-bottom: 1.25rem; /* More space below facilities */
+  line-height: 1.6;
+  flex-grow: 1;
+}
+
+.kos-room-card-facilities .facility-icon {
+  color: #007bff; /* Icon color matches primary */
+  font-size: 1.1rem; /* Slightly larger icon */
+}
+
+.kos-room-card-facilities .facility-text {
+  font-size: 0.88rem;
+  color: #6c757d;
+}
+
+.action-buttons-card {
+  margin-top: auto;
+}
+
+.action-buttons-card .btn {
+  padding: 0.45rem 0.9rem; /* Slightly larger buttons */
+  font-size: 0.85rem;
+  border-radius: 6px;
+}
+/* End Kos Room Card Styling */
+
+/* Dark Theme Adjustments for ManageKos when inside Dashboard */
+.dark-theme-body .manage-kos-page {
+  background-color: #1e1e1e; /* Match Dashboard's .main-content dark background */
+  color: #e0e0e0;
+}
+
+.dark-theme-body .page-title {
+  color: #e0e0e0;
+}
+
+.dark-theme-body .back-button {
+  color: #ccc;
+  border: 1px solid #555;
+  background-color: #2a2a2a;
+}
+.dark-theme-body .back-button:hover {
+  background-color: #333;
+  color: #fff;
+  border-color: #777;
+}
+
+.dark-theme-body .main-content-card {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  background-color: #2a2a2a; /* Darker card background */
+}
+
+.dark-theme-body .card-header-flex {
+  background-color: #2a2a2a;
+  border-bottom: 1px solid #3a3a3a; /* Darker separator */
+}
+
+.dark-theme-body .card-title-custom {
+  color: #ffffff; /* Adjusted primary color for dark theme */
+}
+
+.dark-theme-body .add-room-button {
+  background-color: #754804;
+  border-color: #107bc7;
+}
+.dark-theme-body .add-room-button:hover {
+  background-color: #0d6aad;
+  border-color: #0d6aad;
+}
+
+/* Dark Theme for Kos Room Cards */
+.dark-theme-body .kos-room-card {
+  background-color: #30343a; /* Darker card background */
+  border: 1px solid #4a4e54; /* Darker border */
+  border-top: 4px solid #c4761c; /* Accent top border for dark theme (e.g., info color) */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Adjusted shadow for dark theme */
+}
+
+.dark-theme-body .kos-room-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.dark-theme-body .kos-room-card-title {
+  color: #e9ecef; /* Lighter title for dark theme */
+}
+
+.dark-theme-body .kos-room-card-price {
+  color: #e9ecef !important; /* Theme-based text color for dark theme */
+}
+
+.dark-theme-body .kos-room-card-availability-label {
+  color: #e9ecef; /* Theme-based text color for dark theme */
+}
+
+.dark-theme-body .kos-room-card-facilities {
+  color: #adb5bd; /* Lighter muted text for dark theme */
+}
+
+.dark-theme-body .kos-room-card-facilities .facility-icon {
+  color: #58a6ff; /* Icon color matches dark theme primary */
+}
+
+.dark-theme-body .kos-room-card-facilities .facility-text {
+  color: #adb5bd;
+}
+
+.dark-theme-body .kos-room-info-icon {
+  color: #58a6ff; /* Warna ikon info untuk tema gelap */
+}
+
+.dark-theme-body .kos-room-info-icon:hover {
+  color: #82baff; /* Warna ikon info saat hover untuk tema gelap */
+}
+
+/* Styling untuk ringkasan penghuni di card */
+.occupant-summary {
+  font-size: 0.8rem;
+  color: #6c757d;
+  border-top: 1px dashed #e0e0e0;
+  padding-top: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.occupant-summary p {
+  margin-bottom: 0.25rem;
+}
+
+.dark-theme-body .occupant-summary {
+  color: #adb5bd;
+  border-top: 1px dashed #4a4e54;
+}
+
+/* Styling untuk tombol hapus data penghuni di modal */
+.modal-footer-custom .button-delete-occupant {
+  font-size: 0.9rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 20px; /* Pill shape */
+  /* Warna akan mengikuti variant outline-danger */
+}
+
+.dark-theme-body .modal-footer-custom .button-delete-occupant {
+  /* Jika perlu penyesuaian khusus untuk dark theme */
+  /* Contoh:
+  border-color: #a04040;
+  color: #f8d7da;
+  background-color: transparent; */
+}
+
+/* Pastikan dropdown di modal detail penghuni konsisten */
+#dropdown-payment-status.form-control-custom {
+  text-align: left; /* Align text to left like other inputs */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dark-theme-body #dropdown-payment-status.form-control-custom {
+  background-color: #333;
+  color: #e0e0e0;
+  border: 1px solid #555;
+}
+
+.dark-theme-body #dropdown-payment-status.form-control-custom:focus,
+.dark-theme-body #dropdown-payment-status.form-control-custom:hover {
+  border-color: #107bc7; /* Sesuai dengan focus form control lain */
+}
+
+.dark-theme-body .dropdown-menu {
+  background-color: #333;
+  border-color: #555;
+}
+
+.dark-theme-body .dropdown-menu .dropdown-item {
+  color: #e0e0e0;
+}
+
+.dark-theme-body .dropdown-menu .dropdown-item:hover,
+.dark-theme-body .dropdown-menu .dropdown-item:focus {
+  background-color: #444;
+  color: #fff;
+}
+
+
+/* End Dark Theme for Kos Room Cards */
+
+.dark-theme-body .kos-table {
+  /* Pastikan tabel itu sendiri tidak memiliki latar belakang putih yang mengganggu */
+  background-color: transparent; /* Atau warna dasar gelap jika diperlukan */
+}
+
+.dark-theme-body .kos-table tbody tr {
+  background-color: transparent !important; /* Coba paksa tr menjadi transparan */
+}
+
+.dark-theme-body .table-header-custom tr th {
+  background-color: #333; /* Darker header background */
+  color: #c0c0c0; /* Lighter header text */
+  border-bottom: 2px solid #744807; /* Accent border */
+}
+
+.dark-theme-body .kos-table tbody tr:hover {
+  background-color: #383838; /* Darker hover for rows */
+}
+
+.dark-theme-body .kos-table td {
+  background-color: #2a2a2a !important; /* Warna latar belakang gelap untuk sel data */
+  color: #d0d0d0 !important; /* Warna teks terang */
+  border-bottom: 1px solid #3a3a3a !important; /* Darker row border */
+}
+
+.dark-theme-body .kos-table tbody tr:hover td {
+  background-color: #383838 !important; /* Warna latar belakang hover yang lebih gelap untuk sel data */
+}
+
+.dark-theme-body .availability-status.available {
+  background-color: rgba(
+    40,
+    167,
+    69,
+    0.2
+  ); /* Slightly more opaque for dark bg */
+  color: #63e6be; /* Lighter green text */
+}
+
+.dark-theme-body .availability-status.unavailable {
+  background-color: rgba(220, 53, 69, 0.2); /* Slightly more opaque */
+  color: #ffa8a8; /* Lighter red text */
+}
+
+.dark-theme-body .action-button-edit {
+  color: #17a2b8;
+  border-color: #17a2b8;
+}
+.dark-theme-body .action-button-edit:hover {
+  background-color: #17a2b8;
+  color: #fff;
+}
+
+.dark-theme-body .action-button-delete {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+.dark-theme-body .action-button-delete:hover {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.dark-theme-body .no-data-message {
+  color: #a0a0a0;
+}
+
+.dark-theme-body .modal-header-custom {
+  background-color: #107bc7; /* Consistent dark theme primary */
+  color: #fff;
+}
+
+.dark-theme-body .modal-body-custom {
+  background-color: #2c2c2c; /* Dark modal body */
+}
+
+.dark-theme-body .form-label-custom {
+  color: #c0c0c0;
+}
+
+.dark-theme-body .form-control-custom {
+  background-color: #333;
+  color: #e0e0e0;
+  border: 1px solid #555;
+}
+.dark-theme-body .form-control-custom:focus {
+  border-color: #107bc7;
+  box-shadow: 0 0 0 0.2rem rgba(16, 123, 199, 0.25);
+}
+
+.dark-theme-body .form-check-custom .form-check-label {
+  color: #c0c0c0;
+}
+
+.dark-theme-body .modal-footer-custom {
+  background-color: #252525; /* Darker footer */
+  border-top: 1px solid #3a3a3a;
+}
+
+.dark-theme-body .modal-footer-custom .button-cancel {
+  border-color: #6c757d;
+  color: #c0c0c0;
+  background-color: #444;
+}
+.dark-theme-body .modal-footer-custom .button-cancel:hover {
+  background-color: #555;
+  color: #fff;
+}
+
+.dark-theme-body .modal-footer-custom .button-save {
+  background-color: #107bc7;
+  border-color: #107bc7;
+}
+.dark-theme-body .modal-footer-custom .button-save:hover {
+  background-color: #0d6aad;
+  border-color: #0d6aad;
+}
+
+.dark-theme-body .alert-danger {
+  background-color: #521c22;
+  color: #f8d7da;
+  border-color: #843534;
 }

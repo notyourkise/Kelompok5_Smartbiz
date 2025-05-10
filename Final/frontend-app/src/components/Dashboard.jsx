@@ -1,209 +1,354 @@
-import React, { useState, useEffect } from 'react'; // Import useEffect
-import { useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Nav, Card, Dropdown, Button, Spinner } from 'react-bootstrap'; // Tambahkan Spinner
+import React, { useState, useEffect } from "react"; // Import useEffect
+import { useNavigate } from "react-router-dom";
 import {
-  FaTachometerAlt, FaDollarSign, FaBed, FaCoffee, FaUser, FaBox, FaSignOutAlt, FaUserCircle, FaFilter, FaWarehouse, FaStore, FaExclamationCircle // Tambahkan ikon baru
-} from 'react-icons/fa';
-import axios from 'axios'; // Import axios
-import Footer from './Footer';
-import './Dashboard.css'; // Pastikan CSS diimpor
+  Container,
+  Row,
+  Col,
+  Nav,
+  Card,
+  Dropdown,
+  Button,
+  Spinner,
+} from "react-bootstrap"; // Tambahkan Spinner
+import {
+  FaTachometerAlt,
+  FaDollarSign,
+  FaBed,
+  FaCoffee,
+  FaUser,
+  FaBox,
+  FaSignOutAlt,
+  FaUserCircle,
+  FaFilter,
+  FaWarehouse,
+  FaStore,
+  FaExclamationCircle,
+  FaInfoCircle,
+  FaWhatsapp,
+  FaInstagram,
+  FaEnvelope, // Tambahkan ikon baru
+  FaMoon, // Ikon untuk dark mode
+  FaSun, // Ikon untuk light mode
+} from "react-icons/fa";
+import axios from "axios"; // Import axios
+import Footer from "./Footer";
+import ManageUser from "./ManageUser"; // Impor ManageUser
+import ManageKos from "./ManageKos"; // Impor ManageKos
+import ManageCoffeeShopMenu from "./ManageCoffeeShopMenu"; // Impor ManageCoffeeShopMenu
+import "./Dashboard.css"; // Pastikan CSS diimpor
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [activeView, setActiveView] = useState('dashboard');
+  const [activeView, setActiveView] = useState("dashboard");
+  const [theme, setTheme] = useState("dark"); // 'light' or 'dark'
+  const [timeFilter, setTimeFilter] = useState("thisMonth"); // Default filter
+  const [currentTimeString, setCurrentTimeString] = useState("");
+
+  // Helper function to apply date filtering on the frontend
+  const getFilteredTransactionsByDate = (transactions, filterType) => {
+    if (!Array.isArray(transactions)) return [];
+    const now = new Date();
+    let startDate = new Date(now); // Initialize startDate
+    let endDate = new Date(now);   // Initialize endDate
+
+    endDate.setHours(23, 59, 59, 999); // End of current day for all filters
+
+    switch (filterType) {
+      case "today":
+        startDate.setHours(0, 0, 0, 0); // Start of current day
+        break;
+      case "last7days":
+        startDate.setDate(now.getDate() - 6); // Today and previous 6 days
+        startDate.setHours(0, 0, 0, 0);
+        break;
+      case "thisMonth":
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1); // First day of current month
+        startDate.setHours(0, 0, 0, 0);
+        // endDate remains end of current day
+        break;
+      case "thisYear":
+        startDate = new Date(now.getFullYear(), 0, 1); // First day of current year
+        startDate.setHours(0, 0, 0, 0);
+        // endDate remains end of current day
+        break;
+      default:
+        // If filterType is 'allTime' or unknown, or if no case matches, return an empty array.
+        console.warn(`Unhandled filterType in getFilteredTransactionsByDate: ${filterType}`);
+        return []; 
+    }
+
+    return transactions.filter(t => {
+      if (!t.created_at || typeof t.created_at !== 'string') {
+        // console.warn('Invalid or missing created_at for transaction:', t);
+        return false;
+      }
+      
+      // Robust date parsing for "YYYY-MM-DD HH:MM:SS" format
+      let transactionDate;
+      const dateTimeParts = t.created_at.split(" ");
+      if (dateTimeParts.length === 2) {
+        const dateParts = dateTimeParts[0].split("-");
+        const timeParts = dateTimeParts[1].split(":");
+        if (dateParts.length === 3 && timeParts.length === 3) {
+          const year = parseInt(dateParts[0], 10);
+          const month = parseInt(dateParts[1], 10) - 1; // JavaScript months are 0-indexed
+          const day = parseInt(dateParts[2], 10);
+          const hour = parseInt(timeParts[0], 10);
+          const minute = parseInt(timeParts[1], 10);
+          const second = parseInt(timeParts[2], 10);
+          
+          // Check if all parts are valid numbers
+          if (![year, month, day, hour, minute, second].some(isNaN)) {
+            transactionDate = new Date(year, month, day, hour, minute, second);
+          }
+        }
+      }
+
+      if (!transactionDate || isNaN(transactionDate.getTime())) {
+        // console.warn('Failed to parse created_at string to valid date:', t.created_at, t);
+        return false; // If date is invalid or parsing failed, exclude it
+      }
+      
+      return transactionDate >= startDate && transactionDate <= endDate;
+    });
+  };
+
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  };
+
   const [stats, setStats] = useState({
     totalUsers: null,
-    monthlyIncome: null, 
-    monthlyExpense: null, // Added for this month's expenses
+    monthlyIncome: "Rp 0", // Initialize to Rp 0 for clearer debugging
+    monthlyExpense: "Rp 0", // Initialize to Rp 0 for clearer debugging
     availableRooms: null,
     menuItems: null,
     loading: true,
     error: null,
   });
 
-  const username = localStorage.getItem('username');
-  const role = localStorage.getItem('role');
-  const token = localStorage.getItem('token'); // Ambil token
+  const handleTimeFilterChange = (filter) => {
+    setTimeFilter(filter);
+  };
+
+  // useEffect to apply theme class to body
+  useEffect(() => {
+    if (theme === "dark") {
+      document.body.classList.add("dark-theme-body");
+    } else {
+      document.body.classList.remove("dark-theme-body");
+    }
+    // Cleanup function to remove the class when the component unmounts or theme changes to light
+    return () => {
+      document.body.classList.remove("dark-theme-body");
+    };
+  }, [theme]);
+
+  useEffect(() => {
+    const updateClock = () => {
+      const now = new Date();
+      const options = {
+        weekday: 'long', // "Senin"
+        day: 'numeric', // "10"
+        month: 'long', // "Mei"
+        year: 'numeric', // "2025"
+        hour: '2-digit', // "23"
+        minute: '2-digit', // "58"
+        timeZone: 'Asia/Makassar', // WITA
+        hour12: false, // Use 24-hour format
+      };
+      setCurrentTimeString(now.toLocaleString('id-ID', options).replace(/\./g, ':')); // Replace dots with colons for time
+    };
+
+    updateClock(); // Initial call to set the clock immediately
+    const intervalId = setInterval(updateClock, 1000); // Update every second
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, []);
+
+  const username = localStorage.getItem("username");
+  const role = localStorage.getItem("role");
+  const token = localStorage.getItem("token"); // Ambil token
 
   // --- Fetch Statistik ---
   useEffect(() => {
     const fetchStats = async () => {
       if (!token) {
-        setStats(prev => ({ ...prev, loading: false, error: 'Autentikasi tidak ditemukan.' }));
+        setStats((prev) => ({
+          ...prev,
+          loading: false,
+          error: "Autentikasi tidak ditemukan.",
+        }));
         return;
       }
 
-      setStats(prev => ({ ...prev, loading: true, error: null }));
+      setStats((prev) => ({ ...prev, loading: true, error: null }));
 
       const config = {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       };
 
       try {
-        // Definisikan endpoint (gunakan URL lengkap dengan port backend)
-        const userEndpoint = 'http://localhost:3001/api/users';
-        const roomEndpoint = 'http://localhost:3001/api/kos';
-        const menuEndpoint = 'http://localhost:3001/coffee-shop/menus';
-        const kostFinanceEndpoint = 'http://localhost:3001/keuangan/detail?category=kost';
-        const coffeeFinanceEndpoint = 'http://localhost:3001/keuangan/detail?category=coffee shop';
+        const userEndpoint = "http://localhost:3001/api/users";
+        const roomEndpoint = "http://localhost:3001/api/kos";
+        const menuEndpoint = "http://localhost:3001/coffee-shop/menus";
+        const allFinanceEndpoint = "http://localhost:3001/keuangan/detail"; // Fetch ALL finance data
 
-        // Lakukan request API secara paralel
-        const [userRes, roomRes, menuRes, kostFinanceRes, coffeeFinanceRes] = await Promise.all([
-          axios.get(userEndpoint, config),
-          axios.get(roomEndpoint, config),
-          axios.get(menuEndpoint, config),
-          axios.get(kostFinanceEndpoint, config), // Ambil transaksi Kost
-          axios.get(coffeeFinanceEndpoint, config) // Ambil transaksi Coffee Shop
+        const results = await Promise.allSettled([
+          axios.get(userEndpoint, config),        // 0: userResult
+          axios.get(roomEndpoint, config),        // 1: roomResult
+          axios.get(menuEndpoint, config),        // 2: menuResult
+          axios.get(allFinanceEndpoint, config)   // 3: allFinanceResult
         ]);
 
-        // Hitung statistik dasar
-        const totalUsers = Array.isArray(userRes.data) ? userRes.data.length : 0;
-        const menuItems = Array.isArray(menuRes.data) ? menuRes.data.length : 0;
+        const userResult = results[0];
+        const roomResult = results[1];
+        const menuResult = results[2];
+        const allFinanceResult = results[3]; // Renamed for clarity
 
-        // Hitung kamar tersedia
-        let availableRooms = 'Error';
-        if (Array.isArray(roomRes.data)) {
-            try {
-                availableRooms = roomRes.data.filter(room => String(room.availability).toLowerCase() === 'true').length;
-            } catch (filterError) { console.error("Error filtering rooms:", filterError); }
-        } else { console.warn("API response for rooms is not an array:", roomRes.data); }
-
-        // Hitung Pendapatan Bulan Ini
-        let calculatedMonthlyIncome = 'Error';
-        const currentMonth = new Date().getMonth();
-        const currentYear = new Date().getFullYear();
-
-        try {
-            const kostTransactions = Array.isArray(kostFinanceRes.data) ? kostFinanceRes.data : [];
-            const coffeeTransactions = Array.isArray(coffeeFinanceRes.data) ? coffeeFinanceRes.data : [];
-            const allTransactions = [...kostTransactions, ...coffeeTransactions];
-
-            const monthlyIncomeSum = allTransactions
-                .filter(t => {
-                    if (t.type !== 'income' || !t.created_at) return false;
-                    try {
-                        // Coba parse tanggal. Asumsikan format 'YYYY-MM-DD HH:MI:SS' dan mungkin UTC
-                        // Tambahkan 'T' dan 'Z' untuk parsing yang lebih robust
-                        const dateStr = t.created_at.includes('T') ? t.created_at : t.created_at.replace(' ', 'T') + 'Z';
-                        const transactionDate = new Date(dateStr);
-                        if (isNaN(transactionDate.getTime())) {
-                             console.warn("Invalid date format encountered:", t.created_at);
-                             return false; // Abaikan tanggal tidak valid
-                        }
-                        return transactionDate.getMonth() === currentMonth && transactionDate.getFullYear() === currentYear;
-                    } catch (dateError) {
-                        console.error("Error parsing transaction date:", t.created_at, dateError);
-                        return false;
-                    }
-                })
-                .reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
-
-            // Format ke Rupiah
-             calculatedMonthlyIncome = new Intl.NumberFormat("id-ID", {
-                style: "currency",
-                currency: "IDR",
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(monthlyIncomeSum);
-
-        } catch (calcError) {
-            console.error("Error calculating monthly income:", calcError);
-            // calculatedMonthlyIncome tetap 'Error'
+        let totalUsers = "Error";
+        if (userResult.status === 'fulfilled' && Array.isArray(userResult.value.data)) {
+          totalUsers = userResult.value.data.length;
+        } else if (userResult.status === 'rejected') {
+          console.error("Error fetching users:", userResult.reason);
         }
 
-        // Hitung Pengeluaran Bulan Ini
-        let calculatedMonthlyExpense = 'Error';
-        try {
-            const kostTransactions = Array.isArray(kostFinanceRes.data) ? kostFinanceRes.data : [];
-            const coffeeTransactions = Array.isArray(coffeeFinanceRes.data) ? coffeeFinanceRes.data : [];
-            const allTransactions = [...kostTransactions, ...coffeeTransactions];
-            const monthlyExpenseSum = allTransactions
-                .filter(t => {
-                    if (t.type !== 'expense' || !t.created_at) return false;
-                    try {
-                        const dateStr = t.created_at.includes('T') ? t.created_at : t.created_at.replace(' ', 'T') + 'Z';
-                        const transactionDate = new Date(dateStr);
-                        if (isNaN(transactionDate.getTime())) {
-                             console.warn("Invalid date format encountered:", t.created_at);
-                             return false;
-                        }
-                        return transactionDate.getMonth() === currentMonth && transactionDate.getFullYear() === currentYear;
-                    } catch (dateError) {
-                        console.error("Error parsing transaction date:", t.created_at, dateError);
-                        return false;
-                    }
-                })
-                .reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
-
-            calculatedMonthlyExpense = new Intl.NumberFormat("id-ID", {
-                style: "currency",
-                currency: "IDR",
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(monthlyExpenseSum);
-
-        } catch (calcError) {
-            console.error("Error calculating monthly expense:", calcError);
-            // calculatedMonthlyExpense tetap 'Error'
+        let menuItems = "Error";
+        if (menuResult.status === 'fulfilled' && Array.isArray(menuResult.value.data)) {
+          menuItems = menuResult.value.data.length;
+        } else if (menuResult.status === 'rejected') {
+          console.error("Error fetching menu items:", menuResult.reason);
         }
 
+        let availableRooms = "Error";
+        if (roomResult.status === 'fulfilled' && Array.isArray(roomResult.value.data)) {
+          try {
+            availableRooms = roomResult.value.data.filter(
+              (room) => String(room.availability).toLowerCase() === "true"
+            ).length;
+          } catch (filterError) {
+            console.error("Error filtering rooms:", filterError);
+          }
+        } else if (roomResult.status === 'rejected') {
+          console.error("Error fetching rooms:", roomResult.reason);
+        }
+
+
+        let rawKostFinanceData = [];
+        let rawCoffeeFinanceData = [];
+        let financeDataError = false;
+
+        if (allFinanceResult.status === 'fulfilled' && Array.isArray(allFinanceResult.value.data)) {
+          const allTransactions = allFinanceResult.value.data;
+          rawKostFinanceData = allTransactions.filter(t =>
+            t.category && (
+              t.category.toLowerCase() === "kost" ||
+              t.category.toLowerCase() === "pendapatan kos" ||
+              t.category.toLowerCase() === "pengeluaran kos"
+            )
+          );
+          rawCoffeeFinanceData = allTransactions.filter(t =>
+            t.category && t.category.toLowerCase() === "coffee shop"
+          );
+        } else if (allFinanceResult.status === 'rejected') {
+          console.error("Error fetching All finance data:", allFinanceResult.reason);
+          financeDataError = true;
+        }
+
+        // Apply frontend date filtering based on timeFilter state
+        const filteredKostData = getFilteredTransactionsByDate(rawKostFinanceData, timeFilter);
+        const filteredCoffeeData = getFilteredTransactionsByDate(rawCoffeeFinanceData, timeFilter);
+        
+        let calculatedFilteredIncome = financeDataError ? "Error" : "Rp 0";
+        if (!financeDataError) {
+          try {
+            const kostTransactionsIncome = filteredKostData.filter(t => t.type === "income");
+            const coffeeTransactionsIncome = filteredCoffeeData.filter(t => t.type === "income");
+            const totalFilteredIncome = [...kostTransactionsIncome, ...coffeeTransactionsIncome]
+              .reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
+            calculatedFilteredIncome = new Intl.NumberFormat("id-ID", {
+              style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0,
+            }).format(totalFilteredIncome);
+          } catch (calcError) {
+            console.error("Error calculating filtered income for dashboard:", calcError);
+            calculatedFilteredIncome = "Error";
+          }
+        }
+
+        let calculatedFilteredExpense = financeDataError ? "Error" : "Rp 0";
+        if (!financeDataError) {
+          try {
+            const kostTransactionsExpense = filteredKostData.filter(t => t.type === "expense");
+            const coffeeTransactionsExpense = filteredCoffeeData.filter(t => t.type === "expense");
+            const totalFilteredExpense = [...kostTransactionsExpense, ...coffeeTransactionsExpense]
+              .reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
+            calculatedFilteredExpense = new Intl.NumberFormat("id-ID", {
+              style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0,
+            }).format(totalFilteredExpense);
+          } catch (calcError) {
+            console.error("Error calculating filtered expense for dashboard:", calcError);
+            calculatedFilteredExpense = "Error";
+          }
+        }
+
+        // Check if all primary data sources failed, to set a general error message
+        const criticalDataFailed = userResult.status === 'rejected' && 
+                                   roomResult.status === 'rejected' && 
+                                   menuResult.status === 'rejected' &&
+                                   allFinanceResult.status === 'rejected'; 
+        
         setStats({
-          totalUsers: totalUsers,
-          monthlyIncome: calculatedMonthlyIncome,
-          monthlyExpense: calculatedMonthlyExpense, // Added monthly expense
-          availableRooms: availableRooms,
-          menuItems: menuItems,
+          totalUsers,
+          monthlyIncome: calculatedFilteredIncome,
+          monthlyExpense: calculatedFilteredExpense,
+          availableRooms,
+          menuItems,
           loading: false,
-          error: null,
+          error: criticalDataFailed ? "Gagal mengambil sebagian data statistik penting." : (financeDataError ? "Gagal mengambil data keuangan." : null),
         });
 
       } catch (err) {
-        console.error("Error fetching dashboard stats:", err);
-        let errorMessage = 'Gagal mengambil data statistik.';
-        if (err.response?.status === 401 || err.response?.status === 403) {
-            errorMessage = 'Sesi berakhir atau akses ditolak. Silakan login kembali.';
-        }
-         setStats(prev => ({
-              ...prev,
-              totalUsers: 'Error',
-              availableRooms: 'Error',
-              menuItems: 'Error',
-              monthlyIncome: 'Error',
-              monthlyExpense: 'Error', // Set expense to Error as well
-              loading: false,
-              error: errorMessage
-         }));
+        // This catch is for errors outside the Promise.allSettled scope, e.g., setup errors
+        console.error("Outer error in fetchStats setup:", err);
+        setStats((prev) => ({
+          ...prev,
+          totalUsers: "Error", availableRooms: "Error", menuItems: "Error",
+          monthlyIncome: "Error", monthlyExpense: "Error", // Keep existing values or set to Error
+          loading: false, error: "Terjadi kesalahan saat memuat data.",
+        }));
       }
     };
 
-    if (activeView === 'dashboard') {
-        fetchStats();
+    if (activeView === "dashboard") {
+      fetchStats();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeView, token]); // Re-fetch jika activeView kembali ke dashboard atau token berubah
+  }, [activeView, token, timeFilter]); // Re-fetch if activeView, token, or timeFilter changes
 
   // --- Fungsi Navigasi ---
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    localStorage.removeItem('role');
-    navigate('/login');
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("role");
+    navigate("/login");
   };
 
-  const handleCoffeeShopFinanceClick = () => navigate('/finance/coffee-shop');
-  const handleKostFinanceClick = () => navigate('/finance/kost');
-  const handleInventarisCoffeeShopClick = () => navigate('/inventaris/coffee-shop');
-  const handleInventarisKostClick = () => navigate('/inventaris/kost');
-  const handleManageUser = () => navigate('/manage-user');
-  const handleManageKos = () => navigate('/manage-kos');
-  const handleManageCoffeeShopMenu = () => navigate('/manage-coffee-shop-menu');
+  const handleCoffeeShopFinanceClick = () => navigate("/finance/coffee-shop");
+  const handleKostFinanceClick = () => navigate("/finance/kost");
+  const handleInventarisCoffeeShopClick = () =>
+    navigate("/inventaris/coffee-shop");
+  const handleInventarisKostClick = () => navigate("/inventaris/kost");
+  const handleManageUser = () => setActiveView("manageUser"); // Ubah ke setActiveView
+  const handleManageKos = () => setActiveView("manageKos"); // Ubah ke setActiveView
+  const handleManageCoffeeShopMenu = () => setActiveView("manageCoffeeShopMenu"); // Diubah untuk mengatur activeView
+  const handleAboutClick = () => setActiveView("about"); // Handler for About menu
 
   // --- Render Konten ---
   const renderMainContent = () => {
     switch (activeView) {
-      case 'finance':
+      case "finance":
         // ... (Konten sub-menu finance tetap sama)
         return (
           <>
@@ -215,7 +360,12 @@ const Dashboard = () => {
                     <FaStore className="card-icon-modern" />
                     <Card.Title>Coffee Shop</Card.Title>
                     <Card.Text>Kelola keuangan Coffee Shop.</Card.Text>
-                    <Button variant="success" onClick={handleCoffeeShopFinanceClick}>Kelola</Button>
+                    <Button
+                      variant="success"
+                      onClick={handleCoffeeShopFinanceClick}
+                    >
+                      Kelola
+                    </Button>
                   </Card.Body>
                 </Card>
               </Col>
@@ -225,15 +375,17 @@ const Dashboard = () => {
                     <FaBed className="card-icon-modern" />
                     <Card.Title>Kost</Card.Title>
                     <Card.Text>Kelola keuangan Kost.</Card.Text>
-                    <Button variant="success" onClick={handleKostFinanceClick}>Kelola</Button>
+                    <Button variant="success" onClick={handleKostFinanceClick}>
+                      Kelola
+                    </Button>
                   </Card.Body>
                 </Card>
               </Col>
             </Row>
           </>
         );
-      case 'inventory':
-         // ... (Konten sub-menu inventory tetap sama)
+      case "inventory":
+        // ... (Konten sub-menu inventory tetap sama)
         return (
           <>
             <h3>Manajemen Inventaris</h3>
@@ -244,7 +396,12 @@ const Dashboard = () => {
                     <FaStore className="card-icon-modern" />
                     <Card.Title>Inventaris Coffee Shop</Card.Title>
                     <Card.Text>Kelola inventaris Coffee Shop.</Card.Text>
-                    <Button variant="primary" onClick={handleInventarisCoffeeShopClick}>Kelola</Button>
+                    <Button
+                      variant="primary"
+                      onClick={handleInventarisCoffeeShopClick}
+                    >
+                      Kelola
+                    </Button>
                   </Card.Body>
                 </Card>
               </Col>
@@ -254,82 +411,152 @@ const Dashboard = () => {
                     <FaBed className="card-icon-modern" />
                     <Card.Title>Inventaris Kost</Card.Title>
                     <Card.Text>Kelola inventaris Kost.</Card.Text>
-                    <Button variant="primary" onClick={handleInventarisKostClick}>Kelola</Button>
+                    <Button
+                      variant="primary"
+                      onClick={handleInventarisKostClick}
+                    >
+                      Kelola
+                    </Button>
                   </Card.Body>
                 </Card>
               </Col>
             </Row>
           </>
         );
-      case 'dashboard':
+      case "about":
+        return (
+          <>
+            <h3>Tentang SmartbizAdmin</h3>
+            <Card className="dashboard-card-modern about-card">
+              <Card.Body>
+                <Row>
+                  <Col md={12}>
+                    <Card.Title>
+                      <FaInfoCircle className="card-icon-modern" />{" "}
+                      SmartbizAdmin
+                    </Card.Title>
+                    <Card.Text>
+                      SmartbizAdmin adalah solusi manajemen bisnis terpadu yang
+                      dirancang untuk membantu Anda mengelola operasional Kost
+                      dan Coffee Shop dengan lebih efisien. Kami menyediakan
+                      berbagai fitur untuk mempermudah pengelolaan keuangan,
+                      inventaris, pengguna, dan layanan lainnya.
+                    </Card.Text>
+                    <hr />
+                    <h5>Hubungi Kami:</h5>
+                    <div className="contact-info">
+                      <p>
+                        <FaWhatsapp className="whatsapp-icon" />{" "}
+                        <a
+                          href="https://wa.me/6285651384990"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          +62 856-5138-4990
+                        </a>
+                      </p>
+                      <p>
+                        <FaInstagram className="instagram-icon" />{" "}
+                        <a
+                          href="https://instagram.com/muhamaadd.fikrriii"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          @muhamaadd.fikrriii
+                        </a>
+                      </p>
+                      <p>
+                        <FaEnvelope className="email-icon" />{" "}
+                        <a href="haikalariadma07@gmail.com">
+                          haikalariadma07@gmail.com
+                        </a>
+                      </p>
+                    </div>
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Card>
+          </>
+        );
+      case "manageUser":
+        return <ManageUser />;
+      case "manageKos":
+        return <ManageKos />;
+      case "manageCoffeeShopMenu": // Tambahkan case baru
+        return <ManageCoffeeShopMenu theme={theme} />;
+      case "dashboard":
       default:
         // Helper untuk render nilai statistik (handle loading & error)
         const renderStatValue = (valueKey) => {
-            const value = stats[valueKey];
-            if (stats.loading) return <Spinner animation="border" size="sm" />;
-            // Tampilkan error jika value spesifik adalah 'Error' ATAU jika ada error global fetch
-            if (value === 'Error' || (stats.error && valueKey !== 'monthlyIncome')) { // Jangan tunjukkan error global di income jika income sendiri berhasil dihitung
-                 return <FaExclamationCircle className="text-danger" title={stats.error || 'Gagal memuat data'} />;
-            }
-             if (value === null) return '-'; // Tampilkan '-' jika null setelah loading selesai
-             return value; // Tampilkan nilai jika valid
+          const value = stats[valueKey];
+          if (stats.loading) return <Spinner animation="border" size="sm" />;
+          // Tampilkan error jika value spesifik adalah 'Error' ATAU jika ada error global fetch
+          if (
+            value === "Error" ||
+            (stats.error && valueKey !== "monthlyIncome")
+          ) {
+            // Jangan tunjukkan error global di income jika income sendiri berhasil dihitung
+            return (
+              <FaExclamationCircle
+                className="text-danger"
+                title={stats.error || "Gagal memuat data"}
+              />
+            );
+          }
+          if (value === null) return "-"; // Tampilkan '-' jika null setelah loading selesai
+          return value; // Tampilkan nilai jika valid
         };
         return (
           <>
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h3>Ringkasan Statistik</h3>
               <Dropdown>
-                <Dropdown.Toggle variant="outline-secondary" id="dropdown-filter" size="sm">
-                  <FaFilter /> Filter Waktu
+                <Dropdown.Toggle
+                  variant="outline-secondary"
+                  id="dropdown-filter"
+                  size="sm"
+                >
+                  <FaFilter /> {
+                    {
+                      "today": "Hari Ini",
+                      "last7days": "7 Hari Terakhir",
+                      "thisMonth": "Bulan Ini",
+                      "thisYear": "Tahun Ini"
+                    }[timeFilter] || "Filter Waktu"
+                  }
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item href="#">Hari Ini</Dropdown.Item>
-                  <Dropdown.Item href="#">7 Hari Terakhir</Dropdown.Item>
-                  <Dropdown.Item href="#">Bulan Ini</Dropdown.Item>
-                  <Dropdown.Item href="#">Tahun Ini</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleTimeFilterChange("today")} active={timeFilter === "today"}>
+                    Hari Ini
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleTimeFilterChange("last7days")} active={timeFilter === "last7days"}>
+                    7 Hari Terakhir
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleTimeFilterChange("thisMonth")} active={timeFilter === "thisMonth"}>
+                    Bulan Ini
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleTimeFilterChange("thisYear")} active={timeFilter === "thisYear"}>
+                    Tahun Ini
+                  </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </div>
-            {stats.error && <div className="alert alert-danger">{stats.error}</div>}
+            {stats.error && (
+              <div className="alert alert-danger">{stats.error}</div>
+            )}
             <Row xs={1} md={2} lg={3} className="g-4">
               <Col>
                 <Card className="widget-card">
                   <Card.Body>
-                    <div className="widget-icon bg-primary"><FaUser /></div>
-                    <div className="widget-content">
-                      <Card.Subtitle className="text-muted">Total Pengguna</Card.Subtitle>
-                      <Card.Title className="widget-value">{renderStatValue('totalUsers')}</Card.Title>
+                    <div className="widget-icon bg-primary">
+                      <FaUser />
                     </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-              <Col>
-                <Card className="widget-card">
-                  <Card.Body>
-                    <div className="widget-icon bg-success"><FaDollarSign /></div>
                     <div className="widget-content">
-                      <Card.Subtitle className="text-muted">Pendapatan Bulan Ini</Card.Subtitle>
-                        {/* Render income secara terpisah karena tidak pakai placeholder [Data] lagi */}
-                       <Card.Title className="widget-value">
-                           {stats.loading ? <Spinner animation="border" size="sm" /> :
-                            (stats.monthlyIncome === 'Error' || (stats.error && !stats.monthlyExpense)) ? <FaExclamationCircle className="text-danger" title={stats.error || 'Gagal menghitung pendapatan'} /> :
-                            stats.monthlyIncome ?? '-'}
-                       </Card.Title>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-              <Col>
-                <Card className="widget-card">
-                  <Card.Body>
-                    {/* Using bg-danger for expense icon background */}
-                    <div className="widget-icon bg-danger"><FaDollarSign /></div> 
-                    <div className="widget-content">
-                      <Card.Subtitle className="text-muted">Pengeluaran Bulan Ini</Card.Subtitle>
+                      <Card.Subtitle className="text-muted">
+                        Total Pengguna
+                      </Card.Subtitle>
                       <Card.Title className="widget-value">
-                           {stats.loading ? <Spinner animation="border" size="sm" /> :
-                            (stats.monthlyExpense === 'Error' || (stats.error && !stats.monthlyIncome)) ? <FaExclamationCircle className="text-danger" title={stats.error || 'Gagal menghitung pengeluaran'} /> :
-                            stats.monthlyExpense ?? '-'}
+                        {renderStatValue("totalUsers")}
                       </Card.Title>
                     </div>
                   </Card.Body>
@@ -338,21 +565,85 @@ const Dashboard = () => {
               <Col>
                 <Card className="widget-card">
                   <Card.Body>
-                    <div className="widget-icon bg-info"><FaBed /></div>
+                    <div className="widget-icon bg-success">
+                      <FaDollarSign />
+                    </div>
                     <div className="widget-content">
-                      <Card.Subtitle className="text-muted">Kamar Tersedia</Card.Subtitle>
-                      <Card.Title className="widget-value">{renderStatValue('availableRooms')}</Card.Title>
+                      <Card.Subtitle className="text-muted">
+                        Pendapatan 
+                      </Card.Subtitle>
+                      <Card.Title className="widget-value">
+                        {stats.loading ? (
+                          <Spinner animation="border" size="sm" />
+                        ) : stats.monthlyIncome === "Error" || (stats.error && !stats.monthlyIncome && !stats.monthlyExpense) ? ( // Adjusted error condition
+                          <FaExclamationCircle
+                            className="text-danger"
+                            title={stats.error || "Gagal menghitung pendapatan"}
+                          />
+                        ) : (
+                          stats.monthlyIncome ?? "-" // monthlyIncome now holds filtered income
+                        )}
+                      </Card.Title>
                     </div>
                   </Card.Body>
                 </Card>
               </Col>
-               <Col>
+              <Col>
                 <Card className="widget-card">
                   <Card.Body>
-                    <div className="widget-icon bg-warning"><FaCoffee /></div>
+                    <div className="widget-icon bg-danger">
+                      <FaDollarSign />
+                    </div>
                     <div className="widget-content">
-                      <Card.Subtitle className="text-muted">Item Menu Kopi</Card.Subtitle>
-                      <Card.Title className="widget-value">{renderStatValue('menuItems')}</Card.Title>
+                      <Card.Subtitle className="text-muted">
+                        Pengeluaran 
+                      </Card.Subtitle>
+                      <Card.Title className="widget-value">
+                        {stats.loading ? (
+                          <Spinner animation="border" size="sm" />
+                        ) : stats.monthlyExpense === "Error" || (stats.error && !stats.monthlyIncome && !stats.monthlyExpense) ? ( // Adjusted error condition
+                          <FaExclamationCircle
+                            className="text-danger"
+                            title={stats.error || "Gagal menghitung pengeluaran"}
+                          />
+                        ) : (
+                          stats.monthlyExpense ?? "-" // monthlyExpense now holds filtered expense
+                        )}
+                      </Card.Title>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col>
+                <Card className="widget-card">
+                  <Card.Body>
+                    <div className="widget-icon bg-info">
+                      <FaBed />
+                    </div>
+                    <div className="widget-content">
+                      <Card.Subtitle className="text-muted">
+                        Kamar Tersedia
+                      </Card.Subtitle>
+                      <Card.Title className="widget-value">
+                        {renderStatValue("availableRooms")}
+                      </Card.Title>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col>
+                <Card className="widget-card">
+                  <Card.Body>
+                    <div className="widget-icon bg-warning">
+                      <FaCoffee />
+                    </div>
+                    <div className="widget-content">
+                      <Card.Subtitle className="text-muted">
+                        Item Menu Kopi
+                      </Card.Subtitle>
+                      <Card.Title className="widget-value">
+                        {renderStatValue("menuItems")}
+                      </Card.Title>
                     </div>
                   </Card.Body>
                 </Card>
@@ -371,32 +662,46 @@ const Dashboard = () => {
         <div className="sidebar-header">
           <h2 className="sidebar-title">Smartbiz</h2>
         </div>
-        <Nav.Link onClick={() => setActiveView('dashboard')} active={activeView === 'dashboard'}>
+        <Nav.Link
+          onClick={() => setActiveView("dashboard")}
+          active={activeView === "dashboard"}
+        >
           <FaTachometerAlt className="sidebar-icon icon-dashboard" /> Dashboard
         </Nav.Link>
-        {role === 'superadmin' && (
-          <Nav.Link onClick={() => setActiveView('finance')} active={activeView === 'finance'}>
-            <FaDollarSign className="sidebar-icon icon-finance" /> Manajemen Keuangan
+        {role === "superadmin" && (
+          <Nav.Link
+            onClick={() => setActiveView("finance")}
+            active={activeView === "finance"}
+          >
+            <FaDollarSign className="sidebar-icon icon-finance" /> Manajemen
+            Keuangan
           </Nav.Link>
         )}
-        {role === 'superadmin' && (
-           <Nav.Link onClick={handleManageKos}>
-             <FaBed className="sidebar-icon icon-kos" /> Kamar Kos
-           </Nav.Link>
+        {role === "superadmin" && (
+          <Nav.Link onClick={handleManageKos} active={activeView === "manageKos"}>
+          <FaBed className="sidebar-icon icon-kos" /> Manajemen Kamar Kos
+          </Nav.Link>
         )}
-         <Nav.Link onClick={handleManageCoffeeShopMenu}>
-           <FaCoffee className="sidebar-icon icon-coffee" /> Coffee Shop Menu
-         </Nav.Link>
-        {role === 'superadmin' && (
-          <Nav.Link onClick={handleManageUser}>
+        <Nav.Link onClick={handleManageCoffeeShopMenu} active={activeView === "manageCoffeeShopMenu"}>
+          <FaCoffee className="sidebar-icon icon-coffee" /> Coffee Shop Menu
+        </Nav.Link>
+        {role === "superadmin" && (
+          <Nav.Link onClick={handleManageUser} active={activeView === "manageUser"}>
             <FaUser className="sidebar-icon icon-user" /> Manajemen User
           </Nav.Link>
         )}
-        {role === 'superadmin' && (
-          <Nav.Link onClick={() => setActiveView('inventory')} active={activeView === 'inventory'}>
-            <FaWarehouse className="sidebar-icon icon-inventory" /> Manajemen Inventaris
+        {role === "superadmin" && (
+          <Nav.Link
+            onClick={() => setActiveView("inventory")}
+            active={activeView === "inventory"}
+          >
+            <FaWarehouse className="sidebar-icon icon-inventory" /> Manajemen
+            Inventaris
           </Nav.Link>
         )}
+        <Nav.Link onClick={handleAboutClick} active={activeView === "about"}>
+          <FaInfoCircle className="sidebar-icon icon-about" /> Tentang Kami
+        </Nav.Link>
         {/* Tambahkan Nav.Link lain jika perlu */}
       </Nav>
 
@@ -405,17 +710,38 @@ const Dashboard = () => {
         {/* Header within Main Content */}
         <header className="main-header">
           <div className="header-welcome">
-             {/* Tampilkan pesan selamat datang hanya jika username ada */}
-             {username && <h3 className="welcome-message">Selamat Datang, {username}!</h3>}
-             {role && <h5 className="role-display">Role: {role}</h5>}
+            {/* Tampilkan pesan selamat datang hanya jika username ada */}
+            {username && (
+              <h3 className="welcome-message">Selamat Datang, {username}!</h3>
+            )}
+            {role && <h5 className="role-display">Role: {role}</h5>}
           </div>
-          {/* User Dropdown */}
-          <Dropdown align="end" className="user-dropdown-modern">
-            <Dropdown.Toggle variant="link" id="dropdown-user-modern">
-              <FaUserCircle size={30} />
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={() => console.log('Navigate to Profile page...')}>
+          {/* Clock, Theme Toggle, and User Dropdown */}
+          <div className="header-actions d-flex align-items-center">
+            <div className="clock-display me-3"> {/* Added me-3 for margin */}
+              {currentTimeString}
+            </div>
+            <Button
+              variant="link"
+              onClick={toggleTheme}
+              className="theme-toggle-btn p-0 me-3" // p-0 to remove padding, me-3 for margin
+              title={theme === 'light' ? "Switch to Dark Mode" : "Switch to Light Mode"}
+              style={{ background: 'none', border: 'none' }} // Ensure button itself is transparent
+            >
+              {theme === "light" ? (
+                <FaMoon size={24} className="theme-icon" /> // Class for specific styling
+              ) : (
+                <FaSun size={24} className="theme-icon" /> // Class for specific styling
+              )}
+            </Button>
+            <Dropdown align="end" className="user-dropdown-modern">
+              <Dropdown.Toggle variant="link" id="dropdown-user-modern" className="p-0 profile-dropdown-toggle">
+                <FaUserCircle size={30} className="profile-icon"/> {/* Class for specific styling */}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item
+                onClick={() => console.log("Navigate to Profile page...")}
+              >
                 <FaUserCircle className="dropdown-icon" /> Profile
               </Dropdown.Item>
               <Dropdown.Item onClick={handleLogout}>
@@ -423,12 +749,11 @@ const Dashboard = () => {
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
+          </div> {/* Closing tag for header-actions */}
         </header>
 
         {/* Dynamic Content */}
-        <div className="content-area">
-          {renderMainContent()}
-        </div>
+        <div className="content-area">{renderMainContent()}</div>
 
         <Footer />
       </div>

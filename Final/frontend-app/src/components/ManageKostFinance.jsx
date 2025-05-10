@@ -6,7 +6,19 @@ import { useNavigate } from "react-router-dom";
 import { Doughnut, Bar } from "react-chartjs-2";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver"; // Import file-saver for CSV download
-import { NumberFormatBase } from "react-number-format"; // Correct import for Vite
+// import { NumberFormatBase } from "react-number-format"; // Ganti ini
+import { NumericFormat } from 'react-number-format'; // Dengan ini
+
+// Style sementara dihapus karena tidak menyelesaikan masalah overflow dan bisa mengganggu debugging
+// const modalStyleFix = `
+//   .modal-body {
+//     overflow: visible !important;
+//   }
+//   .modal-content {
+//     overflow: visible !important;
+//   }
+//   /* Jika menggunakan class custom pada modal, targetkan itu juga */
+// `;
 
 import {
   Chart as ChartJS,
@@ -95,7 +107,7 @@ const ManageKostFinance = () => {
       }
 
       const response = await fetch(
-        "http://localhost:3001/keuangan/detail?category=kost",
+        "http://localhost:3001/keuangan/detail", // Menghapus filter ?category=kost dari URL
         {
           method: "GET",
           headers: {
@@ -152,7 +164,15 @@ const ManageKostFinance = () => {
       return;
     }
 
-    let relevantTransactions = transactions.filter(t => t.category === "Kost"); // Changed category
+    // Filter transaksi agar hanya menampilkan yang berkaitan dengan "Kost" atau "Pendapatan Kos" atau "Pengeluaran Kos"
+    let relevantTransactions = transactions.filter(t => 
+      t.category && (
+        t.category.toLowerCase() === "kost" || 
+        t.category.toLowerCase() === "pendapatan kos" ||
+        t.category.toLowerCase() === "pengeluaran kos" // Jika Anda memiliki kategori ini juga
+      )
+    );
+    console.log("ManageKostFinance: Transactions after category filter:", relevantTransactions); // DEBUG
 
     let filteredForDate = relevantTransactions;
     if (timeFilter !== "all") {
@@ -670,6 +690,7 @@ const ManageKostFinance = () => {
 
   return (
     <ErrorBoundary>
+      {/* <style>{modalStyleFix}</style> */} {/* Style sementara dihapus */}
       <div className="manage-kost-finance-container">
         <header className="manage-kost-finance-header">
           <FaArrowLeft
@@ -834,14 +855,13 @@ const ManageKostFinance = () => {
 
               <Form.Group className="mb-3">
                 <Form.Label>Jumlah</Form.Label>
-                <NumberFormatBase
+                <NumericFormat
                   name="amount"
                   value={newTransaction.amount}
                   onValueChange={(values) => {
-                    const { formattedValue, value } = values;
                     setNewTransaction({
                       ...newTransaction,
-                      amount: value, // Simpan nilai mentah untuk pengolahan lebih lanjut
+                      amount: values.value, // react-number-format mengembalikan 'value' sebagai float/number
                     });
                   }}
                   thousandSeparator="."
@@ -849,6 +869,7 @@ const ManageKostFinance = () => {
                   prefix="Rp. "
                   placeholder="Masukkan jumlah"
                   className="form-control"
+                  allowNegative={false}
                 />
               </Form.Group>
 
@@ -912,14 +933,13 @@ const ManageKostFinance = () => {
 
                 <Form.Group className="mb-3">
                   <Form.Label>Jumlah</Form.Label>
-                   <NumberFormatBase
+                   <NumericFormat
                       name="amount"
                       value={editingTransaction.amount}
                       onValueChange={(values) => {
-                        const { value } = values;
                         setEditingTransaction({
                           ...editingTransaction,
-                          amount: value,
+                          amount: values.value, // react-number-format mengembalikan 'value' sebagai float/number
                         });
                       }}
                       thousandSeparator="."
@@ -927,6 +947,7 @@ const ManageKostFinance = () => {
                       prefix="Rp. "
                       placeholder="Masukkan jumlah"
                       className="form-control"
+                      allowNegative={false}
                     />
                 </Form.Group>
 

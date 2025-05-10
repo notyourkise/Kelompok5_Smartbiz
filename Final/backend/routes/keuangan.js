@@ -1,26 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const keuanganController = require('../controllers/keuanganControllers');
-const authenticateToken = require('../middleware/authMiddleware'); // Import middleware untuk otentikasi
-
-// Middleware untuk memastikan hanya superadmin yang bisa mengakses rute tertentu
-const authorizeSuperAdmin = (req, res, next) => {
-  if (req.user.role !== 'superadmin') {
-    return res.status(403).json({ error: 'Akses ditolak. Hanya superadmin yang bisa mengakses ini.' });
-  }
-  next();
-};
+// Impor 'protect' dan 'authorize' dari authMiddleware menggunakan destructuring
+const { protect, authorize } = require('../middleware/authMiddleware');
 
 // Endpoint untuk mendapatkan data transaksi berdasarkan kategori (Semua orang yang terautentikasi bisa mengakses ini)
-router.get('/detail', authenticateToken, keuanganController.getAllTransactionsDetail);
+// Gunakan 'protect' sebagai middleware otentikasi
+router.get('/detail', protect, keuanganController.getAllTransactionsDetail);
 
 // Endpoint untuk menambahkan transaksi baru (Hanya untuk Superadmin)
-router.post('/detail', authenticateToken, authorizeSuperAdmin, keuanganController.createTransactionDetail);
+// Gunakan 'protect' untuk otentikasi dan 'authorize' untuk otorisasi peran
+router.post('/detail', protect, authorize(['superadmin']), keuanganController.createTransactionDetail);
 
 // Endpoint untuk mengupdate transaksi (Hanya untuk Superadmin)
-router.put('/detail/:id', authenticateToken, authorizeSuperAdmin, keuanganController.updateTransactionDetail);
+router.put('/detail/:id', protect, authorize(['superadmin']), keuanganController.updateTransactionDetail);
 
 // Endpoint untuk menghapus transaksi (Hanya untuk Superadmin)
-router.delete('/detail/:id', authenticateToken, authorizeSuperAdmin, keuanganController.deleteTransactionDetail);
+router.delete('/detail/:id', protect, authorize(['superadmin']), keuanganController.deleteTransactionDetail);
 
 module.exports = router;

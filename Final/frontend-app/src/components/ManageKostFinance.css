@@ -1,364 +1,160 @@
-/* src/components/ManageKostFinance.css - White and Brown Elegant Theme */
+/* CSS untuk ManageKostFinance.jsx */
 
-/* Base container style */
-.manage-kost-finance-container {
-  min-height: 100vh;
-  background-color: #ffffff; /* White background */
-  padding: 2.5rem;
-  color: #4d403A; /* Dark warm brown for text */
-  font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
+/* ... (CSS Anda yang sudah ada) ... */
+
+/* Perbaikan untuk dropdown terpotong di dalam modal */
+.modal-body .form-select,
+.modal-body .form-control[as="select"] { /* Target spesifik untuk select di modal */
+  height: auto !important; /* Biarkan tinggi menyesuaikan konten */
+  min-height: calc(1.5em + .75rem + 2px); /* Standar tinggi bootstrap untuk form control */
+  padding-top: .375rem !important; /* Sesuaikan padding jika perlu */
+  padding-bottom: .375rem !important;
+  line-height: 1.5 !important; /* Pastikan line-height cukup */
+  overflow: visible !important; /* Meskipun untuk select standar ini kurang berpengaruh pada opsi */
+  -webkit-appearance: menulist !important; /* Coba paksa tampilan default browser */
+  -moz-appearance: menulist !important;
+  appearance: menulist !important;
 }
 
-/* Header style */
+/* Pastikan modal dan kontennya tidak membatasi overflow secara berlebihan */
+/* Ini mungkin sudah kita coba sebelumnya, tapi pastikan tidak ada yang meng-override */
+.modal-dialog {
+  overflow: visible !important; /* Coba pada .modal-dialog juga */
+}
+
+.modal-content {
+  overflow: visible !important;
+}
+
+.modal-body {
+  overflow-y: auto !important; /* Izinkan scroll vertikal jika konten body panjang */
+  overflow-x: visible !important; /* Izinkan overflow horizontal jika dropdown melebar */
+  /* Pertimbangkan untuk memberi padding bawah yang cukup pada modal-body jika form panjang */
+  padding-bottom: 50px; /* Contoh, agar ada ruang untuk dropdown terbuka ke bawah */
+}
+
+/* Jika ada class custom pada modal "Tambah Transaksi" */
+/* .tambah-transaksi-modal .modal-body {
+  overflow: visible !important;
+} */
+
+/* Styling umum lainnya untuk ManageKostFinance */
+.manage-kost-finance-container {
+  padding: 20px;
+  background-color: #f8f9fa; /* Warna latar belakang halaman */
+}
+
 .manage-kost-finance-header {
   display: flex;
   align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #e0d8d0; /* Light brown/beige border */
-}
-
-.manage-kost-finance-title {
-  color: #5d4037; /* Rich primary brown */
-  font-weight: 600;
-  font-size: 1.85rem;
-  margin-left: 1rem; /* Space after back icon */
-  flex-grow: 1; /* Allow title to take available space */
+  margin-bottom: 20px;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 10px;
 }
 
 .back-icon {
   font-size: 1.5rem;
-  color: #6d4c41; /* Warm brown icon */
+  margin-right: 15px;
   cursor: pointer;
-  transition: color 0.2s ease;
+  color: #007bff; /* Warna ikon */
 }
 
 .back-icon:hover {
-  color: #5d4037; /* Darker brown on hover */
+  color: #0056b3;
 }
 
-/* Filter controls container */
+.manage-kost-finance-title {
+  margin-bottom: 0;
+  color: #343a40; /* Warna judul */
+}
+
 .filter-controls-container {
-  margin-bottom: 1.5rem;
+  margin-bottom: 20px;
   display: flex;
-  justify-content: flex-end; /* Align filter to the right */
+  justify-content: flex-end;
+  padding-right: 2.5rem; /* Sesuai kode JSX Anda */
 }
 
-.filter-controls-container .dropdown-toggle {
-  background-color: #8d6e63; /* Muted brown for filter button */
-  border-color: #795548;
-  color: #f9f6f2;
-  font-weight: 500;
-}
-
-.filter-controls-container .dropdown-toggle:hover,
-.filter-controls-container .dropdown-toggle:focus {
-  background-color: #6d4c41; /* Darker brown */
-  border-color: #5d4037;
-}
-
-.filter-controls-container .dropdown-menu {
-  background-color: #fdfdfd;
-  border: 1px solid #e0d8d0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.filter-controls-container .dropdown-item {
-  color: #4d403A;
-}
-
-.filter-controls-container .dropdown-item:hover,
-.filter-controls-container .dropdown-item:focus {
-  background-color: #efebe9; /* Light beige hover */
-  color: #3e2723;
-}
-
-
-/* Finance Summary (Charts) */
 .finance-summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-bottom: 2.5rem;
+  display: flex;
+  flex-wrap: wrap; /* Agar responsif */
+  gap: 20px; /* Jarak antar chart */
+  margin-bottom: 30px;
 }
 
 .chart-container {
-  background-color: #ffffff; /* White background for charts */
-  padding: 1.5rem;
+  flex: 1; /* Agar chart mengambil ruang yang sama */
+  min-width: 300px; /* Lebar minimum untuk responsivitas */
+  padding: 20px;
+  background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(93, 64, 55, 0.08); /* Soft brown shadow */
-  border: 1px solid #e0d8d0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.075);
 }
 
 .chart-container h5 {
-  color: #5d4037; /* Rich primary brown */
-  margin-bottom: 1.5rem;
   text-align: center;
-  font-weight: 500;
+  margin-bottom: 20px;
+  color: #495057;
 }
 
 .donut-chart-placeholder,
 .bar-chart-placeholder {
-  height: 300px; /* Fixed height for chart areas */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  height: 300px; /* Sesuaikan tinggi chart */
+  position: relative; /* Untuk maintainAspectRatio Chart.js */
 }
 
-/* Action Buttons Area */
 .action-buttons {
   display: flex;
-  justify-content: space-between; /* Pushes buttons to opposite ends */
+  justify-content: space-between; /* Tombol Tambah di kiri, Cetak di kanan */
   align-items: center;
-  margin-bottom: 2rem;
-  gap: 1rem; /* Adds space between buttons if they wrap or are close */
+  margin-bottom: 20px;
 }
 
-.action-buttons .add-button {
-  background-color: #6d4c41; /* Rich warm brown */
-  border: 1px solid #5d4037; /* Slightly darker brown border */
-  color: #f9f6f2; /* Off-white text */
-  padding: 0.7rem 1.4rem;
-  border-radius: 6px;
-  font-weight: 500;
-  transition: background-color 0.2s ease-out, border-color 0.2s ease-out, transform 0.2s ease-out;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
+.add-button {
+  /* Styling untuk tombol Tambah Transaksi */
 }
 
-.action-buttons .print-button .dropdown-toggle {
-  background-color: #a1887f; /* Lighter warm brown for print button */
-  border: 1px solid #8d6e63; /* Slightly darker border for print button */
-  color: #f9f6f2; /* Off-white text */
-  padding: 0.7rem 1.4rem;
-  border-radius: 6px;
-  font-weight: 500;
-  transition: background-color 0.2s ease-out, border-color 0.2s ease-out, transform 0.2s ease-out;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
+.print-button-container .dropdown-toggle {
+  /* Styling untuk tombol Cetak jika perlu */
 }
 
-.action-buttons .add-button:hover {
-  background-color: #5d4037; /* Darker brown on hover */
-  border-color: #4e342e;
-  color: #ffffff;
-  transform: translateY(-1px);
-}
-
-.action-buttons .print-button .dropdown-toggle:hover {
-  background-color: #8d6e63; /* Darker shade of the lighter brown on hover */
-  border-color: #795548;
-  color: #ffffff;
-  transform: translateY(-1px);
-}
-
-.action-buttons .print-button .dropdown-menu {
-  background-color: #fdfdfd;
-  border: 1px solid #e0d8d0;
-}
-.action-buttons .print-button .dropdown-item {
-  color: #4d403A;
-}
-.action-buttons .print-button .dropdown-item:hover {
-  background-color: #efebe9;
-}
-
-
-/* Table Styles */
 .finance-table-container {
-  background-color: #ffffff; /* Clean white background for table area */
-  padding: 1.5rem; 
-  border-radius: 8px; /* Classy radius */
-  box-shadow: 0 4px 12px rgba(93, 64, 55, 0.08); /* Soft brown shadow */
-  border: 1px solid #e0d8d0; /* Light brown/beige border */
-  overflow-x: auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.075);
 }
 
-.finance-table { 
+.finance-table {
   width: 100%;
-  border-collapse: separate; 
-  border-spacing: 0; 
-  /* background-color: #ffffff; /* Table itself can be transparent if container has bg */
-  color: #4d403A; /* Dark warm brown text */
+  border-collapse: collapse;
 }
 
-.finance-table thead {
-  background-color: #f5f0eb; /* Very light beige/tan for header */
-  color: #a08454; /* Dark Gold for header text */
-  border-bottom: 2px solid #c0a062; /* Solid gold line for header bottom */
-}
-
-.finance-table th, 
+.finance-table th,
 .finance-table td {
-  vertical-align: middle; 
-  padding: 0.9rem 1.2rem; /* Generous cell padding */
-  border-bottom: 1px solid #e0d8d0; /* Light brown/beige row separator */
+  padding: 12px 15px;
   text-align: left;
+  border-bottom: 1px solid #dee2e6;
 }
 
-.finance-table th {
-  font-weight: 500; /* Medium weight for headers */
-  text-transform: uppercase; 
-  font-size: 0.78rem; 
-  letter-spacing: 0.8px;
-}
-
-.finance-table tbody tr {
-  transition: background-color 0.15s ease-out;
-}
-
-/* Striped rows for the table - light brown and white */
-.finance-table tbody tr:nth-of-type(odd) {
-  background-color: #69422e; /* Light brown for odd rows */
-}
-.finance-table tbody tr:nth-of-type(even) {
-  background-color: #3d3714; /* White for even rows */
+.finance-table thead th {
+  background-color: #e9ecef;
+  color: #495057;
+  font-weight: 600;
 }
 
 .finance-table tbody tr:hover {
-  background-color: #fdf6e3; /* Very light creamy gold-tinged beige on hover */
-  color: #3e2723; /* Darker brown text on hover */
+  background-color: #f1f3f5;
 }
 
-/* Table Action Buttons (Edit/Delete) */
-.finance-table td .btn {
-  margin-right: 0.5rem; /* Add some right margin to all buttons in a cell */
-  padding: 0.35rem 0.75rem; 
-  font-size: 0.8rem;
-  border-radius: 4px; 
-  font-weight: 500;
-  transition: all 0.2s ease-out;
-}
-.finance-table td .btn:last-child {
-  margin-right: 0; /* Remove margin from the last button in a cell */
-}
-
-.finance-table td .btn-outline-primary { /* Edit button */
-  border-color: #5472a4; /* Muted steel blue */
-  color: #5472a4;
-}
-.finance-table td .btn-outline-primary:hover {
-  background-color: #5472a4; 
-  color: #ffffff;
-  border-color: #46618f; 
-}
-
-.finance-table td .btn-outline-danger { /* Delete button */
-  border-color: #c62828; /* Deep red */
-  color: #c62828;
-}
-.finance-table td .btn-outline-danger:hover {
-  background-color: #c62828; 
-  color: #ffffff;
-  border-color: #b71c1c; 
-}
-.finance-table td .btn svg { 
-  margin-right: 0.4rem; 
-  vertical-align: text-bottom; /* Align icon better */
-}
-
-
-/* Modal styles - Consistent with ManageUser.css */
-.modal-content {
-  background-color: #fdfdfd;
-  color: #4d403A;
-  border: 1px solid #d7ccc8;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(93, 64, 55, 0.1);
-}
-
-.modal-header {
-  border-bottom: 1px solid #c0a062; /* Gold separator */
-  color: #5d4037;
-  padding: 1.25rem 1.5rem;
-}
-.modal-header .modal-title {
-  font-weight: 600;
-  font-size: 1.35rem;
-  color: #a08454; /* Dark Gold for modal title */
-}
-
-.modal-header .btn-close {
-  filter: none;
-  opacity: 0.6;
-}
-.modal-header .btn-close:hover {
-  opacity: 0.9;
-}
-
-.modal-body {
-  padding: 1.75rem;
-}
-
-.modal-body .form-label {
-  color: #6d4c41;
-  font-size: 0.9rem;
-  margin-bottom: 0.4rem;
-  font-weight: 500;
-}
-
-.modal-body .form-control {
-  background-color: #ffffff;
-  color: #4d403A;
-  border: 1px solid #c8bca7; /* Light tan/beige border */
-  border-radius: 4px;
-  padding: 0.7rem 1rem;
-  transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
-}
-.modal-body .form-control::placeholder {
-  color: #a1887f;
-}
-
-.modal-body .form-control:focus {
-  border-color: #c0a062; /* Gold focus border */
-  box-shadow: 0 0 0 3px rgba(192, 160, 98, 0.25);
-}
-
-.modal-footer {
-  border-top: 1px solid #e0d8d0;
-  padding: 1.25rem 1.5rem;
-  background-color: #f9f6f2; /* Light beige footer background */
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
-}
-
-.modal-footer .btn-primary {
-  background-color: #6d4c41;
-  border-color: #5d4037;
-  color: #f9f6f2;
-}
-.modal-footer .btn-primary:hover {
-  background-color: #5d4037;
-  border-color: #4e342e;
-  color: #ffffff;
-}
-
-.modal-footer .btn-secondary {
-  background-color: #f9f6f2;
-  border: 1px solid #a1887f;
-  color: #6d4c41;
-}
-.modal-footer .btn-secondary:hover {
-  background-color: #efebe9;
-  border-color: #8d6e63;
-  color: #5d4037;
-}
-
-/* Loading and Error Messages */
-.manage-kost-finance-container > p { /* Direct children p tags for loading/error */
-  text-align: center;
-  font-size: 1.1rem;
-  padding: 1rem;
-  color: #757575;
-}
 .error-message {
-  color: #c62828 !important; /* Deep red for errors */
-  background-color: #ffcdd2; /* Light red background */
-  border: 1px solid #ef9a9a;
-  border-radius: 4px;
-  padding: 0.75rem 1rem !important;
+  color: red;
+  padding: 10px;
+  border: 1px solid red;
+  border-radius: 5px;
+  margin-bottom: 15px;
 }
+
+/* Styling untuk modal jika diperlukan (selain overflow fix) */
+/* .modal-header-custom, .modal-title-custom, .modal-body-custom, .modal-footer-custom */
+/* bisa Anda tambahkan di sini jika ada di JSX Anda */

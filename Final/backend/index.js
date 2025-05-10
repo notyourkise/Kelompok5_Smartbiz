@@ -3,6 +3,7 @@ const cors = require('cors');
 const app = express();
 const PORT = 3001;
 const pool = require('./config/db');
+const path = require('path'); // Impor modul path
 
 // Konfigurasi CORS untuk membatasi akses hanya untuk frontend
 const corsOptions = {
@@ -15,6 +16,11 @@ const corsOptions = {
 app.use(cors(corsOptions));  
 app.use(express.json());  // Mengizinkan request dengan format JSON
 
+// Middleware untuk menyajikan file statis dari folder 'uploads'
+// Ini akan membuat file di dalam folder 'uploads' dapat diakses melalui URL
+// Contoh: http://localhost:3001/uploads/bukti_pembayaran_kos/namafile.jpg
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Import routes
 const authRoutes = require('./routes/auth');
 const keuanganRoutes = require('./routes/keuangan');
@@ -23,7 +29,8 @@ const kosRoutes = require('./routes/kos');
 const newCoffeeShopRoutes = require('./routes/coffeeShop'); // Use a distinct name for clarity
 const inventarisRoutes = require('./routes/InventarisRoutes'); // Corrected import path
 const UserRoutes = require('./routes/UserRoutes');
-const authenticateToken = require('./middleware/authMiddleware'); // Import authentication middleware
+// Mengimpor 'protect' sebagai 'authenticateToken' dan 'authorize'
+const { protect: authenticateToken, authorize } = require('./middleware/authMiddleware'); 
 
 // Gunakan routes
 app.use('/auth', authRoutes);  // Rute untuk login dan registrasi
@@ -53,7 +60,28 @@ const testDatabaseConnection = async () => {
 };
 
 // Uji koneksi database saat server dijalankan
-testDatabaseConnection(); 
+testDatabaseConnection();
+
+// Fungsi untuk mereset status pembayaran pada tanggal 1 setiap bulan
+const resetPaymentStatusOnFirstOfMonth = async () => {
+  const today = new Date();
+  if (today.getDate() === 1) { // Cek apakah hari ini tanggal 1
+    console.log('Tanggal 1 terdeteksi, menjalankan reset status pembayaran...');
+    try {
+      const result = await pool.query(
+        "UPDATE rooms SET payment_status_current_month = 'Belum Bayar' WHERE tenant_name IS NOT NULL"
+      );
+      console.log(`Status pembayaran direset untuk ${result.rowCount} kamar yang terisi.`);
+    } catch (err) {
+      console.error('Gagal mereset status pembayaran:', err);
+    }
+  } else {
+    // console.log('Bukan tanggal 1, reset status pembayaran tidak dijalankan.'); // Bisa dikomentari jika log ini terlalu sering
+  }
+};
+
+// Jalankan fungsi reset status pembayaran saat server dimulai
+resetPaymentStatusOnFirstOfMonth();
 
 // Menjalankan server
 app.listen(PORT, () => {

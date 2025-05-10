@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-const authenticateToken = (req, res, next) => {
+// Middleware untuk otentikasi token
+const protect = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Format: "Bearer TOKEN"
 
@@ -8,7 +9,7 @@ const authenticateToken = (req, res, next) => {
     return res.status(401).json({ error: "Token tidak ditemukan. Akses ditolak." });
   }
 
-  jwt.verify(token, 'your-secret-key', (err, user) => {
+  jwt.verify(token, 'your-secret-key', (err, user) => { // Ganti 'your-secret-key' dengan secret key Anda yang sebenarnya
     if (err) {
       console.error('JWT Verification Error:', err.message);
       
@@ -20,10 +21,35 @@ const authenticateToken = (req, res, next) => {
     }
 
     // Token valid, user akan berisi payload { id, username, role }
-    req.user = user;
+    req.user = user; // Menyimpan informasi pengguna di request object
 
-    next(); // Lanjut ke route controller
+    next(); // Lanjut ke route controller atau middleware berikutnya
   });
 };
 
-module.exports = authenticateToken;
+// Middleware untuk otorisasi berdasarkan peran (role)
+const authorize = (roles = []) => {
+  // roles bisa berupa string tunggal (misalnya 'admin') atau array string (misalnya ['superadmin', 'admin'])
+  if (typeof roles === 'string') {
+    roles = [roles];
+  }
+
+  return (req, res, next) => {
+    if (!req.user || !req.user.role) {
+      return res.status(403).json({ error: "Akses ditolak. Peran pengguna tidak diketahui." });
+    }
+
+    if (roles.length && !roles.includes(req.user.role)) {
+      // Pengguna tidak memiliki peran yang diizinkan
+      return res.status(403).json({ error: `Akses ditolak. Anda tidak memiliki peran sebagai ${roles.join(' atau ')}.` });
+    }
+
+    // Pengguna memiliki peran yang diizinkan
+    next();
+  };
+};
+
+module.exports = {
+  protect,
+  authorize,
+};

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/UserController');
-const authenticateToken = require('../middleware/authMiddleware'); // Import middleware untuk otentikasi
+const { protect: authenticateToken } = require('../middleware/authMiddleware'); // Corrected import
 
 // Middleware untuk memastikan hanya superadmin yang bisa mengakses rute tertentu
 const authorizeSuperAdmin = (req, res, next) => {

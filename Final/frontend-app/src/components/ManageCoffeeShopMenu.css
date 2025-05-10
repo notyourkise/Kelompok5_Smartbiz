@@ -1,11 +1,19 @@
 /* src/components/ManageCoffeeShopMenu.css - Elegant & Interactive Theme */
 
-/* Base Container */
-.manage-coffee-menu-container {
+/* Base Container - Default to Light Theme */
+.manage-coffee-menu-container.theme-light {
   min-height: 100vh;
-  background-color: #f9f6f2; /* Soft off-white/light beige from theme */
+  background-color: #f9f6f2; /* Soft off-white/light beige */
   padding: 2.5rem;
-  color: #4d403A; /* Dark warm brown text from theme */
+  color: #4d403A; /* Dark warm brown text */
+  font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.manage-coffee-menu-container.theme-dark {
+  min-height: 100vh;
+  background-color: #000000; /* Black background */
+  padding: 2.5rem;
+  color: #FFFFFF; /* White text for contrast */
   font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
 }
 
@@ -16,13 +24,20 @@
   align-items: center;
   margin-bottom: 2.5rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid #e0d8d0; /* Light brown/beige border */
+  /* Theme-specific border will be handled below */
 }
+
+.theme-light .manage-coffee-menu-header {
+  border-bottom: 1px solid #e0d8d0; /* Light brown/beige border for light theme */
+}
+
+.theme-dark .manage-coffee-menu-header {
+  border-bottom: 1px solid #444444; /* Darker border for dark theme */
+}
+
 
 .manage-coffee-menu-header .back-button {
   background-color: transparent;
-  border: 1px solid #a1887f; /* Light warm brown border */
-  color: #6d4c41; /* Warm brown icon */
   padding: 0.6rem;
   width: 40px;
   height: 40px;
@@ -33,19 +48,41 @@
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.manage-coffee-menu-header .back-button:hover {
+/* Light theme back button */
+.theme-light .manage-coffee-menu-header .back-button {
+  border: 1px solid #a1887f; /* Light warm brown border */
+  color: #6d4c41; /* Warm brown icon */
+}
+.theme-light .manage-coffee-menu-header .back-button:hover {
   background-color: #efebe9; /* Very light beige hover */
   border-color: #8d6e63;
   color: #5d4037;
 }
 
+/* Dark theme back button */
+.theme-dark .manage-coffee-menu-header .back-button {
+  border: 1px solid #777777; /* Grey border for dark theme */
+  color: #FFFFFF; /* White icon for contrast */
+}
+.theme-dark .manage-coffee-menu-header .back-button:hover {
+  background-color: #333333; /* Darker grey hover */
+  border-color: #999999;
+  color: #FFFFFF;
+}
+
 .manage-coffee-title {
-  color: #5d4037; /* Rich primary brown */
   font-weight: 600;
   font-size: 1.85rem;
   text-align: center;
   flex-grow: 1;
 }
+.theme-light .manage-coffee-title {
+  color: #5d4037; /* Rich primary brown for light theme */
+}
+.theme-dark .manage-coffee-title {
+  color: #FFFFFF; /* White title for dark theme */
+}
+
 
 .cart-container {
   position: relative;
@@ -54,11 +91,19 @@
 
 .cart-icon {
   font-size: 1.8rem;
-  color: #6d4c41; /* Warm brown */
   transition: color 0.2s ease;
 }
-.cart-icon:hover {
+.theme-light .cart-icon {
+  color: #6d4c41; /* Warm brown */
+}
+.theme-light .cart-icon:hover {
   color: #5d4037; /* Darker brown */
+}
+.theme-dark .cart-icon {
+  color: #FFFFFF; /* White icon for contrast */
+}
+.theme-dark .cart-icon:hover {
+  color: #CCCCCC; /* Lighter grey for hover */
 }
 
 .cart-badge {
@@ -103,107 +148,153 @@
   gap: 2rem;
 }
 
-/* Individual Menu Card */
+/* Individual Menu Card - Base Styling */
 .menu-card {
-  background-color: #ffffff;
-  border-radius: 12px; /* More rounded corners */
-  box-shadow: 0 6px 18px rgba(93, 64, 55, 0.1); /* Softer, more spread shadow */
+  border-radius: 15px;
   padding: 1.5rem;
   text-align: center;
-  position: relative; /* For absolute positioning of icons */
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  overflow: hidden; /* Ensures icons don't overflow weirdly during transitions */
+  position: relative;
+  transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
 }
 
-.menu-card:hover {
-  transform: translateY(-8px) scale(1.02); /* Lift and slightly scale */
+/* Light Theme Menu Card */
+.theme-light .menu-card {
+  background-color: #ffffff; /* White background for light theme */
+  box-shadow: 0 6px 18px rgba(93, 64, 55, 0.1); /* Softer shadow for light theme */
+  color: #4d403A; /* Dark brown text */
+}
+.theme-light .menu-card:hover {
+  transform: translateY(-8px) scale(1.02);
   box-shadow: 0 10px 25px rgba(93, 64, 55, 0.15);
 }
-
-.menu-card h5 {
+.theme-light .menu-card h5 {
   color: #5d4037; /* Rich brown for title */
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-top: 1rem; /* Space below icons */
-  margin-bottom: 0.5rem;
 }
-
-.menu-card p {
+.theme-light .menu-card p {
   color: #a08454; /* Dark gold for price */
-  font-size: 1.1rem;
-  font-weight: 500;
-  margin-bottom: 1.5rem;
+}
+.theme-light .edit-icon,
+.theme-light .info-icon {
+  color: #8d6e63; /* Muted brown */
+}
+.theme-light .edit-icon:hover,
+.theme-light .info-icon:hover {
+  color: #5d4037; /* Darker brown */
+  transform: scale(1.1);
+}
+.theme-light .menu-card .btn-add-to-cart {
+  background-color: #6d4c41; /* Rich warm brown */
+  border-color: #5d4037;
+  color: #f9f6f2;
+}
+.theme-light .menu-card .btn-add-to-cart:hover {
+  background-color: #5d4037;
+  border-color: #4e342e;
+  color: #ffffff;
+}
+.theme-light .menu-card .btn-delete {
+  background-color: transparent;
+  border: 1px solid #c62828; /* Deep red border */
+  color: #c62828; /* Deep red text */
+}
+.theme-light .menu-card .btn-delete:hover {
+  background-color: #c62828;
+  border-color: #b71c1c;
+  color: #ffffff;
 }
 
-/* Edit Icon */
+
+/* Dark Theme Menu Card */
+.theme-dark .menu-card {
+  background-color: #5D4037; /* Dominant brown background */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25), 0 5px 10px rgba(0,0,0,0.22); /* More pronounced shadow */
+  color: #FFFFFF; /* White text for contrast */
+}
+.theme-dark .menu-card:hover {
+  transform: translateY(-10px) scale(1.03); /* More lift and scale */
+  box-shadow: 0 14px 35px rgba(0,0,0,0.3), 0 10px 15px rgba(0,0,0,0.28); /* Deeper shadow on hover */
+}
+.theme-dark .menu-card h5 {
+  color: #FFFFFF; /* White title */
+}
+.theme-dark .menu-card p {
+  color: #F5E8C7; /* Light beige/cream for price */
+}
+.theme-dark .edit-icon,
+.theme-dark .info-icon {
+  color: #F5E8C7; /* Light beige/cream for icon */
+}
+.theme-dark .edit-icon:hover,
+.theme-dark .info-icon:hover {
+  color: #FFFFFF; /* White on hover */
+  transform: scale(1.15);
+}
+.theme-dark .menu-card .btn-add-to-cart {
+  background-color: #A08454; /* Dark gold */
+  border-color: #8C6D3F;
+  color: #FFFFFF;
+}
+.theme-dark .menu-card .btn-add-to-cart:hover {
+  background-color: #8C6D3F;
+  border-color: #795C32;
+}
+.theme-dark .menu-card .btn-delete {
+  background-color: transparent;
+  border: 1px solid #EAB2A0; /* Lighter, contrasting red/pink */
+  color: #EAB2A0;
+}
+.theme-dark .menu-card .btn-delete:hover {
+  background-color: #EAB2A0;
+  border-color: #D49A8A;
+  color: #5D4037; /* Dark brown text on hover */
+}
+
+
+/* General Menu Card Styles (applies to both themes) */
+.menu-card h5 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.6rem;
+}
+.menu-card p {
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin-bottom: 1.75rem;
+}
 .edit-icon {
   position: absolute;
   top: 1rem;
   left: 1rem;
-  font-size: 1.1rem;
-  color: #8d6e63; /* Muted brown */
+  font-size: 1.2rem;
   cursor: pointer;
   transition: color 0.2s ease, transform 0.2s ease;
   z-index: 10;
 }
-.edit-icon:hover {
-  color: #5d4037; /* Darker brown */
-  transform: scale(1.1);
-}
-
-/* Info Icon */
 .info-icon {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  font-size: 1.2rem;
-  color: #8d6e63; /* Muted brown */
+  font-size: 1.3rem;
   cursor: pointer;
   transition: color 0.2s ease, transform 0.2s ease;
   z-index: 10;
 }
-.info-icon:hover {
-  color: #5d4037; /* Darker brown */
-  transform: scale(1.1);
-}
-
-/* Buttons within Menu Card */
 .menu-card-actions {
   display: flex;
-  justify-content: space-around; /* Evenly space buttons */
-  gap: 0.5rem; /* Space between buttons */
+  justify-content: space-around;
+  gap: 0.5rem;
 }
-
 .menu-card .btn {
   border-radius: 6px;
   font-weight: 500;
   padding: 0.5rem 1rem;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-  flex-grow: 1; /* Allow buttons to grow */
+  flex-grow: 1;
 }
-
-.menu-card .btn-add-to-cart {
-  background-color: #6d4c41; /* Rich warm brown */
-  border-color: #5d4037;
-  color: #f9f6f2;
-}
-.menu-card .btn-add-to-cart:hover {
-  background-color: #5d4037;
-  border-color: #4e342e;
-  color: #ffffff;
-  transform: translateY(-1px);
-}
-
-.menu-card .btn-delete {
-  background-color: transparent;
-  border: 1px solid #c62828; /* Deep red border */
-  color: #c62828; /* Deep red text */
-}
-.menu-card .btn-delete:hover {
-  background-color: #c62828;
-  border-color: #b71c1c;
-  color: #ffffff;
-  transform: translateY(-1px);
+.menu-card .btn:hover { /* General hover for buttons in card */
+  transform: translateY(-2px) scale(1.02);
 }
 
 
