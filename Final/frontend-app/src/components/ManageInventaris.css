@@ -1,193 +1,281 @@
-/* src/components/ManageInventaris.css */
+/* src/components/ManageInventaris.css - Dark Theme, Image-based Card Layout */
 
-/* Base container style from Dashboard */
+/* Base Container - Dark Theme */
 .manage-inventaris-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1f2833 0%, #45a29e 100%);
-  padding: 2rem;
-  color: #c5c6c7;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #000000; /* Black background */
+  padding: 2.5rem;
+  color: #FFFFFF; /* White text for contrast */
+  font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif; /* Consistent font */
+  display: flex;
+  flex-direction: column;
 }
 
-/* Header style similar to Dashboard */
+/* Header */
 .manage-inventaris-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #4b5a6a;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #444444; /* Darker border for dark theme */
 }
 
-.manage-inventaris-title {
-  color: #66fcf1;
-  font-weight: bold;
-  font-size: 2rem;
-}
-
-/* Button styles (reusing action-button and back-button from ManageUser.css) */
-.action-button {
+.manage-inventaris-header .back-button {
   background-color: transparent;
-  border: 1px solid #66fcf1;
-  color: #66fcf1;
-  padding: 0.6rem 1.2rem;
-  border-radius: 20px;
-  font-weight: bold;
-  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem; /* Space between icon and text */
-}
-
-.action-button:hover {
-  background-color: #66fcf1;
-  color: #1f2833;
-  transform: scale(1.05);
-}
-
-.back-button {
-  background-color: #4b5a6a; /* Different background for back button */
-  border: 1px solid #6c757d;
-  color: #c5c6c7;
-  padding: 0.6rem; /* Adjust padding for icon-only */
-  width: 45px; /* Fixed size */
-  height: 45px;
-  border-radius: 10px;
+  border: 1px solid #777777; /* Grey border for dark theme */
+  color: #FFFFFF; /* White icon for contrast */
+  padding: 0.6rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.back-button:hover {
-  background-color: #6c757d;
-  transform: scale(1.1);
+.manage-inventaris-header .back-button:hover {
+  background-color: #333333; /* Darker grey hover */
+  border-color: #999999;
 }
 
-/* Table Styles */
-.table-responsive {
-  margin-top: 2rem; /* Add space above the table */
+.manage-inventaris-title {
+  font-weight: 600;
+  font-size: 1.85rem;
+  text-align: center;
+  flex-grow: 1;
+  color: #FFFFFF; /* White title for dark theme */
+  margin: 0 1rem;
 }
 
-.inventaris-table {
-  background-color: #2c3e50; /* Darker background for table */
-  color: #c5c6c7; /* Light text color */
-  border: 1px solid #4b5a6a; /* Border color */
-  border-radius: 8px; /* Rounded corners for the table container */
-  overflow: hidden; /* Ensures border-radius clips content */
+/* Add Item Button - Dark Theme Style */
+.manage-inventaris-header .action-button {
+  background-color: #A08454; /* Dark gold */
+  border: 1px solid #8C6D3F;
+  color: #FFFFFF;
+  padding: 0.7rem 1.4rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
 }
 
-.inventaris-table thead {
-  background-color: #1f2833; /* Even darker header */
-  color: #66fcf1; /* Accent color for header text */
+.manage-inventaris-header .action-button:hover {
+  background-color: #8C6D3F; /* Darker gold on hover */
+  border-color: #795C32;
+  transform: translateY(-1px);
 }
 
-.inventaris-table th,
-.inventaris-table td {
-  vertical-align: middle; /* Center content vertically */
-  padding: 0.8rem 1rem; /* Adjust padding */
-  border-color: #4b5a6a; /* Match border color */
+/* Inventaris Cards Container */
+.inventaris-card-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Responsive grid */
+  gap: 2rem;
+  flex-grow: 1;
+  padding-bottom: 2rem;
 }
 
-/* Style for striped rows */
-.table-striped > tbody > tr:nth-of-type(odd) > * {
-  background-color: rgba(75, 90, 106, 0.5); /* Slightly different shade for odd rows */
-  color: #c5c6c7;
+/* Individual Inventaris Card - Dark Theme, Image-based Layout */
+.inventaris-card {
+  background-color: #5D4037; /* Brown background */
+  border-radius: 8px;
+  padding: 0; /* Card padding handled by internal elements */
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  color: #ca8f11fa;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-/* Hover effect for rows */
-.table-hover > tbody > tr:hover > * {
-  background-color: #45a29e; /* Accent color on hover */
-  color: #1f2833; /* Dark text on hover */
+.inventaris-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* Ensure buttons in table cells have some space */
-.inventaris-table td .btn {
-  margin-right: 0.5rem; /* Add space between buttons */
-}
-.inventaris-table td .btn:last-child {
-  margin-right: 0; /* Remove margin from the last button */
+.card-image-placeholder {
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  background-color: #795548; /* Darker brown for placeholder */
+  position: relative;
+  /* Basic SVG placeholder matching the image style */
+  background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22100%25%22%20height%3D%22100%25%22%20viewBox%3D%220%200%20300%20168%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Crect%20width%3D%22300%22%20height%3D%22168%22%20fill%3D%22%23add8e6%22/%3E%3Cpath%20d%3D%22M0%20120%20Q%2075%2090%20150%20120%20T%20300%20120%20L%20300%20168%20L%200%20168%20Z%22%20fill%3D%22%2390ee90%22/%3E%3Ccircle%20cx%3D%2270%22%20cy%3D%2270%22%20r%3D%2215%22%20fill%3D%22%23ffffff%22/%3E%3Ccircle%20cx%3D%22120%22%20cy%3D%2260%22%20r%3D%2220%22%20fill%3D%22%23ffffff%22/%3E%3C/svg%3E');
+  background-size: cover;
+  background-position: center;
 }
 
-/* Style for stock warning */
-.stock-warning {
-  color: #e74c3c; /* Red color for warning */
+.info-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5rem;
+  color: #FFFFFF;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  padding: 5px;
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.info-icon:hover {
+  color: #F5E8C7; /* Light beige/cream on hover */
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.inventaris-card .card-body {
+  padding: 1rem; /* Padding for text content below image */
+  flex-grow: 1;
+}
+
+.inventaris-card .item-name {
+  font-size: 1.25rem; /* "Nama Barang" is largest */
   font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #FFFFFF;
 }
 
-.warning-text {
-  font-size: 0.8em;
-  margin-left: 5px;
-  font-style: italic;
+.inventaris-card .item-details {
+  font-size: 0.9rem; /* Smaller text for stock details */
+  color: #F5E8C7; /* Light beige/cream text */
 }
 
-/* Modal styles (Copied from ManageUser.css) */
+.inventaris-card .item-details p {
+  margin-bottom: 0.25rem; /* Tighter spacing for stock lines */
+}
+
+.stock-warning-text { /* Renamed from .warning-text to be more specific */
+  color: #FFAB91; /* Lighter, more visible red on dark brown */
+  font-weight: normal;
+  font-size: 0.85rem;
+  margin-left: 4px;
+}
+
+/* Card Footer */
+.inventaris-card .card-footer {
+  background-color: transparent;
+  border-top: none; /* No border in the image example */
+  padding: 0.5rem 1rem 1rem 1rem; /* Padding for footer */
+  margin-top: auto; /* Pushes footer to the bottom of the card */
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.inventaris-card .card-footer .edit-button,
+.inventaris-card .card-footer .delete-button {
+  color: #F5E8C7; /* Light beige/cream text for buttons */
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem; /* Smaller font for Edit/Delete */
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.inventaris-card .card-footer .edit-button:hover,
+.inventaris-card .card-footer .delete-button:hover {
+  color: #FFFFFF;
+  text-decoration: underline;
+}
+
+
+/* Modal styles (Dark Theme) */
 .modal-content {
-  background-color: #1f2833;
-  color: #c5c6c7;
-  border: 1px solid #4b5a6a;
-  border-radius: 10px;
+  background-color: #3a3a3a; /* Dark background for modal */
+  color: #FFFFFF; /* White text */
+  border: 1px solid #555555; /* Darker border */
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); /* Darker shadow */
 }
 
 .modal-header {
-  border-bottom: 1px solid #4b5a6a;
-  color: #66fcf1;
+  border-bottom: 1px solid #A08454; /* Gold separator */
+  color: #FFFFFF; /* White title */
+  padding: 1.25rem 1.5rem;
+}
+.modal-header .modal-title {
+  font-weight: 600;
+  font-size: 1.35rem;
+  color: #F5E8C7; /* Light beige/cream title */
 }
 
 .modal-header .btn-close {
-  filter: invert(1) grayscale(100%) brightness(200%);
+  filter: invert(1) grayscale(100%) brightness(200%); /* Make close button white */
+  opacity: 0.7;
+}
+.modal-header .btn-close:hover {
+  opacity: 1;
 }
 
 .modal-body {
-  padding: 1.5rem;
+  padding: 1.75rem;
 }
 
 .modal-body .form-label {
- color: #0080ff;
+  color: #CCCCCC; /* Light grey label */
 }
 
 .modal-body .form-control {
-  background-color: #2c3e50;
-  color: #ffffff;
-  border: 1px solid #4b5a6a;
-  border-radius: 5px;
+  background-color: #555555; /* Dark input background */
+  color: #FFFFFF; /* White text */
+  border: 1px solid #777777; /* Grey border */
 }
-
 .modal-body .form-control::placeholder {
-  color: #8a9a9a;
+  color: #AAAAAA; /* Lighter grey placeholder */
 }
-
 .modal-body .form-control:focus {
-  border-color: #00ffee;
-  background-color: #2c3e50;
-  color: #ffffff;
-  box-shadow: none;
+  background-color: #666666;
+  border-color: #A08454; /* Gold focus border */
+  box-shadow: 0 0 0 3px rgba(160, 132, 84, 0.3); /* Gold focus ring */
 }
-
 
 .modal-footer {
-  border-top: 1px solid #4b5a6a;
+  border-top: 1px solid #555555; /* Darker border */
+  padding: 1.25rem 1.5rem;
+  background-color: #3a3a3a; /* Dark footer background */
 }
 
-.modal-footer .btn-primary {
-  background-color: #66fcf1;
-  border-color: #66fcf1;
-  color: #1f2833;
-  font-weight: bold;
-}
-.modal-footer .btn-primary:hover {
-  background-color: #45a29e;
-  border-color: #45a29e;
-  color: #1f2833;
-}
-
-.modal-footer .btn-secondary {
-  color: #c5c6c7;
-  background-color: #4b5a6a;
-  border-color: #ffffff;
-  font-weight: bold;
+.modal-footer .btn-secondary { /* For "Batal" or "Cancel" */
+  background-color: #555555;
+  border: 1px solid #777777;
+  color: #FFFFFF;
 }
 .modal-footer .btn-secondary:hover {
-  background-color: #6c757d;
-  color: #ffffff;
+  background-color: #666666;
+  border-color: #888888;
+}
+.modal-footer .btn-primary { /* For "Simpan" or "Save" */
+  background-color: #A08454; /* Dark gold */
+  border-color: #8C6D3F;
+  color: #FFFFFF;
+}
+.modal-footer .btn-primary:hover {
+  background-color: #8C6D3F;
+  border-color: #795C32;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .manage-inventaris-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  .manage-inventaris-title {
+    text-align: center;
+    margin-bottom: 0.5rem;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .manage-inventaris-header .back-button,
+  .manage-inventaris-header .action-button {
+    width: 100%;
+    justify-content: center;
+  }
+   .manage-inventaris-header .back-button { order: 1; }
+   .manage-inventaris-title { order: 2; }
+   .manage-inventaris-header .action-button { order: 3; }
 }

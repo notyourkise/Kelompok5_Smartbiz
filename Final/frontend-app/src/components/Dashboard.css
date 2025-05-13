@@ -154,6 +154,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Softer shadow */
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   margin-bottom: 20px; /* Space between cards */
+  height: 100%; /* Ensure cards in a row have same height */
 }
 
 .dashboard-card-modern:hover {
@@ -198,6 +199,7 @@
   margin-bottom: 20px;
   overflow: hidden; /* To contain the icon background */
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Added transition */
+  height: 100%; /* Ensure cards in a row have same height */
 }
 
 .widget-card:hover {

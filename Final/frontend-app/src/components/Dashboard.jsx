@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; // Import useEffect
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -29,17 +29,23 @@ import {
   FaEnvelope, // Tambahkan ikon baru
   FaMoon, // Ikon untuk dark mode
   FaSun, // Ikon untuk light mode
+  FaChevronDown, // Icon for dropdown
+  FaChevronUp, // Icon for dropdown
 } from "react-icons/fa";
-import axios from "axios"; // Import axios
+import axios from "axios";
 import Footer from "./Footer";
 import ManageUser from "./ManageUser"; // Impor ManageUser
 import ManageKos from "./ManageKos"; // Impor ManageKos
 import ManageCoffeeShopMenu from "./ManageCoffeeShopMenu"; // Impor ManageCoffeeShopMenu
+import ManageInventarisCoffeeShop from "./ManageInventarisCoffeeShop"; // Import Inventaris Coffee Shop
+import ManageInventarisKost from "./ManageInventarisKost"; // Import Inventaris Kost
 import "./Dashboard.css"; // Pastikan CSS diimpor
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState("dashboard");
+  const [isInventoryOpen, setIsInventoryOpen] = useState(false); // State for inventory dropdown
+  const [isFinanceOpen, setIsFinanceOpen] = useState(false); // State for finance dropdown
   const [theme, setTheme] = useState("dark"); // 'light' or 'dark'
   const [timeFilter, setTimeFilter] = useState("thisMonth"); // Default filter
   const [currentTimeString, setCurrentTimeString] = useState("");
@@ -143,6 +149,16 @@ const Dashboard = () => {
       document.body.classList.remove("dark-theme-body");
     };
   }, [theme]);
+
+  // Toggle inventory dropdown
+  const toggleInventoryDropdown = () => {
+    setIsInventoryOpen(!isInventoryOpen);
+  };
+
+  // Toggle finance dropdown
+  const toggleFinanceDropdown = () => {
+    setIsFinanceOpen(!isFinanceOpen);
+  };
 
   useEffect(() => {
     const updateClock = () => {
@@ -335,13 +351,10 @@ const Dashboard = () => {
     navigate("/login");
   };
 
-  const handleCoffeeShopFinanceClick = () => navigate("/finance/coffee-shop");
-  const handleKostFinanceClick = () => navigate("/finance/kost");
-  const handleInventarisCoffeeShopClick = () =>
-    navigate("/inventaris/coffee-shop");
-  const handleInventarisKostClick = () => navigate("/inventaris/kost");
-  const handleManageUser = () => setActiveView("manageUser"); // Ubah ke setActiveView
-  const handleManageKos = () => setActiveView("manageKos"); // Ubah ke setActiveView
+  const handleCoffeeShopFinanceClick = () => navigate("/finance/coffee-shop"); // Keep navigation for finance for now, unless specified otherwise
+  const handleKostFinanceClick = () => navigate("/finance/kost"); // Keep navigation for finance for now
+  const handleManageUser = () => setActiveView("manageUser");
+  const handleManageKos = () => setActiveView("manageKos");
   const handleManageCoffeeShopMenu = () => setActiveView("manageCoffeeShopMenu"); // Diubah untuk mengatur activeView
   const handleAboutClick = () => setActiveView("about"); // Handler for About menu
 
@@ -384,45 +397,7 @@ const Dashboard = () => {
             </Row>
           </>
         );
-      case "inventory":
-        // ... (Konten sub-menu inventory tetap sama)
-        return (
-          <>
-            <h3>Manajemen Inventaris</h3>
-            <Row xs={1} md={2} className="g-4">
-              <Col>
-                <Card className="dashboard-card-modern">
-                  <Card.Body>
-                    <FaStore className="card-icon-modern" />
-                    <Card.Title>Inventaris Coffee Shop</Card.Title>
-                    <Card.Text>Kelola inventaris Coffee Shop.</Card.Text>
-                    <Button
-                      variant="primary"
-                      onClick={handleInventarisCoffeeShopClick}
-                    >
-                      Kelola
-                    </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-              <Col>
-                <Card className="dashboard-card-modern">
-                  <Card.Body>
-                    <FaBed className="card-icon-modern" />
-                    <Card.Title>Inventaris Kost</Card.Title>
-                    <Card.Text>Kelola inventaris Kost.</Card.Text>
-                    <Button
-                      variant="primary"
-                      onClick={handleInventarisKostClick}
-                    >
-                      Kelola
-                    </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Row>
-          </>
-        );
+      // REMOVED 'inventory' case
       case "about":
         return (
           <>
@@ -482,8 +457,12 @@ const Dashboard = () => {
         return <ManageUser />;
       case "manageKos":
         return <ManageKos />;
-      case "manageCoffeeShopMenu": // Tambahkan case baru
+      case "manageCoffeeShopMenu":
         return <ManageCoffeeShopMenu theme={theme} />;
+      case "manageInventarisCoffeeShop": // Add case for Coffee Shop Inventory
+        return <ManageInventarisCoffeeShop />;
+      case "manageInventarisKost": // Add case for Kost Inventory
+        return <ManageInventarisKost />;
       case "dashboard":
       default:
         // Helper untuk render nilai statistik (handle loading & error)
@@ -662,47 +641,94 @@ const Dashboard = () => {
         <div className="sidebar-header">
           <h2 className="sidebar-title">Smartbiz</h2>
         </div>
+        {/* Dashboard Link */}
         <Nav.Link
           onClick={() => setActiveView("dashboard")}
           active={activeView === "dashboard"}
         >
           <FaTachometerAlt className="sidebar-icon icon-dashboard" /> Dashboard
         </Nav.Link>
+
+        {/* Finance Dropdown (Superadmin only) */}
         {role === "superadmin" && (
-          <Nav.Link
-            onClick={() => setActiveView("finance")}
-            active={activeView === "finance"}
-          >
-            <FaDollarSign className="sidebar-icon icon-finance" /> Manajemen
-            Keuangan
-          </Nav.Link>
+          <>
+            <Nav.Link 
+              onClick={toggleFinanceDropdown} 
+              className="d-flex justify-content-between align-items-center"
+              // active={activeView === "financeCoffeeShop" || activeView === "financeKost"} // Optional: highlight main if sub is active
+            >
+              <span>
+                <FaDollarSign className="sidebar-icon icon-finance" /> Manajemen Keuangan
+              </span>
+              {isFinanceOpen ? <FaChevronUp /> : <FaChevronDown />}
+            </Nav.Link>
+            {isFinanceOpen && (
+              <Nav className="flex-column ms-3 sub-menu">
+                <Nav.Link 
+                  onClick={() => { setActiveView("financeCoffeeShop"); handleCoffeeShopFinanceClick(); }}
+                  active={activeView === "financeCoffeeShop"}
+                >
+                  <FaStore className="sidebar-icon sub-icon" /> Keuangan Coffee Shop
+                </Nav.Link>
+                <Nav.Link 
+                  onClick={() => { setActiveView("financeKost"); handleKostFinanceClick(); }}
+                  active={activeView === "financeKost"}
+                >
+                  <FaBed className="sidebar-icon sub-icon" /> Keuangan Kost
+                </Nav.Link>
+              </Nav>
+            )}
+          </>
         )}
+        {/* End Finance Dropdown */}
+
+        {/* Manage Kos Link (Superadmin only) */}
         {role === "superadmin" && (
           <Nav.Link onClick={handleManageKos} active={activeView === "manageKos"}>
-          <FaBed className="sidebar-icon icon-kos" /> Manajemen Kamar Kos
+            <FaBed className="sidebar-icon icon-kos" /> Manajemen Kamar Kos
           </Nav.Link>
         )}
+
+        {/* Coffee Shop Menu Link */}
         <Nav.Link onClick={handleManageCoffeeShopMenu} active={activeView === "manageCoffeeShopMenu"}>
           <FaCoffee className="sidebar-icon icon-coffee" /> Coffee Shop Menu
         </Nav.Link>
+
+        {/* Manage User Link (Superadmin only) */}
         {role === "superadmin" && (
           <Nav.Link onClick={handleManageUser} active={activeView === "manageUser"}>
             <FaUser className="sidebar-icon icon-user" /> Manajemen User
           </Nav.Link>
         )}
+
+        {/* Inventory Dropdown (Superadmin only) */}
         {role === "superadmin" && (
-          <Nav.Link
-            onClick={() => setActiveView("inventory")}
-            active={activeView === "inventory"}
-          >
-            <FaWarehouse className="sidebar-icon icon-inventory" /> Manajemen
-            Inventaris
-          </Nav.Link>
+          <>
+            <Nav.Link onClick={toggleInventoryDropdown} className="d-flex justify-content-between align-items-center inventory-toggle">
+              <span>
+                <FaBox className="sidebar-icon icon-inventory" /> Inventaris
+              </span>
+              {isInventoryOpen ? <FaChevronUp /> : <FaChevronDown />}
+            </Nav.Link>
+            {isInventoryOpen && (
+              <Nav className="flex-column ms-3 sub-menu"> {/* Indentation for sub-menu */}
+                <Nav.Link onClick={() => setActiveView("manageInventarisCoffeeShop")} active={activeView === "manageInventarisCoffeeShop"}>
+                  <FaStore className="sidebar-icon sub-icon" /> Coffee Shop
+                </Nav.Link>
+                <Nav.Link onClick={() => setActiveView("manageInventarisKost")} active={activeView === "manageInventarisKost"}>
+                  <FaWarehouse className="sidebar-icon sub-icon" /> Kost
+                </Nav.Link>
+              </Nav>
+            )}
+          </>
         )}
+        {/* End Inventory Dropdown */}
+
+        {/* About Us Link */}
         <Nav.Link onClick={handleAboutClick} active={activeView === "about"}>
           <FaInfoCircle className="sidebar-icon icon-about" /> Tentang Kami
         </Nav.Link>
-        {/* Tambahkan Nav.Link lain jika perlu */}
+
       </Nav>
 
       {/* Main Content Area */}

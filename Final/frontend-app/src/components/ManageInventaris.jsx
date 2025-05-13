@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-// Import Table component from react-bootstrap
-import { Button, Modal, Form, Table } from "react-bootstrap"; 
-import { FaTrashAlt, FaEdit, FaPlus, FaArrowLeft } from "react-icons/fa"; // Remove FaBox, not needed for table
+// Import Card, Row, Col from react-bootstrap
+import { Button, Modal, Form, Card, Row, Col } from "react-bootstrap"; 
+import { FaTrashAlt, FaEdit, FaPlus, FaArrowLeft, FaInfoCircle } from "react-icons/fa"; // Added FaInfoCircle
 import { useNavigate } from "react-router-dom"; // Untuk navigasi
 import Footer from './Footer'; // Pastikan Footer diimpor
 import './ManageInventaris.css'; // Import the new CSS file
@@ -143,58 +143,55 @@ const ManageInventaris = () => {
         </Button>
       </header>
 
-      {/* Inventaris Table */}
-      <div className="table-responsive"> {/* Make table responsive */}
-        <Table striped bordered hover className="inventaris-table"> {/* Add class for potential styling */}
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Nama Item</th>
-              <th>Stok</th>
-              <th>Minimum Stok</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {inventaris.length > 0 ? (
-              inventaris.map((item, index) => (
-                <tr key={item.id}>
-                  <td>{index + 1}</td>
-                  <td>{item.item_name}</td>
-                  {/* Add conditional class for stock warning */}
-                  <td className={item.stock <= item.minimum_stock ? 'stock-warning' : ''}>
-                    {item.stock}
-                    {item.stock <= item.minimum_stock && (
-                      <span className="warning-text"> (Stok menipis!)</span>
-                    )}
-                  </td>
-                  <td>{item.minimum_stock}</td>
-                  <td>
+      {/* Inventaris Card Layout */}
+      <div className="inventaris-card-list">
+        <Row xs={1} md={2} lg={3} className="g-4"> {/* Responsive Grid */}
+          {inventaris.length > 0 ? (
+            inventaris.map((item) => (
+              <Col key={item.id}>
+                <Card className="inventaris-card">
+                  <div className="card-image-placeholder">
+                    {/* Placeholder for image */}
+                    <FaInfoCircle className="info-icon" onClick={() => alert(`Info for ${item.item_name}`)} /> {/* Basic info click handler */}
+                  </div>
+                  <Card.Body>
+                    <Card.Title className="item-name">{item.item_name}</Card.Title>
+                    <div className="item-details">
+                      <p className="item-stock">Stok Barang: {item.stock}
+                        {item.stock <= item.minimum_stock && (
+                          <span className="stock-warning-text"> (Minimum!)</span>
+                        )}
+                      </p>
+                      <p className="item-min-stock">Minimum Stok: {item.minimum_stock}</p>
+                    </div>
+                  </Card.Body>
+                  <Card.Footer>
                     <Button
-                      variant="outline-primary"
+                      variant="link"
                       size="sm"
-                      className="me-2" // Margin end for spacing
+                      className="edit-button"
                       onClick={() => handleEditClick(item)}
                     >
-                      <FaEdit /> Edit
+                      Edit
                     </Button>
                     <Button
-                      variant="outline-danger"
+                      variant="link"
                       size="sm"
+                      className="delete-button"
                       onClick={() => handleDelete(item.id)}
                     >
-                      <FaTrashAlt /> Hapus
+                      Delete
                     </Button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="text-center">Tidak ada data inventaris.</td>
-              </tr>
-            )}
-          </tbody>
-        </Table>
+                  </Card.Footer>
+                </Card>
+              </Col>
+            ))
+          ) : (
+            <Col>
+              <p className="text-center w-100">Tidak ada data inventaris.</p>
+            </Col>
+          )}
+        </Row>
       </div>
 
       {/* Modal Create Item */}

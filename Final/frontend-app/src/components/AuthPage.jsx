@@ -191,8 +191,8 @@ const AuthPage = () => {
             <div className="auth-overlay-panel auth-overlay-left">
               {/* Content for when Register is active (overlay is on the left) */}
               {/* Removed GIF img tag */}
-              <h2>Welcome Back!</h2>
-              <p>To keep connected with us please login with your personal info</p>
+              <h2>Hello, Friend!</h2>
+              <p>Enter your personal details and start journey with us</p>
               <button className="auth-button ghost" onClick={switchToLogin}>
                 Sign In
               </button>
@@ -200,8 +200,8 @@ const AuthPage = () => {
             <div className="auth-overlay-panel auth-overlay-right">
               {/* Content for when Login is active (overlay is on the right) */}
               {/* Removed GIF img tag */}
-              <h2>Hello, Friend!</h2>
-              <p>Enter your personal details and start journey with us</p>
+              <h2>Welcome Back!</h2>
+              <p>To keep connected with us please login with your personal info</p>
               <button className="auth-button ghost" onClick={switchToRegister}>
                 Sign Up
               </button>
