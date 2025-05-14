@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-// Import Card instead of Table
 import { Button, Modal, Form, Card, Row, Col } from "react-bootstrap";
 import {
   FaTrashAlt,
@@ -8,16 +7,18 @@ import {
   FaPlus,
   FaArrowLeft,
   FaInfoCircle,
-} from "react-icons/fa"; // Added FaInfoCircle
+} from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Footer from "./Footer";
-import "./ManageInventarisKost.css"; // Import CSS khusus untuk Kost
+import "./ManageInventarisKost.css";
 
 const ManageInventarisKost = () => {
   const navigate = useNavigate();
   const [inventaris, setInventaris] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteItemId, setDeleteItemId] = useState(null);
   const [newItem, setNewItem] = useState({
     item_name: "",
     stock: 0,
@@ -49,21 +50,29 @@ const ManageInventarisKost = () => {
   }, []);
 
   const handleBack = () => navigate("/dashboard");
-
-  const handleDelete = async (itemId) => {
+  const handleDelete = async (id) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      console.error("Authentication token not found. Cannot delete item.");
+      console.error(
+        "Token autentikasi tidak ditemukan. Tidak dapat menghapus item."
+      );
       return;
     }
     try {
-      await axios.delete(`http://localhost:3001/api/inventaris/${itemId}`, {
+      await axios.delete(`http://localhost:3001/api/inventaris/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setInventaris(inventaris.filter((item) => item.id !== itemId));
+      setInventaris(inventaris.filter((item) => item.id !== id));
+      setShowDeleteModal(false);
+      setDeleteItemId(null);
     } catch (error) {
-      console.error("Error deleting item:", error);
+      console.error("Error saat menghapus item:", error);
     }
+  };
+
+  const handleDeleteClick = (id) => {
+    setDeleteItemId(id);
+    setShowDeleteModal(true);
   };
 
   const handleCreateModal = () => setShowCreateModal(true);
@@ -82,7 +91,7 @@ const ManageInventarisKost = () => {
     try {
       const newItemWithCategory = {
         ...newItem,
-        category: "kost", // Menambahkan kategori kost
+        category: "kost",
       };
 
       await axios.post(
@@ -143,24 +152,17 @@ const ManageInventarisKost = () => {
         </Button>
       </header>
 
-      {/* Card Layout for Inventaris */}
       <div className="inventaris-card-list">
         <Row xs={1} md={2} lg={3} className="g-4">
-          {" "}
-          {/* Responsive Grid */}
           {inventaris.length > 0 ? (
             inventaris.map((item) => (
               <Col key={item.id}>
                 <Card className="inventaris-card">
-                  {" "}
-                  {/* Removed h-100, height will be intrinsic to content + image placeholder */}
                   <div className="card-image-placeholder">
-                    {/* Placeholder for image */}
                     <FaInfoCircle
                       className="info-icon"
                       onClick={() => alert(`Info for ${item.item_name}`)}
-                    />{" "}
-                    {/* Basic info click handler */}
+                    />
                   </div>
                   <Card.Body>
                     <Card.Title className="item-name">
@@ -199,12 +201,12 @@ const ManageInventarisKost = () => {
                     >
                       <FaEdit style={{ marginRight: "4px" }} />
                       Edit
-                    </Button>
+                    </Button>{" "}
                     <Button
                       variant="outline-danger"
                       size="sm"
                       className="delete-button"
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => handleDeleteClick(item.id)}
                       style={{
                         borderColor: "#e53935 !important",
                         color: "#e53935",
@@ -214,6 +216,7 @@ const ManageInventarisKost = () => {
                         gap: "0.4rem",
                         fontWeight: 500,
                         marginLeft: "0.7rem",
+                        borderWidth: "2px",
                       }}
                     >
                       <FaTrashAlt style={{ marginRight: "4px" }} />
@@ -225,14 +228,12 @@ const ManageInventarisKost = () => {
             ))
           ) : (
             <Col>
-              <p className="text-center w-100">Tidak ada data inventaris.</p>{" "}
-              {/* Message if no data */}
+              <p className="text-center w-100">Tidak ada data inventaris.</p>
             </Col>
           )}
         </Row>
       </div>
 
-      {/* Modals remain the same */}
       <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Tambah Item Inventaris</Modal.Title>
@@ -319,6 +320,22 @@ const ManageInventarisKost = () => {
           </Button>
           <Button variant="primary" onClick={handleUpdateItem}>
             Simpan Perubahan
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Konfirmasi Hapus</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Apakah Anda yakin ingin menghapus item ini?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Batal
+          </Button>
+          <Button variant="danger" onClick={() => handleDelete(deleteItemId)}>
+            Hapus
           </Button>
         </Modal.Footer>
       </Modal>

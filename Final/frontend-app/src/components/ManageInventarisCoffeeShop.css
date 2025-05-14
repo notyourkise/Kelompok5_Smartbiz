@@ -1,12 +1,33 @@
 /* src/components/ManageInventarisCoffeeShop.css - Consistent with Coffee Shop Menu Theme */
 
+body {
+  background-color: var(--background-color);
+}
+
+[data-theme="light"] {
+  --background-color: #f5f5f5; /* Light theme background color */
+}
+
+[data-theme="dark"] {
+  --background-color: #333333; /* Dark theme background color */
+}
+
+/* Theme background for light/dark mode */
+.theme-light .manage-inventaris-container {
+  background-color: #f5f5f5 !important;
+  color: #222 !important;
+}
+.theme-dark .manage-inventaris-container {
+  background-color: #000000 !important;
+  color: #fff !important;
+}
+
 /* Base Container - Dark Theme */
 .manage-inventaris-container {
   min-height: 100vh;
-  background-color: #000000; /* Black background */
   padding: 2.5rem;
-  color: #FFFFFF; /* White text for contrast */
-  font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
+  color: #ffffff; /* White text for contrast */
+  font-family: "Lato", "Helvetica Neue", Arial, sans-serif;
   display: flex;
   flex-direction: column;
 }
@@ -25,7 +46,7 @@
   /* Dark theme back button */
   background-color: transparent;
   border: 1px solid #777777; /* Grey border for dark theme */
-  color: #FFFFFF; /* White icon for contrast */
+  color: #ffffff; /* White icon for contrast */
   padding: 0.6rem;
   width: 40px; /* Fixed size */
   height: 40px; /* Fixed size */
@@ -33,13 +54,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .manage-inventaris-header .back-button:hover {
   background-color: #333333; /* Darker grey hover */
   border-color: #999999;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .manage-inventaris-title {
@@ -47,37 +69,40 @@
   font-size: 1.85rem;
   text-align: center;
   flex-grow: 1;
-  color: #FFFFFF; /* White title for dark theme */
+  color: #ffffff; /* White title for dark theme */
   margin: 0 1rem; /* Add some horizontal margin */
 }
 
 /* Add Item Button - Dark Theme Style */
 .manage-inventaris-header .action-button {
-  background-color: #A08454; /* Dark gold like reference */
-  border: 1px solid #8C6D3F;
-  color: #FFFFFF; /* White text */
+  background-color: #a08454; /* Dark gold like reference */
+  border: 1px solid #8c6d3f;
+  color: #ffffff; /* White text */
   padding: 0.7rem 1.4rem;
   border-radius: 6px;
   font-weight: 500;
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    transform 0.2s ease;
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
 }
 
 .manage-inventaris-header .action-button:hover {
-  background-color: #8C6D3F; /* Darker gold on hover */
-  border-color: #795C32;
+  background-color: #8c6d3f; /* Darker gold on hover */
+  border-color: #795c32;
   color: #ffffff;
   transform: translateY(-1px);
 }
-
 
 /* Inventaris Cards Container */
 /* Card List Grid - Konsisten */
 .inventaris-card-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Card min 300px */
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(300px, 1fr)
+  ); /* Card min 300px */
   gap: 2rem;
   flex-grow: 1;
   padding-bottom: 2rem;
@@ -87,22 +112,22 @@
 /* Card - Ukuran Persegi Konsisten */
 .inventaris-card {
   width: 300px;
-  min-height: 220px;      /* Minimum tinggi agar tetap proporsional */
-  background-color: #5D4037 !important;
+  min-height: 220px; /* Minimum tinggi agar tetap proporsional */
+  background-color: #5d4037 !important;
   border-radius: 16px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
   color: #fff;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
   position: relative;
-  height: auto;           /* Tinggi otomatis mengikuti isi */
-  max-height: 100%;       /* Tidak melebihi parent */
+  height: auto; /* Tinggi otomatis mengikuti isi */
+  max-height: 100%; /* Tidak melebihi parent */
 }
 .inventaris-card:hover {
   transform: translateY(-8px) scale(1.03);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.22);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
 }
 
 /* Placeholder Image - Tetap proporsional */
@@ -116,10 +141,9 @@
   justify-content: center;
   flex-shrink: 0;
   flex-grow: 0;
-  max-height: 140px;      /* Maksimal tinggi gambar */
-  min-height: 100px;      /* Minimal tinggi gambar */
+  max-height: 140px; /* Maksimal tinggi gambar */
+  min-height: 100px; /* Minimal tinggi gambar */
 }
-
 
 /* Card Body */
 .inventaris-card .card-body {
@@ -153,11 +177,11 @@
 
 .inventaris-card .item-details {
   font-size: 0.95rem;
-  color: #F5E8C7;
+  color: #f5e8c7;
 }
 
 .stock-warning-text {
-  color: #FFAB91;
+  color: #ffab91;
   font-size: 0.85rem;
   margin-left: 4px;
 }
@@ -170,7 +194,7 @@
   display: flex;
   justify-content: flex-end; /* Align buttons right */
   gap: 0.75rem; /* Space between buttons */
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 /* Styling for buttons within the card footer */
@@ -205,25 +229,24 @@
 /* Bootstrap's default :hover states for variants will apply. */
 /* The text and icon colors set above should persist on hover due to specificity or !important */
 
-
 /* Modal Styling - Dark Theme Adjustments */
 .modal-content {
   background-color: #3a3a3a; /* Dark background for modal */
-  color: #FFFFFF; /* White text */
+  color: #ffffff; /* White text */
   border: 1px solid #555555; /* Darker border */
   border-radius: 8px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); /* Darker shadow */
 }
 
 .modal-header {
-  border-bottom: 1px solid #A08454; /* Gold separator */
-  color: #FFFFFF; /* White title */
+  border-bottom: 1px solid #a08454; /* Gold separator */
+  color: #ffffff; /* White title */
   padding: 1.25rem 1.5rem;
 }
 .modal-header .modal-title {
   font-weight: 600;
   font-size: 1.35rem;
-  color: #F5E8C7; /* Light beige/cream title */
+  color: #f5e8c7; /* Light beige/cream title */
 }
 
 .modal-header .btn-close {
@@ -239,7 +262,7 @@
 }
 
 .modal-body .form-label {
-  color: #CCCCCC; /* Light grey label */
+  color: #cccccc; /* Light grey label */
   font-size: 0.9rem;
   margin-bottom: 0.4rem;
   font-weight: 500;
@@ -247,18 +270,18 @@
 
 .modal-body .form-control {
   background-color: #555555; /* Dark input background */
-  color: #FFFFFF; /* White text */
+  color: #ffffff; /* White text */
   border: 1px solid #777777; /* Grey border */
   border-radius: 4px;
   padding: 0.7rem 1rem;
   transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
 }
 .modal-body .form-control::placeholder {
-  color: #AAAAAA; /* Lighter grey placeholder */
+  color: #aaaaaa; /* Lighter grey placeholder */
 }
 .modal-body .form-control:focus {
   background-color: #666666;
-  border-color: #A08454; /* Gold focus border */
+  border-color: #a08454; /* Gold focus border */
   box-shadow: 0 0 0 3px rgba(160, 132, 84, 0.3); /* Gold focus ring */
 }
 
@@ -274,23 +297,25 @@
 }
 
 /* Modal Buttons - Dark Theme */
-.modal-footer .btn-secondary { /* Cancel button */
+.modal-footer .btn-secondary {
+  /* Cancel button */
   background-color: #555555;
   border: 1px solid #777777;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 .modal-footer .btn-secondary:hover {
   background-color: #666666;
   border-color: #888888;
 }
-.modal-footer .btn-primary { /* Save/Update button */
-  background-color: #A08454; /* Dark gold */
-  border-color: #8C6D3F;
-  color: #FFFFFF;
+.modal-footer .btn-primary {
+  /* Save/Update button */
+  background-color: #a08454; /* Dark gold */
+  border-color: #8c6d3f;
+  color: #ffffff;
 }
 .modal-footer .btn-primary:hover {
-  background-color: #8C6D3F;
-  border-color: #795C32;
+  background-color: #8c6d3f;
+  border-color: #795c32;
 }
 
 /* Responsive adjustments */
@@ -314,13 +339,13 @@
   .manage-inventaris-header .back-button {
     order: 1; /* Keep back button first */
   }
-   .manage-inventaris-header .action-button {
-     order: 3; /* Add button last */
-   }
-   .manage-inventaris-title {
-     order: 2; /* Title in the middle */
-   }
-   .inventaris-card-list {
+  .manage-inventaris-header .action-button {
+    order: 3; /* Add button last */
+  }
+  .manage-inventaris-title {
+    order: 2; /* Title in the middle */
+  }
+  .inventaris-card-list {
     grid-template-columns: 1fr;
     gap: 1.2rem;
   }

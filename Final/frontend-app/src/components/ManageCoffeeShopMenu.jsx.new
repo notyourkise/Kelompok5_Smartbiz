@@ -1,0 +1,376 @@
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import { Modal, Button, Form, Table, Alert, Spinner } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faShoppingCart,
+  faPlus,
+  faArrowLeft,
+  faInfoCircle,
+  faEdit,
+} from "@fortawesome/free-solid-svg-icons";
+import "./ManageCoffeeShopMenu.css";
+import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const API_URL = "http://localhost:3001/coffee-shop";
+
+function ManageCoffeeShopMenu({ theme }) {
+  // ... existing state and helper functions ...
+
+  return (
+    <div className={`manage-coffee-menu-container ${theme === 'dark' ? 'theme-dark' : 'theme-light'}`}>
+      <div className="manage-coffee-menu-header">
+        <h2 className="manage-coffee-title">Manajemen Menu Coffee Shop</h2>
+        <div className="cart-container">
+          <FontAwesomeIcon
+            ref={cartIconRef}
+            icon={faShoppingCart}
+            className="cart-icon"
+            onClick={() => setShowCartModal(true)}
+          />
+          {cart.length > 0 && <span className="cart-badge">{cart.length}</span>}
+        </div>
+      </div>
+      
+      {error && <Alert variant="danger">{error}</Alert>}
+      {success && <Alert variant="success">{success}</Alert>}
+
+      <Button className="action-button mb-3" onClick={() => handleShowModal()}>
+        <FontAwesomeIcon icon={faPlus} /> Tambah Menu Baru
+      </Button>
+
+      {isLoading && !menus.length ? (
+        <div className="text-center">
+          <Spinner animation="border" role="status">
+            <span className="sr-only">Loading...</span>
+          </Spinner>
+        </div>
+      ) : (
+        <div>
+          {/* Coffee Section */}
+          <div className="menu-section mb-5">
+            <h3 className="section-title">Coffee</h3>
+            <div className="menu-cards-container">
+              {menus
+                .filter((item) => item.category === "coffee")
+                .map((item) => (
+                  <div className="menu-card" key={item.id}>
+                    <FontAwesomeIcon
+                      icon={faEdit}
+                      className="edit-icon"
+                      onClick={() => handleShowModal(item)}
+                      title="Edit Menu"
+                    />
+                    <FontAwesomeIcon
+                      icon={faInfoCircle}
+                      className="info-icon"
+                      onClick={() => handleShowDescriptionModal(item)}
+                      title="Lihat Deskripsi"
+                    />
+                    <h5>{item.name}</h5>
+                    <p>Rp {parseFloat(item.price).toLocaleString("id-ID")}</p>
+                    <div className="menu-card-actions">
+                      <Button
+                        className="btn btn-add-to-cart"
+                        onClick={(e) => addToCart(item, e)}
+                      >
+                        Tambah
+                      </Button>
+                      <Button
+                        className="btn btn-delete"
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        Hapus
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Non-Coffee Section */}
+          <div className="menu-section mb-5">
+            <h3 className="section-title">Non-Coffee</h3>
+            <div className="menu-cards-container">
+              {menus
+                .filter((item) => item.category === "non-coffee")
+                .map((item) => (
+                  <div className="menu-card" key={item.id}>
+                    <FontAwesomeIcon
+                      icon={faEdit}
+                      className="edit-icon"
+                      onClick={() => handleShowModal(item)}
+                      title="Edit Menu"
+                    />
+                    <FontAwesomeIcon
+                      icon={faInfoCircle}
+                      className="info-icon"
+                      onClick={() => handleShowDescriptionModal(item)}
+                      title="Lihat Deskripsi"
+                    />
+                    <h5>{item.name}</h5>
+                    <p>Rp {parseFloat(item.price).toLocaleString("id-ID")}</p>
+                    <div className="menu-card-actions">
+                      <Button
+                        className="btn btn-add-to-cart"
+                        onClick={(e) => addToCart(item, e)}
+                      >
+                        Tambah
+                      </Button>
+                      <Button
+                        className="btn btn-delete"
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        Hapus
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Snack Section */}
+          <div className="menu-section">
+            <h3 className="section-title">Snack</h3>
+            <div className="menu-cards-container">
+              {menus
+                .filter((item) => item.category === "snack")
+                .map((item) => (
+                  <div className="menu-card" key={item.id}>
+                    <FontAwesomeIcon
+                      icon={faEdit}
+                      className="edit-icon"
+                      onClick={() => handleShowModal(item)}
+                      title="Edit Menu"
+                    />
+                    <FontAwesomeIcon
+                      icon={faInfoCircle}
+                      className="info-icon"
+                      onClick={() => handleShowDescriptionModal(item)}
+                      title="Lihat Deskripsi"
+                    />
+                    <h5>{item.name}</h5>
+                    <p>Rp {parseFloat(item.price).toLocaleString("id-ID")}</p>
+                    <div className="menu-card-actions">
+                      <Button
+                        className="btn btn-add-to-cart"
+                        onClick={(e) => addToCart(item, e)}
+                      >
+                        Tambah
+                      </Button>
+                      <Button
+                        className="btn btn-delete"
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        Hapus
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Description Modal */}
+      <Modal show={showDescriptionModal} onHide={handleCloseDescriptionModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>{currentDescriptionItem?.name} - Deskripsi</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            {currentDescriptionItem?.description || "Tidak ada deskripsi untuk item ini."}
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseDescriptionModal}>
+            Tutup
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Cart Modal */}
+      <Modal show={showCartModal} onHide={() => setShowCartModal(false)} centered className="cart-modal">
+        <Modal.Header closeButton>
+          <Modal.Title>Keranjang</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nama Menu</th>
+                <th>Jumlah</th>
+                <th>Total</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cart.map((item, index) => (
+                <tr key={item.id}>
+                  <td>{index + 1}</td>
+                  <td>{item.name}</td>
+                  <td>{item.quantity}</td>
+                  <td>
+                    Rp {parseFloat(item.price * item.quantity).toLocaleString("id-ID")}
+                  </td>
+                  <td className="quantity-buttons">
+                    <Button size="sm" onClick={() => decreaseQuantity(item)}>-</Button>
+                    <span>{item.quantity}</span>
+                    <Button size="sm" onClick={() => increaseQuantity(item)}>+</Button>
+                  </td>
+                </tr>
+              ))}
+              <tr>
+                <td colSpan="3">Total</td>
+                <td colSpan="2">
+                  Rp {cart
+                    .reduce((total, item) => total + item.price * item.quantity, 0)
+                    .toLocaleString("id-ID")}
+                </td>
+              </tr>
+            </tbody>
+          </Table>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setCart([])} className="action-button">
+            Kosongkan Keranjang
+          </Button>
+          <Button
+            onClick={() => {
+              if (cart.length === 0) {
+                toast.warn("Keranjang masih kosong. Silahkan pilih menu!", {
+                  position: "top-right",
+                  autoClose: 3000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                });
+                return;
+              }
+              localStorage.setItem("cart", JSON.stringify(cart));
+              navigate("/payment-form");
+            }}
+            className="action-button"
+          >
+            Lanjut
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Add/Edit Menu Modal */}
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {currentItem ? "Edit Menu" : "Tambah Menu Baru"}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {error && <Alert variant="danger">{error}</Alert>}
+          <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="formMenuName">
+              <Form.Label>Nama Menu</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Masukkan nama menu"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formMenuPrice">
+              <Form.Label>Harga (Rp)</Form.Label>
+              <Form.Control
+                type="number"
+                placeholder="Masukkan harga"
+                name="price"
+                value={formData.price}
+                onChange={handleInputChange}
+                required
+                min="0"
+                step="1000"
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formMenuCategory">
+              <Form.Label>Kategori</Form.Label>
+              <Form.Control
+                as="select"
+                name="category"
+                value={formData.category}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">Pilih Kategori</option>
+                <option value="coffee">Coffee</option>
+                <option value="non-coffee">Non-Coffee</option>
+                <option value="snack">Snack</option>
+              </Form.Control>
+            </Form.Group>
+
+            <Form.Group controlId="formMenuDescription">
+              <Form.Label>Deskripsi</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                placeholder="Deskripsi menu (opsional)"
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formMenuAvailability">
+              <Form.Label>Ketersediaan</Form.Label>
+              <Form.Control
+                as="select"
+                name="availability"
+                value={formData.availability}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="available">Tersedia</option>
+                <option value="unavailable">Tidak Tersedia</option>
+              </Form.Control>
+            </Form.Group>
+
+            <div className="mt-3">
+              <Button variant="secondary" onClick={handleCloseModal} className="me-2">
+                Batal
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                  />
+                ) : currentItem ? (
+                  "Perbarui Menu"
+                ) : (
+                  "Tambah Menu"
+                )}
+              </Button>
+            </div>
+          </Form>
+        </Modal.Body>
+      </Modal>
+      
+      <ToastContainer />
+    </div>
+  );
+}
+
+export default ManageCoffeeShopMenu;

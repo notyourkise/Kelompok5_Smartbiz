@@ -618,7 +618,7 @@ const Dashboard = () => {
                     </div>
                     <div className="widget-content">
                       <Card.Subtitle className="text-muted">
-                        Item Menu Kopi
+                        Item Menu Coffe Shop
                       </Card.Subtitle>
                       <Card.Title className="widget-value">
                         {renderStatValue("menuItems")}
@@ -636,10 +636,18 @@ const Dashboard = () => {
   // --- Render Komponen Utama ---
   return (
     <div className="dashboard-layout">
-      {/* Sidebar */}
-      <Nav className="flex-column sidebar">
+      {/* Sidebar */}      <Nav className="flex-column sidebar">
         <div className="sidebar-header">
-          <h2 className="sidebar-title">Smartbiz</h2>
+          <div className="d-flex align-items-center justify-content-center">
+            <img 
+              src="/src/assets/smartbizlogo.png"
+              alt="SmartBiz Logo"
+              className="sidebar-logo"
+              width="70"
+              height="70"
+            />
+            <h2 className="sidebar-title mb-0 ms-2">SmartBiz</h2>
+          </div>
         </div>
         {/* Dashboard Link */}
         <Nav.Link

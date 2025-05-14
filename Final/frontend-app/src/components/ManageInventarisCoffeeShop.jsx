@@ -18,6 +18,8 @@ const ManageInventarisCoffeeShop = () => {
   const [inventaris, setInventaris] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteItemId, setDeleteItemId] = useState(null);
   const [newItem, setNewItem] = useState({
     item_name: "",
     stock: 0,
@@ -49,18 +51,24 @@ const ManageInventarisCoffeeShop = () => {
   }, []);
 
   const handleBack = () => navigate("/dashboard");
+  const handleDeleteClick = (id) => {
+    setDeleteItemId(id);
+    setShowDeleteModal(true);
+  };
 
-  const handleDelete = async (itemId) => {
+  const handleDelete = async (id) => {
     const token = localStorage.getItem("token");
     if (!token) {
       console.error("Authentication token not found. Cannot delete item.");
       return;
     }
     try {
-      await axios.delete(`http://localhost:3001/api/inventaris/${itemId}`, {
+      await axios.delete(`http://localhost:3001/api/inventaris/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setInventaris(inventaris.filter((item) => item.id !== itemId));
+      setInventaris(inventaris.filter((item) => item.id !== id));
+      setShowDeleteModal(false);
+      setDeleteItemId(null);
     } catch (error) {
       console.error("Error deleting item:", error);
     }
@@ -207,7 +215,7 @@ const ManageInventarisCoffeeShop = () => {
                       variant="outline-danger"
                       size="sm"
                       className="delete-button"
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => handleDeleteClick(item.id)}
                       style={{
                         borderColor: "#e53935 !important",
                         color: "#e53935",
@@ -323,6 +331,22 @@ const ManageInventarisCoffeeShop = () => {
           </Button>
           <Button variant="primary" onClick={handleUpdateItem}>
             Simpan Perubahan
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Konfirmasi Hapus</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Apakah Anda yakin ingin menghapus item ini?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Batal
+          </Button>
+          <Button variant="danger" onClick={() => handleDelete(deleteItemId)}>
+            Hapus
           </Button>
         </Modal.Footer>
       </Modal>

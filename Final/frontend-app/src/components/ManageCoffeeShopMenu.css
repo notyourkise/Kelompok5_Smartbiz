@@ -5,16 +5,16 @@
   min-height: 100vh;
   background-color: #f9f6f2; /* Soft off-white/light beige */
   padding: 2.5rem;
-  color: #4d403A; /* Dark warm brown text */
-  font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
+  color: #4d403a; /* Dark warm brown text */
+  font-family: "Lato", "Helvetica Neue", Arial, sans-serif;
 }
 
 .manage-coffee-menu-container.theme-dark {
   min-height: 100vh;
   background-color: #000000; /* Black background */
   padding: 2.5rem;
-  color: #FFFFFF; /* White text for contrast */
-  font-family: 'Lato', 'Helvetica Neue', Arial, sans-serif;
+  color: #ffffff; /* White text for contrast */
+  font-family: "Lato", "Helvetica Neue", Arial, sans-serif;
 }
 
 /* Header */
@@ -35,7 +35,6 @@
   border-bottom: 1px solid #444444; /* Darker border for dark theme */
 }
 
-
 .manage-coffee-menu-header .back-button {
   background-color: transparent;
   padding: 0.6rem;
@@ -45,7 +44,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 /* Light theme back button */
@@ -62,12 +62,12 @@
 /* Dark theme back button */
 .theme-dark .manage-coffee-menu-header .back-button {
   border: 1px solid #777777; /* Grey border for dark theme */
-  color: #FFFFFF; /* White icon for contrast */
+  color: #ffffff; /* White icon for contrast */
 }
 .theme-dark .manage-coffee-menu-header .back-button:hover {
   background-color: #333333; /* Darker grey hover */
   border-color: #999999;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .manage-coffee-title {
@@ -80,9 +80,8 @@
   color: #5d4037; /* Rich primary brown for light theme */
 }
 .theme-dark .manage-coffee-title {
-  color: #FFFFFF; /* White title for dark theme */
+  color: #ffffff; /* White title for dark theme */
 }
-
 
 .cart-container {
   position: relative;
@@ -100,10 +99,10 @@
   color: #5d4037; /* Darker brown */
 }
 .theme-dark .cart-icon {
-  color: #FFFFFF; /* White icon for contrast */
+  color: #ffffff; /* White icon for contrast */
 }
 .theme-dark .cart-icon:hover {
-  color: #CCCCCC; /* Lighter grey for hover */
+  color: #cccccc; /* Lighter grey for hover */
 }
 
 .cart-badge {
@@ -120,14 +119,16 @@
 }
 
 /* Main Action Button (Tambah Menu Baru) */
-.action-button.mb-3 { /* More specific selector */
+.action-button.mb-3 {
+  /* More specific selector */
   background-color: #6d4c41; /* Rich warm brown */
   border: 1px solid #5d4037;
   color: #f9f6f2;
   padding: 0.7rem 1.4rem;
   border-radius: 6px;
   font-weight: 500;
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    transform 0.2s ease;
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
@@ -141,11 +142,104 @@
   transform: translateY(-1px);
 }
 
+/* Menu Sections */
+.menu-section {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid;
+}
+
+.theme-light .section-title {
+  color: #5d4037;
+  border-bottom-color: #8d6e63;
+}
+
+.theme-dark .section-title {
+  color: #e0e0e0;
+  border-bottom-color: #616161;
+}
+
+.menu-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  padding: 0.5rem;
+}
+
+.menu-card {
+  background-color: var(--card-bg-color);
+  border-radius: 10px;
+  padding: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.menu-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.theme-light .menu-card {
+  --card-bg-color: #ffffff;
+  border: 1px solid #e0e0e0;
+}
+
+.theme-dark .menu-card {
+  --card-bg-color: #424242;
+  border: 1px solid #616161;
+}
+
 /* Menu Cards Container */
 .menu-cards-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Responsive grid */
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(280px, 1fr)
+  ); /* Responsive grid */
   gap: 2rem;
+  padding: 1rem 0;
+}
+
+/* Menu Section Styles */
+.menu-section {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  color: #8c6d3f;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #a08454;
+}
+
+/* Dark theme specific styles */
+.theme-dark .section-title {
+  color: #f5e8c7;
+  border-bottom-color: #f5e8c7;
+}
+
+@media (max-width: 768px) {
+  .menu-cards-container {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
 }
 
 /* Individual Menu Card - Base Styling */
@@ -154,7 +248,8 @@
   padding: 1.5rem;
   text-align: center;
   position: relative;
-  transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1),
+    box-shadow 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
   overflow: hidden;
 }
 
@@ -162,7 +257,7 @@
 .theme-light .menu-card {
   background-color: #ffffff; /* White background for light theme */
   box-shadow: 0 6px 18px rgba(93, 64, 55, 0.1); /* Softer shadow for light theme */
-  color: #4d403A; /* Dark brown text */
+  color: #4d403a; /* Dark brown text */
 }
 .theme-light .menu-card:hover {
   transform: translateY(-8px) scale(1.02);
@@ -204,52 +299,50 @@
   color: #ffffff;
 }
 
-
 /* Dark Theme Menu Card */
 .theme-dark .menu-card {
-  background-color: #5D4037; /* Dominant brown background */
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25), 0 5px 10px rgba(0,0,0,0.22); /* More pronounced shadow */
-  color: #FFFFFF; /* White text for contrast */
+  background-color: #5d4037; /* Dominant brown background */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25), 0 5px 10px rgba(0, 0, 0, 0.22); /* More pronounced shadow */
+  color: #ffffff; /* White text for contrast */
 }
 .theme-dark .menu-card:hover {
   transform: translateY(-10px) scale(1.03); /* More lift and scale */
-  box-shadow: 0 14px 35px rgba(0,0,0,0.3), 0 10px 15px rgba(0,0,0,0.28); /* Deeper shadow on hover */
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.3), 0 10px 15px rgba(0, 0, 0, 0.28); /* Deeper shadow on hover */
 }
 .theme-dark .menu-card h5 {
-  color: #FFFFFF; /* White title */
+  color: #ffffff; /* White title */
 }
 .theme-dark .menu-card p {
-  color: #F5E8C7; /* Light beige/cream for price */
+  color: #f5e8c7; /* Light beige/cream for price */
 }
 .theme-dark .edit-icon,
 .theme-dark .info-icon {
-  color: #F5E8C7; /* Light beige/cream for icon */
+  color: #f5e8c7; /* Light beige/cream for icon */
 }
 .theme-dark .edit-icon:hover,
 .theme-dark .info-icon:hover {
-  color: #FFFFFF; /* White on hover */
+  color: #ffffff; /* White on hover */
   transform: scale(1.15);
 }
 .theme-dark .menu-card .btn-add-to-cart {
-  background-color: #A08454; /* Dark gold */
-  border-color: #8C6D3F;
-  color: #FFFFFF;
+  background-color: #a08454; /* Dark gold */
+  border-color: #8c6d3f;
+  color: #ffffff;
 }
 .theme-dark .menu-card .btn-add-to-cart:hover {
-  background-color: #8C6D3F;
-  border-color: #795C32;
+  background-color: #8c6d3f;
+  border-color: #795c32;
 }
 .theme-dark .menu-card .btn-delete {
   background-color: transparent;
-  border: 1px solid #EAB2A0; /* Lighter, contrasting red/pink */
-  color: #EAB2A0;
+  border: 1px solid #eab2a0; /* Lighter, contrasting red/pink */
+  color: #eab2a0;
 }
 .theme-dark .menu-card .btn-delete:hover {
-  background-color: #EAB2A0;
-  border-color: #D49A8A;
-  color: #5D4037; /* Dark brown text on hover */
+  background-color: #eab2a0;
+  border-color: #d49a8a;
+  color: #5d4037; /* Dark brown text on hover */
 }
-
 
 /* General Menu Card Styles (applies to both themes) */
 .menu-card h5 {
@@ -290,18 +383,19 @@
   border-radius: 6px;
   font-weight: 500;
   padding: 0.5rem 1rem;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease, transform 0.2s ease;
   flex-grow: 1;
 }
-.menu-card .btn:hover { /* General hover for buttons in card */
+.menu-card .btn:hover {
+  /* General hover for buttons in card */
   transform: translateY(-2px) scale(1.02);
 }
-
 
 /* Modal Styling (General - applies to all modals unless overridden) */
 .modal-content {
   background-color: #fdfdfd; /* Clean, slightly off-white */
-  color: #4d403A;
+  color: #4d403a;
   border: 1px solid #d7ccc8; /* Light tan border */
   border-radius: 8px;
   box-shadow: 0 5px 15px rgba(93, 64, 55, 0.1);
@@ -337,7 +431,6 @@
   display: block; /* Default for p, but good to be explicit */
 }
 
-
 .modal-body .form-label {
   color: #6d4c41; /* Warm brown label */
   font-size: 0.9rem;
@@ -347,7 +440,7 @@
 
 .modal-body .form-control {
   background-color: #ffffff;
-  color: #4d403A;
+  color: #4d403a;
   border: 1px solid #c8bca7; /* Light tan/beige border */
   border-radius: 4px;
   padding: 0.7rem 1rem;
@@ -373,7 +466,8 @@
 }
 
 /* Specific modal button styling if needed, otherwise .action-button class can be used */
-.modal-footer .action-button { /* For cancel/close buttons */
+.modal-footer .action-button {
+  /* For cancel/close buttons */
   background-color: #f9f6f2;
   border: 1px solid #a1887f;
   color: #6d4c41;
@@ -384,7 +478,8 @@
   color: #5d4037;
 }
 .modal-footer button[type="submit"], /* For primary save/update buttons */
-.modal-footer .btn-primary { /* If Bootstrap class is used */
+.modal-footer .btn-primary {
+  /* If Bootstrap class is used */
   background-color: #6d4c41;
   border-color: #5d4037;
   color: #f9f6f2;
@@ -395,7 +490,6 @@
   border-color: #4e342e;
   color: #ffffff;
 }
-
 
 /* Cart Modal Specifics */
 .cart-modal .modal-dialog {
