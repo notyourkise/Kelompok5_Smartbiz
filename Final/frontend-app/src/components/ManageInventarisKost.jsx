@@ -23,6 +23,8 @@ const ManageInventarisKost = () => {
     item_name: "",
     stock: 0,
     minimum_stock: 0,
+    image: null,
+    expiration_date: "",
   });
   const [editingItem, setEditingItem] = useState(null);
 
@@ -76,10 +78,23 @@ const ManageInventarisKost = () => {
   };
 
   const handleCreateModal = () => setShowCreateModal(true);
-  const handleNewItemInputChange = (e) =>
-    setNewItem({ ...newItem, [e.target.name]: e.target.value });
-  const handleEditingItemInputChange = (e) =>
-    setEditingItem({ ...editingItem, [e.target.name]: e.target.value });
+  const handleNewItemInputChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === "image") {
+      setNewItem({ ...newItem, [name]: files[0] });
+    } else {
+      setNewItem({ ...newItem, [name]: value });
+    }
+  };
+
+  const handleEditingItemInputChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === "image") {
+      setEditingItem({ ...editingItem, [name]: files[0] });
+    } else {
+      setEditingItem({ ...editingItem, [name]: value });
+    }
+  };
 
   const handleCreateItem = async () => {
     const token = localStorage.getItem("token");
@@ -88,22 +103,34 @@ const ManageInventarisKost = () => {
       return;
     }
 
-    try {
-      const newItemWithCategory = {
-        ...newItem,
-        category: "kost",
-      };
+    const formData = new FormData();
+    formData.append("item_name", newItem.item_name);
+    formData.append("stock", newItem.stock);
+    formData.append("minimum_stock", newItem.minimum_stock);
+    formData.append("category", "kost");
+    if (newItem.image) {
+      formData.append("image", newItem.image);
+    }
+    if (newItem.expiration_date) {
+      formData.append("expiration_date", newItem.expiration_date);
+    }
 
-      await axios.post(
-        "http://localhost:3001/api/inventaris",
-        newItemWithCategory,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+    try {
+      await axios.post("http://localhost:3001/api/inventaris", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       setShowCreateModal(false);
-      setNewItem({ item_name: "", stock: 0, minimum_stock: 0 });
+      setNewItem({
+        item_name: "",
+        stock: 0,
+        minimum_stock: 0,
+        image: null,
+        expiration_date: "",
+      });
       fetchInventaris();
     } catch (error) {
       console.error("Error creating item:", error);
@@ -123,12 +150,28 @@ const ManageInventarisKost = () => {
       );
       return;
     }
+
+    const formData = new FormData();
+    formData.append("item_name", editingItem.item_name);
+    formData.append("stock", editingItem.stock);
+    formData.append("minimum_stock", editingItem.minimum_stock);
+    formData.append("category", "kost");
+    if (editingItem.image instanceof File) {
+      formData.append("image", editingItem.image);
+    }
+    if (editingItem.expiration_date) {
+      formData.append("expiration_date", editingItem.expiration_date);
+    }
+
     try {
       await axios.put(
         `http://localhost:3001/api/inventaris/${editingItem.id}`,
-        editingItem,
+        formData,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
       setShowEditModal(false);
@@ -158,12 +201,21 @@ const ManageInventarisKost = () => {
             inventaris.map((item) => (
               <Col key={item.id}>
                 <Card className="inventaris-card">
-                  <div className="card-image-placeholder">
-                    <FaInfoCircle
-                      className="info-icon"
-                      onClick={() => alert(`Info for ${item.item_name}`)}
+                  {item.image_url ? (
+                    <Card.Img
+                      variant="top"
+                      src={`http://localhost:3001/${item.image_url}`}
+                      alt={item.item_name}
+                      className="card-image"
                     />
-                  </div>
+                  ) : (
+                    <div className="card-image-placeholder">
+                      <FaInfoCircle
+                        className="info-icon"
+                        onClick={() => alert(`Info for ${item.item_name}`)}
+                      />
+                    </div>
+                  )}
                   <Card.Body>
                     <Card.Title className="item-name">
                       {item.item_name}
@@ -181,6 +233,21 @@ const ManageInventarisKost = () => {
                       <p className="item-min-stock">
                         Minimum Stok: {item.minimum_stock}
                       </p>
+                      {item.expiration_date && (
+                        <p
+                          className={`item-expiration ${
+                            new Date(item.expiration_date) < new Date()
+                              ? "expired"
+                              : "valid"
+                          }`}
+                        >
+                          {new Date(item.expiration_date) < new Date()
+                            ? "Expired"
+                            : `Valid Until: ${new Date(
+                                item.expiration_date
+                              ).toLocaleDateString()}`}
+                        </p>
+                      )}
                     </div>
                   </Card.Body>
                   <Card.Footer>
@@ -267,6 +334,24 @@ const ManageInventarisKost = () => {
                 onChange={handleNewItemInputChange}
               />
             </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Gambar Produk</Form.Label>
+              <Form.Control
+                type="file"
+                name="image"
+                accept="image/*"
+                onChange={handleNewItemInputChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Tanggal Kadaluarsa</Form.Label>
+              <Form.Control
+                type="date"
+                name="expiration_date"
+                value={newItem.expiration_date}
+                onChange={handleNewItemInputChange}
+              />
+            </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -309,6 +394,24 @@ const ManageInventarisKost = () => {
                 type="number"
                 name="minimum_stock"
                 value={editingItem?.minimum_stock || ""}
+                onChange={handleEditingItemInputChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Gambar Produk</Form.Label>
+              <Form.Control
+                type="file"
+                name="image"
+                accept="image/*"
+                onChange={handleEditingItemInputChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Tanggal Kadaluarsa</Form.Label>
+              <Form.Control
+                type="date"
+                name="expiration_date"
+                value={editingItem?.expiration_date || ""}
                 onChange={handleEditingItemInputChange}
               />
             </Form.Group>

@@ -13,6 +13,7 @@ import "./ManageCoffeeShopMenu.css";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { jwtDecode } from 'jwt-decode'; // Import jwtDecode as a named import
 
 const API_URL = "http://localhost:3001/coffee-shop"; // Backend URL
 
@@ -20,6 +21,7 @@ function ManageCoffeeShopMenu({ theme }) {
   // Added theme prop
   const navigate = useNavigate();
   const [menus, setMenus] = useState([]);
+  const [userRole, setUserRole] = useState(null); // State to store user role
   const [cart, setCart] = useState([]);
   const [showCartModal, setShowCartModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -59,9 +61,24 @@ function ManageCoffeeShopMenu({ theme }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Fetch menus on component mount
+  // Fetch menus and decode token on component mount
   useEffect(() => {
     fetchMenus();
+    const token = getToken();
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        setUserRole(decodedToken.role); // Assuming the role is stored in the 'role' claim
+        console.log("User Role:", decodedToken.role); // Log the user role
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        setUserRole(null); // Set role to null if decoding fails
+        console.log("User Role: null (decoding failed)"); // Log null role
+      }
+    } else {
+      setUserRole(null); // Set role to null if no token is found
+      console.log("User Role: null (no token)"); // Log null role
+    }
   }, []);
 
   const getToken = () => localStorage.getItem("token");
@@ -312,9 +329,11 @@ function ManageCoffeeShopMenu({ theme }) {
       {error && <Alert variant="danger">{error}</Alert>}
       {success && <Alert variant="success">{success}</Alert>}
 
-      <Button className="action-button mb-4" onClick={() => handleShowModal()}>
-        <FontAwesomeIcon icon={faPlus} /> Tambah Menu Baru
-      </Button>
+      {userRole === 'superadmin' && ( // Conditionally render "Tambah Menu Baru" button
+        <Button className="action-button mb-4" onClick={() => handleShowModal()}>
+          <FontAwesomeIcon icon={faPlus} /> Tambah Menu Baru
+        </Button>
+      )}
 
       {isLoading && !menus.length ? (
         <div className="text-center">
@@ -332,12 +351,14 @@ function ManageCoffeeShopMenu({ theme }) {
                 .filter((item) => item.category === "coffee")
                 .map((item) => (
                   <div className="menu-card" key={item.id}>
-                    <FontAwesomeIcon
-                      icon={faEdit}
-                      className="edit-icon"
-                      onClick={() => handleShowModal(item)}
-                      title="Edit Menu"
-                    />
+                    {userRole === 'superadmin' && ( // Conditionally render edit icon
+                      <FontAwesomeIcon
+                        icon={faEdit}
+                        className="edit-icon"
+                        onClick={() => handleShowModal(item)}
+                        title="Edit Menu"
+                      />
+                    )}
                     <FontAwesomeIcon
                       icon={faInfoCircle}
                       className="info-icon"
@@ -353,12 +374,14 @@ function ManageCoffeeShopMenu({ theme }) {
                       >
                         Tambah
                       </Button>
-                      <Button
-                        className="btn btn-delete"
-                        onClick={() => handleDelete(item.id)}
-                      >
-                        Hapus
-                      </Button>
+                      {userRole === 'superadmin' && ( // Conditionally render delete button
+                        <Button
+                          className="btn btn-delete"
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          Hapus
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -373,12 +396,14 @@ function ManageCoffeeShopMenu({ theme }) {
                 .filter((item) => item.category === "non-coffee")
                 .map((item) => (
                   <div className="menu-card" key={item.id}>
-                    <FontAwesomeIcon
-                      icon={faEdit}
-                      className="edit-icon"
-                      onClick={() => handleShowModal(item)}
-                      title="Edit Menu"
-                    />
+                    {userRole === 'superadmin' && ( // Conditionally render edit icon
+                      <FontAwesomeIcon
+                        icon={faEdit}
+                        className="edit-icon"
+                        onClick={() => handleShowModal(item)}
+                        title="Edit Menu"
+                      />
+                    )}
                     <FontAwesomeIcon
                       icon={faInfoCircle}
                       className="info-icon"
@@ -394,12 +419,14 @@ function ManageCoffeeShopMenu({ theme }) {
                       >
                         Tambah
                       </Button>
-                      <Button
-                        className="btn btn-delete"
-                        onClick={() => handleDelete(item.id)}
-                      >
-                        Hapus
-                      </Button>
+                      {userRole === 'superadmin' && ( // Conditionally render delete button
+                        <Button
+                          className="btn btn-delete"
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          Hapus
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -414,12 +441,14 @@ function ManageCoffeeShopMenu({ theme }) {
                 .filter((item) => item.category === "snack")
                 .map((item) => (
                   <div className="menu-card" key={item.id}>
-                    <FontAwesomeIcon
-                      icon={faEdit}
-                      className="edit-icon"
-                      onClick={() => handleShowModal(item)}
-                      title="Edit Menu"
-                    />
+                    {userRole === 'superadmin' && ( // Conditionally render edit icon
+                      <FontAwesomeIcon
+                        icon={faEdit}
+                        className="edit-icon"
+                        onClick={() => handleShowModal(item)}
+                        title="Edit Menu"
+                      />
+                    )}
                     <FontAwesomeIcon
                       icon={faInfoCircle}
                       className="info-icon"
@@ -435,12 +464,14 @@ function ManageCoffeeShopMenu({ theme }) {
                       >
                         Tambah
                       </Button>
-                      <Button
-                        className="btn btn-delete"
-                        onClick={() => handleDelete(item.id)}
-                      >
-                        Hapus
-                      </Button>
+                      {userRole === 'superadmin' && ( // Conditionally render delete button
+                        <Button
+                          className="btn btn-delete"
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          Hapus
+                        </Button>
+                      )}
                     </div>
                   </div>
                 ))}

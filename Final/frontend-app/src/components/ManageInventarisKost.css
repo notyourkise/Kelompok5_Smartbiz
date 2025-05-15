@@ -111,7 +111,7 @@ body {
     auto-fill,
     minmax(280px, 1fr)
   ); /* Responsive grid */
-  gap: 2rem;
+  gap: 3rem; /* Increased gap */
   flex-grow: 1; /* Allow container to fill space */
   padding-bottom: 2rem; /* Space before footer */
 }
@@ -146,6 +146,15 @@ body {
   background-position: center;
   border-bottom: 1px solid #e0e0e0; /* Separator line */
 }
+
+.card-image {
+  width: 100%;
+  height: 200px; /* Adjust height as needed */
+  object-fit: cover; /* Ensure image covers the area without distortion */
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
 
 .info-icon {
   position: absolute;
@@ -194,6 +203,20 @@ body {
   font-size: 0.85rem;
   margin-left: 4px;
 }
+
+.item-expiration {
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+.item-expiration.valid {
+  color: #28a745; /* Green color for valid */
+}
+
+.item-expiration.expired {
+  color: #dc3545; /* Red color for expired */
+}
+
 
 /* Remove old .stock-warning class if not used elsewhere */
 

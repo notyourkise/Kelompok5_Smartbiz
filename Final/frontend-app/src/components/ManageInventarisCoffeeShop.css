@@ -98,21 +98,19 @@ body {
 /* Inventaris Cards Container */
 /* Card List Grid - Konsisten */
 .inventaris-card-list {
-  display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(300px, 1fr)
-  ); /* Card min 300px */
-  gap: 2rem;
+  /* Removed custom grid styles to rely on Bootstrap grid */
   flex-grow: 1;
   padding-bottom: 2rem;
-  justify-items: center; /* Center cards horizontally */
+  /* justify-items: center; /* Center cards horizontally */ /* Removed as Bootstrap Col handles alignment */
+  align-items: start;
 }
 
 /* Card - Ukuran Persegi Konsisten */
 .inventaris-card {
   width: 300px;
-  min-height: 220px; /* Minimum tinggi agar tetap proporsional */
+  height: 370px; /* Fixed height for all cards */
+  min-height: 370px;
+  max-height: 370px;
   background-color: #5d4037 !important;
   border-radius: 16px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
@@ -122,8 +120,7 @@ body {
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
   position: relative;
-  height: auto; /* Tinggi otomatis mengikuti isi */
-  max-height: 100%; /* Tidak melebihi parent */
+  margin: 10px; /* Add margin around cards */
 }
 .inventaris-card:hover {
   transform: translateY(-8px) scale(1.03);
@@ -132,8 +129,8 @@ body {
 
 /* Placeholder Image - Tetap proporsional */
 .card-image-placeholder {
-  width: 100%;
-  aspect-ratio: 1/1;
+  width: 298.67px; /* Fixed width for image area */
+  height: 168.67px; /* Fixed height for image area */
   background-color: #795548;
   position: relative;
   display: flex;
@@ -141,8 +138,16 @@ body {
   justify-content: center;
   flex-shrink: 0;
   flex-grow: 0;
-  max-height: 140px; /* Maksimal tinggi gambar */
-  min-height: 100px; /* Minimal tinggi gambar */
+  min-height: 168.67px;
+  max-height: 168.67px;
+}
+
+.card-image {
+  width: 298.67px; /* Fixed width for image */
+  height: 168.67px; /* Fixed height for image */
+  object-fit: cover; /* Ensure image covers the area without distortion */
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
 }
 
 /* Card Body */
@@ -155,6 +160,14 @@ body {
   background: transparent;
   min-height: 0;
   overflow: hidden;
+}
+
+/* Item Header within Card Body */
+.inventaris-card .card-body .item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Distribute space between items */
+  margin-bottom: 0.4rem; /* Keep some space below the header */
 }
 
 /* Card Footer */
@@ -185,6 +198,20 @@ body {
   font-size: 0.85rem;
   margin-left: 4px;
 }
+
+.item-expiration {
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+.item-expiration.valid {
+  color: #28a745; /* Green color for valid */
+}
+
+.item-expiration.expired {
+  color: #dc3545; /* Red color for expired */
+}
+
 /* Card Footer - Dark Theme */
 .inventaris-card .card-footer {
   background-color: transparent; /* Footer matches card background */

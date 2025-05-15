@@ -4,6 +4,8 @@ const app = express();
 const PORT = 3001;
 const pool = require('./config/db');
 const path = require('path'); // Impor modul path
+const multer = require('multer'); // Import multer
+const fs = require('fs'); // Import fs
 
 // Konfigurasi CORS untuk membatasi akses hanya untuk frontend
 const corsOptions = {
@@ -13,8 +15,20 @@ const corsOptions = {
 };
 
 // Menggunakan CORS
-app.use(cors(corsOptions));  
+app.use(cors(corsOptions));
 app.use(express.json());  // Mengizinkan request dengan format JSON
+app.use(express.urlencoded({ extended: true })); // Add this line to parse URL-encoded bodies
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, 'uploads');
+const inventarisUploadsDir = path.join(uploadsDir, 'inventaris');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir);
+}
+if (!fs.existsSync(inventarisUploadsDir)) {
+    fs.mkdirSync(inventarisUploadsDir);
+}
+
 
 // Middleware untuk menyajikan file statis dari folder 'uploads'
 // Ini akan membuat file di dalam folder 'uploads' dapat diakses melalui URL
@@ -30,7 +44,20 @@ const newCoffeeShopRoutes = require('./routes/coffeeShop'); // Use a distinct na
 const inventarisRoutes = require('./routes/InventarisRoutes'); // Corrected import path
 const UserRoutes = require('./routes/UserRoutes');
 // Mengimpor 'protect' sebagai 'authenticateToken' dan 'authorize'
-const { protect: authenticateToken, authorize } = require('./middleware/authMiddleware'); 
+const { protect: authenticateToken, authorize } = require('./middleware/authMiddleware');
+
+// Configure Multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, inventarisUploadsDir); // Uploads will be stored in the 'uploads/inventaris' directory
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
+
 
 // Gunakan routes
 app.use('/auth', authRoutes);  // Rute untuk login dan registrasi
@@ -39,7 +66,8 @@ app.use('/api/kos', kosRoutes);  // Rute untuk manajemen kos
 // app.use('/coffee', coffeeShopRoutes); // Keep the old one commented or remove if sure
 app.use('/coffee-shop', newCoffeeShopRoutes); // Use the new routes, maybe change path prefix? Let's use /coffee-shop
 // Corrected path and applied authentication middleware
-app.use('/api/inventaris', authenticateToken, inventarisRoutes); // Corrected path and added auth
+// Apply multer middleware to the inventaris routes that handle file uploads
+app.use('/api/inventaris', authenticateToken, upload.single('image'), inventarisRoutes); // Corrected path and added auth
 // Gunakan middleware otentikasi untuk rute pengguna
 app.use('/api/users', authenticateToken, UserRoutes);  // Rute untuk mengelola pengguna
 
