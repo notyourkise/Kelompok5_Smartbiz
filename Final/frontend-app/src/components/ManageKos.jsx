@@ -18,6 +18,9 @@ const ManageKos = () => {
     occupation: '', payment_status_current_month: 'Belum Bayar',
   });
 
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [roomToDelete, setRoomToDelete] = useState(null);
+
   const [showPaymentHistoryModal, setShowPaymentHistoryModal] = useState(false);
   const [paymentHistoryData, setPaymentHistoryData] = useState([]);
   const [selectedRoomForHistory, setSelectedRoomForHistory] = useState(null);
@@ -113,17 +116,27 @@ const ManageKos = () => {
     setIsEditing(true); setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this room?')) {
-      const token = localStorage.getItem('token');
-      if (!token) { setError('Authentication token not found.'); return; }
-      try {
-        await axios.delete(`${API_BASE_URL}/kos/${id}`, { headers: { Authorization: `Bearer ${token}` } });
-        fetchKosRooms(); setError(null);
-      } catch (err) {
-        setError(err.response?.data?.message || 'Failed to delete kos room');
-        console.error('Delete error:', err);
-      }
+  // Handle showing delete confirmation modal
+  const handleDeleteClick = (room) => {
+    setRoomToDelete(room);
+    setShowDeleteConfirmModal(true);
+  };
+
+  // Handle deleting room after confirmation
+  const handleDeleteConfirm = async () => {
+    const token = localStorage.getItem('token');
+    if (!token || !roomToDelete) { setError('Authentication token or room to delete not found.'); return; }
+    try {
+      await axios.delete(`${API_BASE_URL}/kos/${roomToDelete.id}`, { headers: { Authorization: `Bearer ${token}` } });
+      fetchKosRooms();
+      setError(null);
+      setShowDeleteConfirmModal(false);
+      setRoomToDelete(null);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to delete kos room');
+      console.error('Delete error:', err);
+      setShowDeleteConfirmModal(false);
+      setRoomToDelete(null);
     }
   };
 
@@ -311,7 +324,7 @@ const ManageKos = () => {
                           </div>
                           <div className="action-buttons-card d-flex justify-content-end">
                             <Button variant="outline-info" size="sm" className="me-2 action-button-edit" onClick={() => handleEdit(room)}><FaEdit /> Edit</Button>
-                            <Button variant="outline-danger" size="sm" className="action-button-delete" onClick={() => handleDelete(room.id)}><FaTrashAlt /> Hapus</Button>
+                          <Button variant="outline-danger" size="sm" className="action-button-delete" onClick={() => handleDeleteClick(room)}><FaTrashAlt /> Hapus</Button>
                           </div>
                         </div>
                       </Card.Body>
@@ -411,6 +424,24 @@ const ManageKos = () => {
           </Modal.Body>
         </Modal>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteConfirmModal} onHide={() => setShowDeleteConfirmModal(false)} centered>
+        <Modal.Header closeButton className="modal-header-custom">
+          <Modal.Title className="modal-title-custom">Konfirmasi Hapus Kamar</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="modal-body-custom">
+          Apakah Anda yakin ingin menghapus kamar "{roomToDelete?.room_name}"?
+        </Modal.Body>
+        <Modal.Footer className="modal-footer-custom">
+          <Button variant="outline-secondary" onClick={() => setShowDeleteConfirmModal(false)}>
+            Batal
+          </Button>
+          <Button variant="danger" onClick={handleDeleteConfirm}>
+            Hapus
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <Footer />
     </div>
   );

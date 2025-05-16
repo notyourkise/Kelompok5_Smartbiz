@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-// Import Card, Row, Col from react-bootstrap
-import { Button, Modal, Form, Card, Row, Col } from "react-bootstrap"; 
+// Import Button, Modal, Form from react-bootstrap, remove Card, Row, Col
+import { Button, Modal, Form } from "react-bootstrap";
 import { FaTrashAlt, FaEdit, FaPlus, FaArrowLeft, FaInfoCircle } from "react-icons/fa"; // Added FaInfoCircle
 import { useNavigate } from "react-router-dom"; // Untuk navigasi
 import Footer from './Footer'; // Pastikan Footer diimpor
@@ -121,7 +121,7 @@ const ManageInventaris = () => {
 
   return (
     // Use the new container class
-    <div className="manage-inventaris-container"> 
+    <div className="manage-inventaris-container">
       {/* Header with Back Button and Title */}
       <header className="manage-inventaris-header">
         {/* Back Button with CSS class */}
@@ -145,18 +145,12 @@ const ManageInventaris = () => {
 
       {/* Inventaris Card Layout */}
       <div className="inventaris-card-list">
-        <Row xs={1} md={2} lg={3} className="g-4"> {/* Responsive Grid */}
           {inventaris.length > 0 ? (
             inventaris.map((item) => (
-              <Col key={item.id}>
-                <Card className="inventaris-card">
-                  <div className="card-image-placeholder">
-                    {/* Placeholder for image */}
-                    <FaInfoCircle className="info-icon" onClick={() => alert(`Info for ${item.item_name}`)} /> {/* Basic info click handler */}
-                  </div>
-                  <Card.Body>
-                    <Card.Title className="item-name">{item.item_name}</Card.Title>
-                    <div className="item-details">
+              <div className="menu-card" key={item.id}> {/* Changed to div with menu-card class */}
+                  <FaInfoCircle className="info-icon" onClick={() => alert(`Info for ${item.item_name}`)} /> {/* Basic info click handler */}
+                  <h5>{item.item_name}</h5> {/* Changed to h5 */}
+                  <div className="item-details">
                       <p className="item-stock">Stok Barang: {item.stock}
                         {item.stock <= item.minimum_stock && (
                           <span className="stock-warning-text"> (Minimum!)</span>
@@ -164,8 +158,7 @@ const ManageInventaris = () => {
                       </p>
                       <p className="item-min-stock">Minimum Stok: {item.minimum_stock}</p>
                     </div>
-                  </Card.Body>
-                  <Card.Footer>
+                  <div className="menu-card-actions"> {/* Added actions div */}
                     <Button
                       variant="link"
                       size="sm"
@@ -182,17 +175,13 @@ const ManageInventaris = () => {
                     >
                       Delete
                     </Button>
-                  </Card.Footer>
-                </Card>
-              </Col>
+                  </div> {/* End actions div */}
+              </div> // End menu-card div
             ))
           ) : (
-            <Col>
               <p className="text-center w-100">Tidak ada data inventaris.</p>
-            </Col>
           )}
-        </Row>
-      </div>
+      </div> {/* End inventaris-card-list */}
 
       {/* Modal Create Item */}
       <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)}>

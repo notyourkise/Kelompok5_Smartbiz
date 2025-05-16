@@ -28,6 +28,8 @@ function ManageCoffeeShopMenu({ theme }) {
   const [currentItem, setCurrentItem] = useState(null);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false); // State for description modal
   const [currentDescriptionItem, setCurrentDescriptionItem] = useState(null); // State for item in description modal
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
   const cartIconRef = useRef(null); // Ref for the cart icon
 
   const increaseQuantity = (item) => {
@@ -276,32 +278,40 @@ function ManageCoffeeShopMenu({ theme }) {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this menu item?")) {
-      return;
-    }
+  // Handle showing delete confirmation modal
+  const handleDeleteClick = (item) => {
+    setItemToDelete(item);
+    setShowDeleteConfirmModal(true);
+  };
+
+  // Handle deleting item after confirmation
+  const handleDeleteConfirm = async () => {
     setIsLoading(true);
     setError("");
     setSuccess("");
     const token = getToken();
-    if (!token) {
-      setError("Authentication token not found.");
+    if (!token || !itemToDelete) {
+      setError("Authentication token or item to delete not found.");
       setIsLoading(false);
       return;
     }
 
     try {
-      await axios.delete(`${API_URL}/menus/${id}`, {
+      await axios.delete(`${API_URL}/menus/${itemToDelete.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSuccess("Menu item deleted successfully!");
       fetchMenus(); // Refresh the list
+      setShowDeleteConfirmModal(false);
+      setItemToDelete(null);
     } catch (err) {
       console.error("Error deleting menu item:", err);
       setError(
         err.response?.data?.message ||
           "Failed to delete menu item. It might be used in existing orders."
       );
+      setShowDeleteConfirmModal(false);
+      setItemToDelete(null);
     } finally {
       setIsLoading(false);
     }
@@ -377,7 +387,7 @@ function ManageCoffeeShopMenu({ theme }) {
                       {userRole === 'superadmin' && ( // Conditionally render delete button
                         <Button
                           className="btn btn-delete"
-                          onClick={() => handleDelete(item.id)}
+                          onClick={() => handleDeleteClick(item)}
                         >
                           Hapus
                         </Button>
@@ -422,7 +432,7 @@ function ManageCoffeeShopMenu({ theme }) {
                       {userRole === 'superadmin' && ( // Conditionally render delete button
                         <Button
                           className="btn btn-delete"
-                          onClick={() => handleDelete(item.id)}
+                          onClick={() => handleDeleteClick(item)}
                         >
                           Hapus
                         </Button>
@@ -467,7 +477,7 @@ function ManageCoffeeShopMenu({ theme }) {
                       {userRole === 'superadmin' && ( // Conditionally render delete button
                         <Button
                           className="btn btn-delete"
-                          onClick={() => handleDelete(item.id)}
+                          onClick={() => handleDeleteClick(item)}
                         >
                           Hapus
                         </Button>
@@ -696,6 +706,24 @@ function ManageCoffeeShopMenu({ theme }) {
             </Button>
           </Form>
         </Modal.Body>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteConfirmModal} onHide={() => setShowDeleteConfirmModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Konfirmasi Hapus Menu</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Apakah Anda yakin ingin menghapus menu "{itemToDelete?.name}"?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteConfirmModal(false)}>
+            Batal
+          </Button>
+          <Button variant="danger" onClick={handleDeleteConfirm}>
+            Hapus
+          </Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );

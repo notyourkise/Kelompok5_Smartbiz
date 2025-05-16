@@ -12,6 +12,8 @@ const ManageUser = () => {
   const [users, setUsers] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
   const [newUser, setNewUser] = useState({
     username: "",
     password: "",
@@ -125,23 +127,33 @@ const ManageUser = () => {
     }
   };
 
-  // Handle deleting user
-  const handleDelete = async (userId) => {
+  // Handle showing delete confirmation modal
+  const handleDeleteClick = (user) => {
+    setUserToDelete(user);
+    setShowDeleteConfirmModal(true);
+  };
+
+  // Handle deleting user after confirmation
+  const handleDeleteConfirm = async () => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("Authentication token not found. Please log in again.");
+    if (!token || !userToDelete) {
+      console.error("Authentication token or user to delete not found. Please log in again.");
       return;
     }
     try {
-      await axios.delete(`http://localhost:3001/api/users/${userId}`, {
+      await axios.delete(`http://localhost:3001/api/users/${userToDelete.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setUsers(users.filter((user) => user.id !== userId));
+      setUsers(users.filter((user) => user.id !== userToDelete.id));
+      setShowDeleteConfirmModal(false);
+      setUserToDelete(null);
     } catch (error) {
       console.error(
         "Error deleting user:",
         error.response ? error.response.data : error.message
       );
+      setShowDeleteConfirmModal(false);
+      setUserToDelete(null);
     }
   };
 
@@ -151,7 +163,7 @@ const ManageUser = () => {
       {/* Header with Back Button and Title */}
       <header className="manage-user-header">
         {/* Back Button with CSS class */}
-        
+
         <h2 className="manage-user-title">Manajemen Pengguna</h2>{" "}
         {/* Add title */}
         {/* Create User Button */}
@@ -198,7 +210,7 @@ const ManageUser = () => {
                     <Button
                       variant="outline-danger"
                       size="sm"
-                      onClick={() => handleDelete(user.id)}
+                      onClick={() => handleDeleteClick(user)}
                     >
                       <FaTrashAlt /> Hapus
                     </Button>
@@ -315,6 +327,24 @@ const ManageUser = () => {
           </Button>
           <Button variant="primary" onClick={handleUpdateUser}>
             Simpan Perubahan
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteConfirmModal} onHide={() => setShowDeleteConfirmModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Konfirmasi Hapus Pengguna</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Apakah Anda yakin ingin menghapus pengguna "{userToDelete?.username}"?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteConfirmModal(false)}>
+            Batal
+          </Button>
+          <Button variant="danger" onClick={handleDeleteConfirm}>
+            Hapus
           </Button>
         </Modal.Footer>
       </Modal>

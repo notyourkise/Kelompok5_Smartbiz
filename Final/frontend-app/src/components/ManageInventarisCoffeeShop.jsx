@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-// Import Card instead of Table
-import { Button, Modal, Form, Card, Row, Col } from "react-bootstrap";
+import { Button, Modal, Form } from "react-bootstrap";
 import {
   FaTrashAlt,
   FaEdit,
   FaPlus,
   FaArrowLeft,
   FaInfoCircle,
-} from "react-icons/fa"; // Added FaInfoCircle
+} from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Footer from "./Footer";
-import "./ManageInventarisCoffeeShop.css"; // Import CSS khusus untuk Coffee Shop
+import "./ManageInventarisCoffeeShop.css";
 
 const ManageInventarisCoffeeShop = () => {
   const navigate = useNavigate();
@@ -198,115 +197,64 @@ const ManageInventarisCoffeeShop = () => {
 
       {/* Card Layout for Inventaris */}
       <div className="inventaris-card-list">
-        <Row xs={1} md={2} lg={3} className="g-4">
-          {" "}
-          {/* Responsive Grid */}
-          {inventaris.length > 0 ? (
-            inventaris.map((item) => (
-              <Col key={item.id}>
-                <Card className="inventaris-card">
-                  {item.image_url ? (
-                    <Card.Img
-                      variant="top"
-                      src={`http://localhost:3001/${item.image_url}`}
-                      alt={item.item_name}
-                      className="card-image"
-                    />
-                  ) : (
-                    <div className="card-image-placeholder">
-                      <FaInfoCircle
-                        className="info-icon"
-                        onClick={() => alert(`Info for ${item.item_name}`)}
-                      />
-                    </div>
+        {inventaris.length > 0 ? (
+          <>
+            {inventaris.map((item) => (
+              <div className="menu-card" key={item.id}>
+                {item.image_url && (
+                  <img
+                    src={`http://localhost:3001/${item.image_url}`}
+                    alt={item.item_name}
+                    className="card-image"
+                  />
+                )}
+                <FaInfoCircle className="info-icon" onClick={() => alert(`Info for ${item.item_name}`)} />
+                <h5>{item.item_name}</h5>
+                <div className="item-details">
+                  <p className="item-stock">Stok Barang: {item.stock}
+                    {item.stock <= item.minimum_stock && (
+                      <span className="stock-warning-text"> (Minimum!)</span>
+                    )}
+                  </p>
+                  <p className="item-min-stock">Minimum Stok: {item.minimum_stock}</p>
+                  {item.expiration_date && (
+                    <p
+                      className={`item-expiration ${
+                        new Date(item.expiration_date) < new Date()
+                          ? "expired"
+                          : "valid"
+                      }`}
+                    >
+                      {new Date(item.expiration_date) < new Date()
+                        ? "Expired"
+                        : `Valid Until: ${new Date(item.expiration_date).toLocaleDateString()}`}
+                    </p>
                   )}
-                  <Card.Body>
-                    <div className="item-header"> {/* New container */}
-                      <Card.Title className="item-name">
-                        {item.item_name}
-                      </Card.Title>
-                      {item.expiration_date && (
-                        <p
-                          className={`item-expiration ${
-                            new Date(item.expiration_date) < new Date()
-                              ? "expired"
-                              : "valid"
-                          }`}
-                        >
-                          {new Date(item.expiration_date) < new Date()
-                            ? "Expired"
-                            : `Valid Until: ${new Date(
-                                item.expiration_date
-                              ).toLocaleDateString()}`}
-                        </p>
-                      )}
-                    </div> {/* End new container */}
-                    <div className="item-details">
-                      <p className="item-stock">
-                        Stok Barang: {item.stock}
-                        {item.stock <= item.minimum_stock && (
-                          <span className="stock-warning-text">
-                            {" "}
-                            (Minimum!)
-                          </span>
-                        )}
-                      </p>
-                      <p className="item-min-stock">
-                        Minimum Stok: {item.minimum_stock}
-                      </p>
-                    </div>
-                  </Card.Body>
-                  <Card.Footer>
-                    <Button
-                      variant="outline-info"
-                      size="sm"
-                      className="edit-button"
-                      onClick={() => handleEditClick(item)}
-                      style={{
-                        borderColor: "#00bcd4 !important",
-                        color: "#00bcd4",
-                        backgroundColor: "transparent",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "0.4rem",
-                        fontWeight: 500,
-                        borderWidth: "2px",
-                      }}
-                    >
-                      <FaEdit style={{ marginRight: "4px" }} />
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline-danger"
-                      size="sm"
-                      className="delete-button"
-                      onClick={() => handleDeleteClick(item.id)}
-                      style={{
-                        borderColor: "#e53935 !important",
-                        color: "#e53935",
-                        backgroundColor: "transparent",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "0.4rem",
-                        fontWeight: 500,
-                        marginLeft: "0.7rem",
-                        borderWidth: "2px",
-                      }}
-                    >
-                      <FaTrashAlt style={{ marginRight: "4px" }} />
-                      Hapus
-                    </Button>
-                  </Card.Footer>
-                </Card>
-              </Col>
-            ))
-          ) : (
-            <Col>
-              <p className="text-center w-100">Tidak ada data inventaris.</p>{" "}
-              {/* Message if no data */}
-            </Col>
-          )}
-        </Row>
+                </div>
+                <div className="menu-card-actions">
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="edit-button"
+                    onClick={() => handleEditClick(item)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="delete-button"
+                    onClick={() => handleDeleteClick(item.id)}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </>
+        ) : (
+          <p className="text-center w-100">Tidak ada data inventaris.</p>
+        )}
       </div>
 
       {/* Modals remain the same */}

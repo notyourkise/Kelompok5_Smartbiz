@@ -1,30 +1,19 @@
-/* src/components/ManageInventarisCoffeeShop.css - Consistent with Coffee Shop Menu Theme */
+/* src/components/ManageInventarisCoffeeShop.css - Styling based on ManageCoffeeShopMenu.css */
 
-body {
-  background-color: var(--background-color);
-}
-
-[data-theme="light"] {
-  --background-color: #f5f5f5; /* Light theme background color */
-}
-
-[data-theme="dark"] {
-  --background-color: #333333; /* Dark theme background color */
-}
-
-/* Theme background for light/dark mode */
-.theme-light .manage-inventaris-container {
-  background-color: #f5f5f5 !important;
-  color: #222 !important;
-}
-.theme-dark .manage-inventaris-container {
-  background-color: #000000 !important;
-  color: #fff !important;
-}
-
-/* Base Container - Dark Theme */
-.manage-inventaris-container {
+/* Base Container - Default to Light Theme */
+.manage-inventaris-container.theme-light {
   min-height: 100vh;
+  background-color: #f9f6f2; /* Soft off-white/light beige */
+  padding: 2.5rem;
+  color: #4d403a; /* Dark warm brown text */
+  font-family: "Lato", "Helvetica Neue", Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.manage-inventaris-container.theme-dark {
+  min-height: 100vh;
+  background-color: #000000; /* Black background */
   padding: 2.5rem;
   color: #ffffff; /* White text for contrast */
   font-family: "Lato", "Helvetica Neue", Arial, sans-serif;
@@ -39,17 +28,22 @@ body {
   align-items: center;
   margin-bottom: 2.5rem;
   padding-bottom: 1.5rem;
+  /* Theme-specific border will be handled below */
+}
+
+.theme-light .manage-inventaris-header {
+  border-bottom: 1px solid #e0d8d0; /* Light brown/beige border for light theme */
+}
+
+.theme-dark .manage-inventaris-header {
   border-bottom: 1px solid #444444; /* Darker border for dark theme */
 }
 
 .manage-inventaris-header .back-button {
-  /* Dark theme back button */
   background-color: transparent;
-  border: 1px solid #777777; /* Grey border for dark theme */
-  color: #ffffff; /* White icon for contrast */
   padding: 0.6rem;
-  width: 40px; /* Fixed size */
-  height: 40px; /* Fixed size */
+  width: 40px;
+  height: 40px;
   border-radius: 6px;
   display: flex;
   justify-content: center;
@@ -58,7 +52,23 @@ body {
     color 0.2s ease;
 }
 
-.manage-inventaris-header .back-button:hover {
+/* Light theme back button */
+.theme-light .manage-inventaris-header .back-button {
+  border: 1px solid #a1887f; /* Light warm brown border */
+  color: #6d4c41; /* Warm brown icon */
+}
+.theme-light .manage-inventaris-header .back-button:hover {
+  background-color: #efebe9; /* Very light beige hover */
+  border-color: #8d6e63;
+  color: #5d4037;
+}
+
+/* Dark theme back button */
+.theme-dark .manage-inventaris-header .back-button {
+  border: 1px solid #777777; /* Grey border for dark theme */
+  color: #ffffff; /* White icon for contrast */
+}
+.theme-dark .manage-inventaris-header .back-button:hover {
   background-color: #333333; /* Darker grey hover */
   border-color: #999999;
   color: #ffffff;
@@ -69,15 +79,20 @@ body {
   font-size: 1.85rem;
   text-align: center;
   flex-grow: 1;
+  margin: 0 1rem;
+}
+.theme-light .manage-inventaris-title {
+  color: #5d4037; /* Rich primary brown for light theme */
+}
+.theme-dark .manage-inventaris-title {
   color: #ffffff; /* White title for dark theme */
-  margin: 0 1rem; /* Add some horizontal margin */
 }
 
-/* Add Item Button - Dark Theme Style */
+/* Add Item Button */
 .manage-inventaris-header .action-button {
-  background-color: #a08454; /* Dark gold like reference */
-  border: 1px solid #8c6d3f;
-  color: #ffffff; /* White text */
+  background-color: #6d4c41; /* Rich warm brown */
+  border: 1px solid #5d4037;
+  color: #f9f6f2;
   padding: 0.7rem 1.4rem;
   border-radius: 6px;
   font-weight: 500;
@@ -89,112 +104,205 @@ body {
 }
 
 .manage-inventaris-header .action-button:hover {
-  background-color: #8c6d3f; /* Darker gold on hover */
-  border-color: #795c32;
+  background-color: #5d4037;
+  border-color: #4e342e;
   color: #ffffff;
   transform: translateY(-1px);
 }
 
-/* Inventaris Cards Container */
-/* Card List Grid - Konsisten */
+/* Inventaris Cards Container (Matching Coffee Shop Menu) */
 .inventaris-card-list {
-  /* Removed custom grid styles to rely on Bootstrap grid */
-  flex-grow: 1;
-  padding-bottom: 2rem;
-  /* justify-items: center; /* Center cards horizontally */ /* Removed as Bootstrap Col handles alignment */
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(280px, 1fr)
+  ); /* Responsive grid - Match Coffee Shop */
+  gap: 2rem; /* Match Coffee Shop */
+  padding: 1rem 0; /* Match Coffee Shop */
+  flex-grow: 1; /* Allow container to fill space */
   align-items: start;
 }
 
-/* Card - Ukuran Persegi Konsisten */
-.inventaris-card {
-  width: 300px;
-  height: 370px; /* Fixed height for all cards */
-  min-height: 370px;
-  max-height: 370px;
-  background-color: #5d4037 !important;
-  border-radius: 16px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  transition: transform 0.3s, box-shadow 0.3s;
-  position: relative;
-  margin: 10px; /* Add margin around cards */
-}
-.inventaris-card:hover {
-  transform: translateY(-8px) scale(1.03);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+/* Individual Inventaris Card (Matching Coffee Shop Menu .menu-card) */
+.menu-card {
+  /* Using .menu-card class as in Coffee Shop */
+  border-radius: 15px; /* Match Coffee Shop */
+  padding: 1.5rem; /* Match Coffee Shop */
+  text-align: center; /* Match Coffee Shop */
+  position: relative; /* Match Coffee Shop */
+  transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1),
+    box-shadow 0.35s cubic-bezier(0.25, 0.8, 0.25, 1); /* Match Coffee Shop */
+  overflow: hidden; /* Match Coffee Shop */
+  display: flex; /* Use flexbox for internal layout */
+  flex-direction: column; /* Stack content vertically */
+  background-color: #5d4037; /* Dark brown for card body */
+  color: #ffffff; /* White text */
 }
 
-/* Placeholder Image - Tetap proporsional */
-.card-image-placeholder {
-  width: 298.67px; /* Fixed width for image area */
-  height: 168.67px; /* Fixed height for image area */
-  background-color: #795548;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  flex-grow: 0;
-  min-height: 168.67px;
-  max-height: 168.67px;
+/* Light Theme Menu Card (Matching Coffee Shop) */
+.theme-light .menu-card {
+  background-color: #5d4037; /* Dark brown for card body */
+  box-shadow: 0 6px 18px rgba(93, 64, 55, 0.1); /* Softer shadow for light theme */
+  color: #ffffff; /* White text */
+  border: 1px solid #e0e0e0; /* Match Coffee Shop */
+}
+.theme-light .menu-card:hover {
+  transform: translateY(-8px) scale(1.02); /* Match Coffee Shop */
+  box-shadow: 0 10px 25px rgba(93, 64, 55, 0.15); /* Match Coffee Shop */
+}
+.theme-light .menu-card h5 {
+  /* Item Name */
+  color: #ffffff; /* White title */
+}
+.theme-light .menu-card p {
+  /* Item Details */
+  color: #f5e8c7; /* Light beige/cream for text */
+}
+.theme-light .info-icon {
+  /* Info Icon */
+  color: #ffffff; /* White icon */
+}
+.theme-light .info-icon:hover {
+  color: #cccccc; /* Lighter white */
+  transform: scale(1.1);
+}
+.theme-light .menu-card .item-expiration.expired {
+  color: #dc3545; /* Red color for expired in light theme */
+}
+.theme-light .menu-card .item-expiration.valid {
+  color: #28a745; /* Green color for valid in light theme */
+}
+
+/* Dark Theme Menu Card (Matching Coffee Shop) */
+.theme-dark .menu-card {
+  background-color: #5d4037; /* Dominant brown background */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25), 0 5px 10px rgba(0, 0, 0, 0.22); /* More pronounced shadow */
+  color: #ffffff; /* White text for contrast */
+  border: 1px solid #616161; /* Match Coffee Shop */
+}
+.theme-dark .menu-card:hover {
+  transform: translateY(-10px) scale(1.03); /* More lift and scale */
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.3), 0 10px 15px rgba(0, 0, 0, 0.28); /* Deeper shadow on hover */
+}
+.theme-dark .menu-card h5 {
+  /* Item Name */
+  color: #ffffff; /* White title */
+}
+.theme-dark .menu-card p {
+  /* Item Details */
+  color: #f5e8c7; /* Light beige/cream for text */
+}
+.theme-dark .info-icon {
+  /* Info Icon */
+  color: #ffffff; /* White icon */
+}
+.theme-dark .info-icon:hover {
+  color: #cccccc; /* Lighter white */
+  transform: scale(1.15);
+}
+.theme-dark .menu-card .item-expiration.expired {
+  color: #ffab91; /* Lighter red/orange for expired in dark theme */
+}
+.theme-dark .menu-card .item-expiration.valid {
+  color: #90ee90; /* Lighter green for valid in dark theme */
+}
+
+/* General Menu Card Styles (applies to both themes - Matching Coffee Shop) */
+.menu-card h5 {
+  /* Item Name */
+  font-size: 1.3rem; /* Match Coffee Shop */
+  font-weight: 600; /* Match Coffee Shop */
+  margin-top: 0.5rem; /* Adjusted margin */
+  margin-bottom: 0.4rem; /* Adjusted margin */
+}
+.menu-card p {
+  /* Item Details */
+  font-size: 1rem; /* Adjusted font size */
+  font-weight: 500; /* Match Coffee Shop */
+  margin-bottom: 0.5rem; /* Adjusted margin */
+  line-height: 1.4; /* Improved readability */
+}
+.info-icon {
+  /* Info Icon */
+  position: absolute; /* Match Coffee Shop */
+  top: 1rem; /* Match Coffee Shop */
+  right: 1rem; /* Match Coffee Shop */
+  font-size: 1.3rem; /* Match Coffee Shop */
+  cursor: pointer; /* Match Coffee Shop */
+  transition: color 0.2s ease, transform 0.2s ease; /* Match Coffee Shop */
+  z-index: 10; /* Match Coffee Shop */
 }
 
 .card-image {
-  width: 298.67px; /* Fixed width for image */
-  height: 168.67px; /* Fixed height for image */
-  object-fit: cover; /* Ensure image covers the area without distortion */
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+  /* Style for the actual image */
+  width: 100%;
+  height: 180px; /* Fixed height for images */
+  object-fit: cover; /* Cover the area */
+  border-top-left-radius: 15px; /* Match card border radius */
+  border-top-right-radius: 15px; /* Match card border radius */
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
-/* Card Body */
-.inventaris-card .card-body {
-  flex: 1 1 auto;
-  padding: 0.7rem 1rem 0.7rem 1rem;
+.menu-card-actions {
+  /* Match Coffee Shop */
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  background: transparent;
-  min-height: 0;
-  overflow: hidden;
+  justify-content: space-around;
+  gap: 0.5rem;
+  margin-top: auto; /* Push actions to the bottom */
+  padding-top: 1rem; /* Space above buttons */
+  border-top: 1px solid rgba(255, 255, 255, 0.1); /* Separator */
+}
+.theme-light .menu-card-actions {
+  border-top-color: rgba(255, 255, 255, 0.1); /* White border for dark card */
+}
+.theme-dark .menu-card-actions {
+  border-top-color: rgba(255, 255, 255, 0.1); /* White border for dark card */
 }
 
-/* Item Header within Card Body */
-.inventaris-card .card-body .item-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* Distribute space between items */
-  margin-bottom: 0.4rem; /* Keep some space below the header */
-}
 
-/* Card Footer */
-.inventaris-card .card-footer {
-  background: transparent;
-  border-top: 1px solid #7a5f55;
+.menu-card .btn {
+  /* Buttons within the card - Match Coffee Shop */
+  border-radius: 6px;
+  font-weight: 500;
   padding: 0.5rem 1rem;
-  margin-top: auto;
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease, transform 0.2s ease;
+  flex-grow: 1;
 }
-/* Konsistensi warna dan font */
-.inventaris-card .item-name {
-  font-size: 1.15rem;
-  font-weight: bold;
-  margin-bottom: 0.4rem;
-  color: #fff;
+.menu-card .btn:hover {
+  /* General hover for buttons in card - Match Coffee Shop */
+  transform: translateY(-2px) scale(1.02);
 }
 
-.inventaris-card .item-details {
-  font-size: 0.95rem;
-  color: #f5e8c7;
+/* Specific button styles within the card actions */
+.menu-card-actions .edit-button {
+  /* Using .edit-button class from Inventaris */
+  background-color: #a08454; /* Dark gold like Coffee Shop add button */
+  border-color: #8c6d3f;
+  color: #ffffff;
+}
+.menu-card-actions .edit-button:hover {
+  background-color: #8c6d3f;
+  border-color: #795c32;
+  color: #ffffff;
 }
 
+.menu-card-actions .delete-button {
+  /* Using .delete-button class from Inventaris */
+  background-color: transparent; /* Match Coffee Shop delete button */
+  border: 1px solid #dc3545; /* Deep red border */
+  color: #dc3545; /* Deep red text */
+}
+.menu-card-actions .delete-button:hover {
+  background-color: #dc3545;
+  border-color: #c82333;
+  color: #ffffff;
+}
+
+
+/* Specific Inventaris Styles */
 .stock-warning-text {
-  color: #ffab91;
+  color: #ffab91; /* Keep existing warning color */
   font-size: 0.85rem;
   margin-left: 4px;
 }
@@ -202,86 +310,44 @@ body {
 .item-expiration {
   font-weight: bold;
   margin-top: 0.5rem;
-}
-
-.item-expiration.valid {
-  color: #28a745; /* Green color for valid */
+  font-size: 0.9rem; /* Adjusted font size */
 }
 
 .item-expiration.expired {
   color: #dc3545; /* Red color for expired */
 }
 
-/* Card Footer - Dark Theme */
-.inventaris-card .card-footer {
-  background-color: transparent; /* Footer matches card background */
-  border-top: 1px solid #7a5f55; /* Darker separator, or remove if not desired */
-  padding: 0.75rem 1rem; /* Consistent padding */
-  margin-top: auto; /* Push footer to bottom */
-  display: flex;
-  justify-content: flex-end; /* Align buttons right */
-  gap: 0.75rem; /* Space between buttons */
-  color: #ffffff;
+.item-expiration.valid {
+  color: #28a745; /* Green color for valid */
 }
 
-/* Styling for buttons within the card footer */
-.inventaris-card .card-footer .btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem; /* Space between icon and text */
-  color: #000000 !important; /* Force BLACK text for all buttons in footer */
-}
 
-/* Specific icon colors (overriding the text color for the SVG element) */
-.inventaris-card .card-footer .edit-button svg {
-  color: #007bff; /* Blue icon */
-}
-
-.inventaris-card .card-footer .delete-button svg {
-  color: #dc3545; /* Red icon */
-}
-
-.edit-button {
-  border-color: #00bcd4 !important;
-  color: #00bcd4 !important;
-  border-width: 2px !important;
-}
-.delete-button {
-  border-color: #e53935 !important;
-  color: #e53935 !important;
-  border-width: 2px !important;
-}
-
-/* Let Bootstrap handle the background/border variant colors (warning, danger) */
-/* Bootstrap's default :hover states for variants will apply. */
-/* The text and icon colors set above should persist on hover due to specificity or !important */
-
-/* Modal Styling - Dark Theme Adjustments */
+/* Modal Styling (General - applies to all modals unless overridden) */
 .modal-content {
-  background-color: #3a3a3a; /* Dark background for modal */
-  color: #ffffff; /* White text */
-  border: 1px solid #555555; /* Darker border */
+  background-color: #fdfdfd; /* Clean, slightly off-white */
+  color: #4d403a;
+  border: 1px solid #d7ccc8; /* Light tan border */
   border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); /* Darker shadow */
+  box-shadow: 0 5px 15px rgba(93, 64, 55, 0.1);
 }
 
 .modal-header {
-  border-bottom: 1px solid #a08454; /* Gold separator */
-  color: #ffffff; /* White title */
+  border-bottom: 1px solid #c0a062; /* Gold separator */
+  color: #5d4037; /* Rich brown title */
   padding: 1.25rem 1.5rem;
 }
 .modal-header .modal-title {
   font-weight: 600;
   font-size: 1.35rem;
-  color: #f5e8c7; /* Light beige/cream title */
+  color: #a08454; /* Dark Gold for modal title */
 }
 
 .modal-header .btn-close {
-  filter: invert(1) grayscale(100%) brightness(200%); /* Make close button white */
-  opacity: 0.7;
+  filter: none;
+  opacity: 0.6;
 }
 .modal-header .btn-close:hover {
-  opacity: 1;
+  opacity: 0.9;
 }
 
 .modal-body {
@@ -289,33 +355,32 @@ body {
 }
 
 .modal-body .form-label {
-  color: #cccccc; /* Light grey label */
+  color: #6d4c41; /* Warm brown label */
   font-size: 0.9rem;
   margin-bottom: 0.4rem;
   font-weight: 500;
 }
 
 .modal-body .form-control {
-  background-color: #555555; /* Dark input background */
-  color: #ffffff; /* White text */
-  border: 1px solid #777777; /* Grey border */
+  background-color: #ffffff;
+  color: #4d403a;
+  border: 1px solid #c8bca7; /* Light tan/beige border */
   border-radius: 4px;
   padding: 0.7rem 1rem;
   transition: border-color 0.2s ease-out, box-shadow 0.2s ease-out;
 }
 .modal-body .form-control::placeholder {
-  color: #aaaaaa; /* Lighter grey placeholder */
+  color: #a1887f; /* Lighter brown placeholder */
 }
 .modal-body .form-control:focus {
-  background-color: #666666;
-  border-color: #a08454; /* Gold focus border */
-  box-shadow: 0 0 0 3px rgba(160, 132, 84, 0.3); /* Gold focus ring */
+  border-color: #c0a062; /* Gold focus border */
+  box-shadow: 0 0 0 3px rgba(192, 160, 98, 0.25); /* Gold focus ring */
 }
 
 .modal-footer {
-  border-top: 1px solid #555555; /* Darker border */
+  border-top: 1px solid #e0d8d0;
   padding: 1.25rem 1.5rem;
-  background-color: #3a3a3a; /* Dark footer background */
+  background-color: #f9f6f2; /* Light beige footer background */
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   display: flex;
@@ -323,29 +388,109 @@ body {
   gap: 0.75rem; /* Space between footer buttons */
 }
 
-/* Modal Buttons - Dark Theme */
+/* Specific modal button styling if needed, otherwise .action-button class can be used */
 .modal-footer .btn-secondary {
-  /* Cancel button */
+  /* For cancel/close buttons */
+  background-color: #f9f6f2;
+  border: 1px solid #a1887f;
+  color: #6d4c41;
+}
+.modal-footer .btn-secondary:hover {
+  background-color: #efebe9;
+  border-color: #8d6e63;
+  color: #5d4037;
+}
+.modal-footer .btn-primary {
+  /* For primary save/update buttons */
+  background-color: #6d4c41;
+  border-color: #5d4037;
+  color: #f9f6f2;
+}
+.modal-footer .btn-primary:hover {
+  background-color: #5d4037;
+  border-color: #4e342e;
+  color: #ffffff;
+}
+
+/* Dark Theme Modal Adjustments */
+.theme-dark .modal-content {
+  background-color: #3a3a3a; /* Dark background for modal */
+  color: #ffffff; /* White text */
+  border: 1px solid #555555; /* Darker border */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); /* Darker shadow */
+}
+
+.theme-dark .modal-header {
+  border-bottom: 1px solid #a08454; /* Gold separator */
+  color: #ffffff; /* White title */
+}
+.theme-dark .modal-header .modal-title {
+  color: #f5e8c7; /* Light beige/cream title */
+}
+
+.theme-dark .modal-header .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%); /* Make close button white */
+  opacity: 0.7;
+}
+.theme-dark .modal-header .btn-close:hover {
+  opacity: 1;
+}
+
+.theme-dark .modal-body .form-label {
+  color: #cccccc; /* Light grey label */
+}
+
+.theme-dark .modal-body .form-control {
+  background-color: #555555; /* Dark input background */
+  color: #ffffff; /* White text */
+  border: 1px solid #777777; /* Grey border */
+}
+.theme-dark .modal-body .form-control::placeholder {
+  color: #aaaaaa; /* Lighter grey placeholder */
+}
+.theme-dark .modal-body .form-control:focus {
+  background-color: #666666;
+  border-color: #a08454; /* Gold focus border */
+  box-shadow: 0 0 0 3px rgba(160, 132, 84, 0.3); /* Gold focus ring */
+}
+
+.theme-dark .modal-footer {
+  border-top: 1px solid #555555; /* Darker border */
+  background-color: #3a3a3a; /* Dark footer background */
+}
+
+/* Dark Theme Modal Buttons */
+.theme-dark .modal-footer .btn-secondary {
   background-color: #555555;
   border: 1px solid #777777;
   color: #ffffff;
 }
-.modal-footer .btn-secondary:hover {
+.theme-dark .modal-footer .btn-secondary:hover {
   background-color: #666666;
   border-color: #888888;
 }
-.modal-footer .btn-primary {
-  /* Save/Update button */
+.theme-dark .modal-footer .btn-primary {
   background-color: #a08454; /* Dark gold */
   border-color: #8c6d3f;
   color: #ffffff;
 }
-.modal-footer .btn-primary:hover {
+.theme-dark .modal-footer .btn-primary:hover {
   background-color: #8c6d3f;
   border-color: #795c32;
+  color: #ffffff;
 }
 
 /* Responsive adjustments */
+@media (max-width: 768px) {
+  .inventaris-card-list {
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(250px, 1fr)
+    ); /* Adjust for smaller screens */
+    gap: 1rem;
+  }
+}
+
 @media (max-width: 576px) {
   .manage-inventaris-header {
     flex-direction: column; /* Stack header items */
@@ -375,14 +520,5 @@ body {
   .inventaris-card-list {
     grid-template-columns: 1fr;
     gap: 1.2rem;
-  }
-  .inventaris-card {
-    width: 90vw;
-    max-width: 340px;
-    min-height: 180px;
-  }
-  .card-image-placeholder {
-    max-height: 100px;
-    min-height: 80px;
   }
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Button, Modal, Form, Card, Row, Col } from "react-bootstrap";
+// Import Button, Modal, Form from react-bootstrap, remove Card, Row, Col
+import { Button, Modal, Form } from "react-bootstrap";
 import {
   FaTrashAlt,
   FaEdit,
@@ -196,43 +197,25 @@ const ManageInventarisKost = () => {
       </header>
 
       <div className="inventaris-card-list">
-        <Row xs={1} md={2} lg={3} className="g-4">
           {inventaris.length > 0 ? (
             inventaris.map((item) => (
-              <Col key={item.id}>
-                <Card className="inventaris-card">
-                  {item.image_url ? (
-                    <Card.Img
-                      variant="top"
+              <div className="menu-card" key={item.id}> {/* Changed to div with menu-card class */}
+                  {item.image_url && ( // Conditionally render image
+                    <img
                       src={`http://localhost:3001/${item.image_url}`}
                       alt={item.item_name}
-                      className="card-image"
+                      className="card-image" // Use card-image class
                     />
-                  ) : (
-                    <div className="card-image-placeholder">
-                      <FaInfoCircle
-                        className="info-icon"
-                        onClick={() => alert(`Info for ${item.item_name}`)}
-                      />
-                    </div>
                   )}
-                  <Card.Body>
-                    <Card.Title className="item-name">
-                      {item.item_name}
-                    </Card.Title>
-                    <div className="item-details">
-                      <p className="item-stock">
-                        Stok Barang: {item.stock}
+                  <FaInfoCircle className="info-icon" onClick={() => alert(`Info for ${item.item_name}`)} /> {/* Basic info click handler */}
+                  <h5>{item.item_name}</h5> {/* Changed to h5 */}
+                  <div className="item-details">
+                      <p className="item-stock">Stok Barang: {item.stock}
                         {item.stock <= item.minimum_stock && (
-                          <span className="stock-warning-text">
-                            {" "}
-                            (Minimum!)
-                          </span>
+                          <span className="stock-warning-text"> (Minimum!)</span>
                         )}
                       </p>
-                      <p className="item-min-stock">
-                        Minimum Stok: {item.minimum_stock}
-                      </p>
+                      <p className="item-min-stock">Minimum Stok: {item.minimum_stock}</p>
                       {item.expiration_date && (
                         <p
                           className={`item-expiration ${
@@ -249,57 +232,30 @@ const ManageInventarisKost = () => {
                         </p>
                       )}
                     </div>
-                  </Card.Body>
-                  <Card.Footer>
+                  <div className="menu-card-actions"> {/* Added actions div */}
                     <Button
-                      variant="outline-info"
+                      variant="link"
                       size="sm"
                       className="edit-button"
                       onClick={() => handleEditClick(item)}
-                      style={{
-                        borderColor: "#00bcd4 !important",
-                        color: "#00bcd4",
-                        backgroundColor: "transparent",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "0.4rem",
-                        fontWeight: 500,
-                      }}
                     >
-                      <FaEdit style={{ marginRight: "4px" }} />
                       Edit
-                    </Button>{" "}
+                    </Button>
                     <Button
-                      variant="outline-danger"
+                      variant="link"
                       size="sm"
                       className="delete-button"
                       onClick={() => handleDeleteClick(item.id)}
-                      style={{
-                        borderColor: "#e53935 !important",
-                        color: "#e53935",
-                        backgroundColor: "transparent",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "0.4rem",
-                        fontWeight: 500,
-                        marginLeft: "0.7rem",
-                        borderWidth: "2px",
-                      }}
                     >
-                      <FaTrashAlt style={{ marginRight: "4px" }} />
-                      Hapus
+                      Delete
                     </Button>
-                  </Card.Footer>
-                </Card>
-              </Col>
+                  </div> {/* End actions div */}
+              </div> // End menu-card div
             ))
           ) : (
-            <Col>
               <p className="text-center w-100">Tidak ada data inventaris.</p>
-            </Col>
           )}
-        </Row>
-      </div>
+      </div> {/* End inventaris-card-list */}
 
       <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)}>
         <Modal.Header closeButton>
