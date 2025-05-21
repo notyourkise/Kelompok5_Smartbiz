@@ -1,21 +1,22 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Card, Form, Button, Table, Alert } from 'react-bootstrap'; // Added Alert
+import { Container, Row, Col, Card, Form, Button, Table, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserCircle, faCreditCard, faShoppingCart, faArrowLeft, faCheckCircle, faSpinner } from '@fortawesome/free-solid-svg-icons'; // Added faSpinner
-import axios from 'axios'; // Import axios
-import './PaymentForm.css'; 
+import { faUserCircle, faCreditCard, faShoppingCart, faArrowLeft, faCheckCircle, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
+import './PaymentForm.css';
+import Swal from 'sweetalert2'; // Import SweetAlert2
 
 function PaymentForm() {
     const navigate = useNavigate();
-    const [isProcessing, setIsProcessing] = useState(false); // State for loading indicator
-    const [paymentError, setPaymentError] = useState(''); // State for payment error messages
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [paymentError, setPaymentError] = useState('');
     const [customerName, setCustomerName] = useState('');
     const [paymentType, setPaymentType] = useState('Tunai'); // Default to Tunai
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
     const handleBackToMenu = () => {
-        navigate('/manage-coffee-shop-menu');
+        navigate('/dashboard');
     };
 
     const calculateTotal = () => {
@@ -69,9 +70,19 @@ function PaymentForm() {
                 // Store customer name and payment type for receipt
                 localStorage.setItem('customerName', customerName);
                 localStorage.setItem('paymentType', paymentType);
-                
-                navigate('/receipt', { state: { cart, customerName, paymentType } });
-                localStorage.removeItem('cart'); // Clear cart after successful navigation and transaction
+
+                // Show success notification
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pembayaran Sukses!',
+                    text: 'Transaksi berhasil dicatat.',
+                    showConfirmButton: false,
+                    timer: 2000 // Auto close after 2 seconds
+                }).then(() => {
+                    navigate('/receipt', { state: { cart, customerName, paymentType } });
+                    localStorage.removeItem('cart'); // Clear cart after successful navigation and transaction
+                });
+
             } else {
                 // Handle non-201/200 success statuses if backend returns them for specific cases
                 const errorData = response.data || { message: `Gagal mencatat transaksi. Status: ${response.status}` };
@@ -92,15 +103,14 @@ function PaymentForm() {
     return (
         <div className="payment-form-elegant-container">
             <Container fluid="lg" className="py-4">
-                <Button variant="link" onClick={handleBackToMenu} className="back-link-button mb-3 ps-0">
-                    <FontAwesomeIcon icon={faArrowLeft} className="me-2" /> Back to Menu
-                </Button>
-
                 <Card className="payment-card shadow-lg">
                     <Card.Header as="h2" className="text-center payment-card-header">
                         <FontAwesomeIcon icon={faShoppingCart} className="me-2" /> Checkout
                     </Card.Header>
                     <Card.Body className="p-4">
+                         <Button variant="secondary" onClick={handleBackToMenu} className="mb-3">
+                            <FontAwesomeIcon icon={faArrowLeft} className="me-2" /> Back to Dashboard
+                        </Button>
                         {paymentError && <Alert variant="danger" onClose={() => setPaymentError('')} dismissible>{paymentError}</Alert>}
                         <Row>
                             <Col md={6} className="mb-4 mb-md-0 customer-payment-section">
@@ -184,9 +194,9 @@ function PaymentForm() {
                             <Button variant="outline-secondary" onClick={handleBackToMenu} className="me-sm-3 mb-2 mb-sm-0 action-button-elegant back-button-elegant">
                                 <FontAwesomeIcon icon={faArrowLeft} className="me-2" /> Cancel
                             </Button>
-                            <Button 
-                                variant="primary" 
-                                onClick={handlePayNow} 
+                            <Button
+                                variant="primary"
+                                onClick={handlePayNow}
                                 className="action-button-elegant pay-now-button-elegant"
                                 disabled={isProcessing || cart.length === 0 || !customerName.trim()}
                             >

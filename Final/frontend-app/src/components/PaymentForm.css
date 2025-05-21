@@ -1,100 +1,108 @@
 /* General container for the payment page */
 .payment-form-elegant-container {
-  background-color: #f0f2f5; /* Light, sophisticated background */
+  background-color: #808080; /* Gray background */
   min-height: 100vh;
-  padding-top: 20px;
-  padding-bottom: 40px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Elegant font */
-}
-
-/* Back to Menu link button */
-.back-link-button {
-  color: #555;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.back-link-button:hover {
-  color: #007bff; /* Or your primary theme color */
-  text-decoration: none;
+  padding: 40px 0;
+  font-family: 'Roboto', sans-serif; /* Modern font */
+  color: #000000; /* Default text color to black */
+  font-weight: bold; /* Make text bold */
+  display: flex; /* Use flexbox to center content */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
 }
 
 /* Main payment card styling */
 .payment-card {
-  border: none; /* Remove default border */
-  border-radius: 15px; /* Softer, more modern corners */
-  background-color: #ffffff; /* Clean white background */
-  /* Consider a subtle gradient or texture if desired */
-  /* background-image: linear-gradient(to top right, #ffffff, #fdfdfd); */
+  border: none;
+  border-radius: 12px; /* Slightly less rounded corners */
+  background-color: #fffacd; /* LemonChiffon - a shade of cream */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* More pronounced shadow */
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Add transition for hover effect */
+}
+
+.payment-card:hover {
+  transform: translateY(-5px); /* Lift effect on hover */
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3); /* Increase shadow on hover */
 }
 
 .payment-card-header {
-  background-color: #343a40; /* Dark, elegant header */
+  background-color: #8b4513; /* SaddleBrown - dark brown header */
   color: #ffffff;
-  padding: 20px;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
-  font-size: 1.75rem; /* Larger header text */
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  padding: 25px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  font-size: 2rem; /* Larger header text */
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .payment-card-header .svg-inline--fa { /* Icon styling in header */
-  margin-right: 12px;
-  color: #ffc107; /* Gold-like color for icon */
+  margin-right: 15px;
+  color: #ffa500; /* Orange color for icon */
+  font-size: 2.2rem;
 }
 
 /* Section titles within the card body */
 .section-title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #495057; /* Dark grey for titles */
-  border-bottom: 2px solid #e9ecef; /* Subtle separator */
-  padding-bottom: 10px;
-  margin-bottom: 25px !important; /* Ensure consistent spacing */
+  font-size: 1.4rem;
+  font-weight: bold; /* Make titles bold */
+  color: #000000; /* Black color for titles */
+  border-bottom: 1px solid #d2b48c; /* Tan - a brown separator */
+  padding-bottom: 12px;
+  margin-bottom: 30px !important; /* Increased spacing */
+  display: flex;
+  align-items: center;
 }
 
 .section-title .svg-inline--fa {
-  margin-right: 10px;
-  color: #007bff; /* Primary color for icons in section titles */
+  margin-right: 12px;
+  color: #000000; /* Black color for icons in section titles */
+  font-size: 1.6rem;
 }
 
 /* Styling for form groups and labels */
 .form-group-elegant .form-label {
-  font-weight: 500;
-  color: #555;
-  margin-bottom: 8px;
+  font-weight: bold; /* Make labels bold */
+  color: #000000; /* Black color for labels */
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .form-group-elegant .form-label .svg-inline--fa {
-  margin-right: 8px;
-  color: #6c757d; /* Muted icon color for labels */
+  margin-right: 10px;
+  color: #000000; /* Black color for icon color for labels */
 }
 
 /* Styling for form controls (input, select) */
 .form-control-elegant {
-  border-radius: 8px; /* Softer corners for inputs */
-  border: 1px solid #ced4da;
-  padding: 10px 15px;
-  font-size: 1rem;
+  border-radius: 6px; /* Slightly less rounded */
+  border: 1px solid #d2b48c; /* Tan border */
+  padding: 12px 18px;
+  font-size: 1.05rem;
   transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  color: #333; /* Keep input text dark for readability */
+  font-weight: normal; /* Keep input text normal weight */
 }
 
 .form-control-elegant:focus {
-  border-color: #80bdff; /* Highlight color on focus */
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Glow effect */
+  border-color: #8b4513; /* SaddleBrown highlight on focus */
+  box-shadow: 0 0 0 0.25rem rgba(139, 69, 19, 0.25); /* Brown glow effect */
 }
 
 /* Order summary box */
 .order-summary-box {
-  background-color: #f8f9fa; /* Slightly off-white for contrast */
+  background-color: #fff8dc; /* Cornsilk - very light yellow/brown */
   border-radius: 10px;
-  border: 1px solid #e9ecef;
+  border: 1px solid #d2b48c; /* Tan border */
   min-height: 200px; /* Ensure it has some height even if empty */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding: 20px; /* Added padding */
 }
 
 /* Table styling for order details */
@@ -103,77 +111,88 @@
 }
 
 .order-table-elegant th {
-  background-color: #e9ecef; /* Light grey for table header */
-  color: #495057;
-  font-weight: 600;
+  background-color: #d2b48c; /* Tan for table header */
+  color: #000000; /* Black color for table header */
+  font-weight: bold; /* Make table header bold */
   border-bottom-width: 2px;
 }
 
 .order-table-elegant td {
   vertical-align: middle;
-  color: #333;
+  color: #000000; /* Black color for table text */
+  padding: 12px; /* Added padding */
+  font-weight: bold; /* Make table text bold */
 }
 
 .order-table-elegant tbody tr:hover {
-  background-color: #e2e6ea; /* Subtle hover for table rows */
+  background-color: #deb887; /* BurlyWood - subtle hover for table rows */
 }
 
 /* Total amount section */
 .total-section {
-  border-top: 1px dashed #adb5bd !important; /* Dashed line for a bit of flair */
+  border-top: 1px solid #d2b48c !important; /* Tan solid line */
+  padding-top: 20px !important; /* Increased padding */
+  margin-top: 20px !important; /* Increased margin */
 }
 
 .total-amount {
-  font-size: 1.5rem; /* Larger total */
-  color: #28a745; /* Green for total, or your primary success color */
+  font-size: 1.6rem; /* Larger total */
+  color: #228b22; /* ForestGreen - green for total */
   font-weight: 700 !important;
 }
 
 /* Action buttons styling */
 .payment-actions {
-  border-top: 1px solid #e9ecef !important; /* Separator for actions */
+  border-top: 1px solid #d2b48c !important; /* Tan separator for actions */
+  padding-top: 30px !important; /* Increased padding */
 }
 
 .action-button-elegant {
-  padding: 12px 25px;
-  font-size: 1.1rem;
-  font-weight: 500;
+  padding: 14px 30px; /* Larger padding */
+  font-size: 1.15rem; /* Slightly larger font */
+  font-weight: bold; /* Make button text bold */
   border-radius: 8px;
   transition: all 0.3s ease;
   letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .action-button-elegant .svg-inline--fa {
-  margin-right: 8px;
+  margin-right: 10px;
 }
 
 .back-button-elegant {
-  background-color: #6c757d;
-  border-color: #6c757d;
+  background-color: #a0522d; /* Sienna */
+  border-color: #a0522d;
   color: white;
 }
 
 .back-button-elegant:hover {
-  background-color: #5a6268;
-  border-color: #545b62;
+  background-color: #8b4513; /* SaddleBrown */
+  border-color: #8b4513;
 }
 
 .pay-now-button-elegant {
-  background-color: #007bff; /* Primary theme color */
-  border-color: #007bff;
+  background-color: #228b22; /* ForestGreen */
+  border-color: #228b22;
   color: white;
-  /* box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2); */ /* Subtle shadow for primary button */
+  box-shadow: 0 4px 8px rgba(34, 139, 34, 0.2); /* Subtle green shadow */
 }
 
 .pay-now-button-elegant:hover {
-  background-color: #0056b3;
-  border-color: #0056b3;
-  /* transform: translateY(-2px); */ /* Slight lift on hover */
+  background-color: #3cb371; /* MediumSeaGreen */
+  border-color: #3cb371;
+  transform: translateY(-2px); /* Slight lift on hover */
 }
 
 .pay-now-button-elegant:disabled {
-  background-color: #a1cfff;
-  border-color: #a1cfff;
+  background-color: #98fb98; /* PaleGreen */
+  border-color: #98fb98;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Responsive adjustments */
@@ -184,17 +203,21 @@
     padding-left: 15px; /* Reset padding for Col */
   }
   .payment-card-header {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
+    padding: 20px;
   }
   .section-title {
-    font-size: 1.15rem;
+    font-size: 1.25rem;
+    margin-bottom: 20px !important;
   }
   .total-amount {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
   }
   .action-button-elegant {
     width: 100%;
     margin-bottom: 10px;
+    padding: 12px 25px;
+    font-size: 1.1rem;
   }
   .action-button-elegant.me-sm-3 {
     margin-right: 0 !important;
