@@ -7,17 +7,20 @@ import {
   FaPlus,
   FaArrowLeft,
   FaInfoCircle,
+  FaCheckCircle,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Footer from "./Footer";
 import "./ManageInventarisCoffeeShop.css";
+import "./SuccessModal.css";
 
 const ManageInventarisCoffeeShop = () => {
   const navigate = useNavigate();
-  const [inventaris, setInventaris] = useState([]);
-  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [inventaris, setInventaris] = useState([]);  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const [deleteItemId, setDeleteItemId] = useState(null);
   const [newItem, setNewItem] = useState({
     item_name: "",
@@ -63,13 +66,21 @@ const ManageInventarisCoffeeShop = () => {
       console.error("Authentication token not found. Cannot delete item.");
       return;
     }
-    try {
-      await axios.delete(`http://localhost:3001/api/inventaris/${id}`, {
+    try {      await axios.delete(`http://localhost:3001/api/inventaris/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setInventaris(inventaris.filter((item) => item.id !== id));
       setShowDeleteModal(false);
       setDeleteItemId(null);
+      
+      // Show success message
+      setSuccessMessage("Item inventaris coffee shop berhasil dihapus!");
+      setShowSuccessModal(true);
+      
+      // Auto close success modal after 2 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+      }, 2000);
     } catch (error) {
       console.error("Error deleting item:", error);
     }
@@ -118,10 +129,13 @@ const ManageInventarisCoffeeShop = () => {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
-        },
-      });
+        },      });
 
       setShowCreateModal(false);
+      setSuccessMessage("Item inventaris coffee shop berhasil ditambahkan!");
+      setShowSuccessModal(true);
+      
+      // Reset form
       setNewItem({
         item_name: "",
         stock: 0,
@@ -129,7 +143,12 @@ const ManageInventarisCoffeeShop = () => {
         image: null,
         expiration_date: "",
       });
-      fetchInventaris();
+      
+      // Auto close success modal after 2 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        fetchInventaris();
+      }, 2000);
     } catch (error) {
       console.error("Error creating item:", error);
     }
@@ -170,11 +189,17 @@ const ManageInventarisCoffeeShop = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
-        }
-      );
+        }      );
       setShowEditModal(false);
+      setSuccessMessage("Item inventaris coffee shop berhasil diperbarui!");
+      setShowSuccessModal(true);
       setEditingItem(null);
-      fetchInventaris();
+      
+      // Auto close success modal after 2 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        fetchInventaris();
+      }, 2000);
     } catch (error) {
       console.error("Error updating item:", error);
     }
@@ -400,7 +425,21 @@ const ManageInventarisCoffeeShop = () => {
         </Modal.Footer>
       </Modal>
 
-      <Footer />
+      {/* Success Modal */}
+      <Modal 
+        show={showSuccessModal} 
+        onHide={() => setShowSuccessModal(false)}
+        centered
+        className="success-modal"
+      >
+        <Modal.Body className="text-center p-4">
+          <div className="success-checkmark-container">
+            <FaCheckCircle className="success-checkmark-icon" />
+          </div>
+          <h4 className="mt-3">{successMessage}</h4>        </Modal.Body>
+      </Modal>
+
+      {/* Footer dihapus karena sudah dihandle oleh Dashboard */}
     </div>
   );
 };

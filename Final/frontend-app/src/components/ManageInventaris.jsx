@@ -278,11 +278,9 @@ const ManageInventaris = () => {
           <Button variant="primary" onClick={handleUpdateItem}>
             Simpan Perubahan
           </Button>
-        </Modal.Footer>
-      </Modal>
+        </Modal.Footer>      </Modal>
 
-      {/* Include Footer */}
-      <Footer />
+      {/* Footer dihapus karena sudah dihandle oleh Dashboard */}
     </div>
   );
 };

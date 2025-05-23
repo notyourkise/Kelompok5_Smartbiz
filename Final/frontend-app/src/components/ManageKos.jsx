@@ -440,9 +440,8 @@ const ManageKos = () => {
           <Button variant="danger" onClick={handleDeleteConfirm}>
             Hapus
           </Button>
-        </Modal.Footer>
-      </Modal>
-      <Footer />
+        </Modal.Footer>      </Modal>
+      {/* Footer dihapus karena sudah dihandle oleh Dashboard */}
     </div>
   );
 };

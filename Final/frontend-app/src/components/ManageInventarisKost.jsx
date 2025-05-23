@@ -8,10 +8,12 @@ import {
   FaPlus,
   FaArrowLeft,
   FaInfoCircle,
+  FaCheckCircle,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Footer from "./Footer";
 import "./ManageInventarisKost.css";
+import "./SuccessModal.css";
 
 const ManageInventarisKost = () => {
   const navigate = useNavigate();
@@ -19,6 +21,8 @@ const ManageInventarisKost = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const [deleteItemId, setDeleteItemId] = useState(null);
   const [newItem, setNewItem] = useState({
     item_name: "",
@@ -68,8 +72,18 @@ const ManageInventarisKost = () => {
       setInventaris(inventaris.filter((item) => item.id !== id));
       setShowDeleteModal(false);
       setDeleteItemId(null);
+
+      // Show success message
+      setSuccessMessage("Item inventaris berhasil dihapus!");
+      setShowSuccessModal(true);
+
+      // Auto close success modal after 2 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+      }, 2000);
     } catch (error) {
       console.error("Error saat menghapus item:", error);
+      // Optionally show an error modal or message here
     }
   };
 
@@ -125,6 +139,10 @@ const ManageInventarisKost = () => {
       });
 
       setShowCreateModal(false);
+      setSuccessMessage("Item inventaris berhasil ditambahkan!");
+      setShowSuccessModal(true);
+
+      // Reset form
       setNewItem({
         item_name: "",
         stock: 0,
@@ -132,9 +150,15 @@ const ManageInventarisKost = () => {
         image: null,
         expiration_date: "",
       });
-      fetchInventaris();
+
+      // Auto close success modal after 2 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        fetchInventaris();
+      }, 2000);
     } catch (error) {
       console.error("Error creating item:", error);
+      // Optionally show an error modal or message here
     }
   };
 
@@ -176,10 +200,18 @@ const ManageInventarisKost = () => {
         }
       );
       setShowEditModal(false);
+      setSuccessMessage("Item inventaris berhasil diperbarui!");
+      setShowSuccessModal(true);
       setEditingItem(null);
-      fetchInventaris();
+
+      // Auto close success modal after 2 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        fetchInventaris();
+      }, 2000);
     } catch (error) {
       console.error("Error updating item:", error);
+      // Optionally show an error modal or message here
     }
   };
 
@@ -195,68 +227,79 @@ const ManageInventarisKost = () => {
           <FaPlus /> Tambah Item
         </Button>
       </header>
-
       <div className="inventaris-card-list">
-          {inventaris.length > 0 ? (
-            inventaris.map((item) => (
-              <div className="menu-card" key={item.id}> {/* Changed to div with menu-card class */}
-                  {item.image_url && ( // Conditionally render image
-                    <img
-                      src={`http://localhost:3001/${item.image_url}`}
-                      alt={item.item_name}
-                      className="card-image" // Use card-image class
-                    />
+        {inventaris.length > 0 ? (
+          inventaris.map((item) => (
+            <div className="menu-card" key={item.id}>
+              {" "}
+              {/* Changed to div with menu-card class */}
+              {item.image_url && ( // Conditionally render image
+                <img
+                  src={`http://localhost:3001/${item.image_url}`}
+                  alt={item.item_name}
+                  className="card-image" // Use card-image class
+                />
+              )}
+              <FaInfoCircle
+                className="info-icon"
+                onClick={() => alert(`Info for ${item.item_name}`)}
+              />{" "}
+              {/* Basic info click handler */}
+              <h5>{item.item_name}</h5> {/* Changed to h5 */}
+              <div className="item-details">
+                <p className="item-stock">
+                  Stok Barang: {item.stock}
+                  {item.stock <= item.minimum_stock && (
+                    <span className="stock-warning-text"> (Minimum!)</span>
                   )}
-                  <FaInfoCircle className="info-icon" onClick={() => alert(`Info for ${item.item_name}`)} /> {/* Basic info click handler */}
-                  <h5>{item.item_name}</h5> {/* Changed to h5 */}
-                  <div className="item-details">
-                      <p className="item-stock">Stok Barang: {item.stock}
-                        {item.stock <= item.minimum_stock && (
-                          <span className="stock-warning-text"> (Minimum!)</span>
-                        )}
-                      </p>
-                      <p className="item-min-stock">Minimum Stok: {item.minimum_stock}</p>
-                      {item.expiration_date && (
-                        <p
-                          className={`item-expiration ${
-                            new Date(item.expiration_date) < new Date()
-                              ? "expired"
-                              : "valid"
-                          }`}
-                        >
-                          {new Date(item.expiration_date) < new Date()
-                            ? "Expired"
-                            : `Valid Until: ${new Date(
-                                item.expiration_date
-                              ).toLocaleDateString()}`}
-                        </p>
-                      )}
-                    </div>
-                  <div className="menu-card-actions"> {/* Added actions div */}
-                    <Button
-                      variant="link"
-                      size="sm"
-                      className="edit-button"
-                      onClick={() => handleEditClick(item)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="link"
-                      size="sm"
-                      className="delete-button"
-                      onClick={() => handleDeleteClick(item.id)}
-                    >
-                      Delete
-                    </Button>
-                  </div> {/* End actions div */}
-              </div> // End menu-card div
-            ))
-          ) : (
-              <p className="text-center w-100">Tidak ada data inventaris.</p>
-          )}
-      </div> {/* End inventaris-card-list */}
-
+                </p>
+                <p className="item-min-stock">
+                  Minimum Stok: {item.minimum_stock}
+                </p>
+                {item.expiration_date && (
+                  <p
+                    className={`item-expiration ${
+                      new Date(item.expiration_date) < new Date()
+                        ? "expired"
+                        : "valid"
+                    }`}
+                  >
+                    {new Date(item.expiration_date) < new Date()
+                      ? "Expired"
+                      : `Valid Until: ${new Date(
+                          item.expiration_date
+                        ).toLocaleDateString()}`}
+                  </p>
+                )}
+              </div>
+              <div className="menu-card-actions">
+                {" "}
+                {/* Added actions div */}
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="edit-button"
+                  onClick={() => handleEditClick(item)}
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="delete-button"
+                  onClick={() => handleDeleteClick(item.id)}
+                >
+                  Delete
+                </Button>
+              </div>{" "}
+              {/* End actions div */}
+            </div> // End menu-card div
+          ))
+        ) : (
+          <p className="text-center w-100">Tidak ada data inventaris.</p>
+        )}
+      </div>{" "}
+      {/* End inventaris-card-list */}
       <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Tambah Item Inventaris</Modal.Title>
@@ -319,7 +362,6 @@ const ManageInventarisKost = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Edit Item Inventaris</Modal.Title>
@@ -382,7 +424,6 @@ const ManageInventarisKost = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-
       {/* Delete Confirmation Modal */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
@@ -395,11 +436,23 @@ const ManageInventarisKost = () => {
           </Button>
           <Button variant="danger" onClick={() => handleDelete(deleteItemId)}>
             Hapus
-          </Button>
+          </Button>{" "}
         </Modal.Footer>
       </Modal>
-
-      <Footer />
+      {/* Success Modal with Checkmark Animation */}
+      <Modal
+        show={showSuccessModal}
+        onHide={() => setShowSuccessModal(false)}
+        centered
+        className="success-modal"
+      >
+        <Modal.Body className="text-center p-4">
+          <div className="success-checkmark-container">
+            <FaCheckCircle className="success-checkmark-icon" />
+          </div>
+          <h4 className="mt-3">{successMessage}</h4>        </Modal.Body>
+      </Modal>
+      {/* Footer dihapus karena sudah dihandle oleh Dashboard */}
     </div>
   );
 };

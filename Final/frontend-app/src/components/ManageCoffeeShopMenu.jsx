@@ -13,7 +13,7 @@ import "./ManageCoffeeShopMenu.css";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { jwtDecode } from 'jwt-decode'; // Import jwtDecode as a named import
+import { jwtDecode } from "jwt-decode"; // Import jwtDecode as a named import
 
 const API_URL = "http://localhost:3001/coffee-shop"; // Backend URL
 
@@ -31,6 +31,31 @@ function ManageCoffeeShopMenu({ theme }) {
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const cartIconRef = useRef(null); // Ref for the cart icon
+
+  // Toast notification utility functions
+  const showSuccessToast = (message) => {
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: theme === "dark" ? "dark" : "light",
+    });
+  };
+
+  const showErrorToast = (message) => {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 4000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: theme === "dark" ? "dark" : "light",
+    });
+  };
 
   const increaseQuantity = (item) => {
     const updatedCart = cart.map((cartItem) =>
@@ -221,7 +246,6 @@ function ManageCoffeeShopMenu({ theme }) {
     }
     setShowModal(true);
   };
-
   const handleCloseModal = () => {
     setShowModal(false);
     setCurrentItem(null);
@@ -239,9 +263,27 @@ function ManageCoffeeShopMenu({ theme }) {
     setIsLoading(true);
     setError("");
     setSuccess("");
+
+    // Validate form data
+    if (!formData.name || !formData.price || !formData.category) {
+      setError("Nama menu, harga, dan kategori harus diisi!");
+      showErrorToast("Nama menu, harga, dan kategori harus diisi!");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate price is a positive number
+    if (parseFloat(formData.price) <= 0) {
+      setError("Harga harus lebih dari 0!");
+      showErrorToast("Harga harus lebih dari 0!");
+      setIsLoading(false);
+      return;
+    }
+
     const token = getToken();
     if (!token) {
       setError("Authentication token not found.");
+      showErrorToast("Authentication token not found. Silahkan login kembali.");
       setIsLoading(false);
       return;
     }
@@ -261,18 +303,28 @@ function ManageCoffeeShopMenu({ theme }) {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        setSuccess("Menu item updated successfully!");
+        const successMsg = "Menu berhasil diperbarui!";
+        setSuccess(successMsg);
+        showSuccessToast(successMsg);
       } else {
         response = await axios.post(`${API_URL}/menus`, dataToSend, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setSuccess("Menu item created successfully!");
+        const successMsg = "Menu baru berhasil ditambahkan!";
+        setSuccess(successMsg);
+        showSuccessToast(successMsg);
       }
       fetchMenus(); // Refresh the list
-      handleCloseModal();
+      setTimeout(() => {
+        handleCloseModal(); // Close modal after showing toast notification
+      }, 500);
     } catch (err) {
       console.error("Error saving menu item:", err);
-      setError(err.response?.data?.message || "Failed to save menu item.");
+      const errorMsg =
+        err.response?.data?.message ||
+        "Gagal menyimpan menu. Silahkan coba lagi.";
+      setError(errorMsg);
+      showErrorToast(errorMsg);
     } finally {
       setIsLoading(false);
     }
@@ -283,7 +335,6 @@ function ManageCoffeeShopMenu({ theme }) {
     setItemToDelete(item);
     setShowDeleteConfirmModal(true);
   };
-
   // Handle deleting item after confirmation
   const handleDeleteConfirm = async () => {
     setIsLoading(true);
@@ -291,7 +342,9 @@ function ManageCoffeeShopMenu({ theme }) {
     setSuccess("");
     const token = getToken();
     if (!token || !itemToDelete) {
-      setError("Authentication token or item to delete not found.");
+      const errorMsg = "Authentication token or item to delete not found.";
+      setError(errorMsg);
+      showErrorToast(errorMsg);
       setIsLoading(false);
       return;
     }
@@ -300,16 +353,19 @@ function ManageCoffeeShopMenu({ theme }) {
       await axios.delete(`${API_URL}/menus/${itemToDelete.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setSuccess("Menu item deleted successfully!");
+      const successMsg = `Menu ${itemToDelete.name} berhasil dihapus!`;
+      setSuccess(successMsg);
+      showSuccessToast(successMsg);
       fetchMenus(); // Refresh the list
       setShowDeleteConfirmModal(false);
       setItemToDelete(null);
     } catch (err) {
       console.error("Error deleting menu item:", err);
-      setError(
+      const errorMsg =
         err.response?.data?.message ||
-          "Failed to delete menu item. It might be used in existing orders."
-      );
+        "Gagal menghapus menu. Menu mungkin sedang digunakan dalam pesanan.";
+      setError(errorMsg);
+      showErrorToast(errorMsg);
       setShowDeleteConfirmModal(false);
       setItemToDelete(null);
     } finally {
@@ -339,8 +395,11 @@ function ManageCoffeeShopMenu({ theme }) {
       {error && <Alert variant="danger">{error}</Alert>}
       {success && <Alert variant="success">{success}</Alert>}
 
-      {userRole === 'superadmin' && ( // Conditionally render "Tambah Menu Baru" button
-        <Button className="action-button mb-4" onClick={() => handleShowModal()}>
+      {userRole === "superadmin" && ( // Conditionally render "Tambah Menu Baru" button
+        <Button
+          className="action-button mb-4"
+          onClick={() => handleShowModal()}
+        >
           <FontAwesomeIcon icon={faPlus} /> Tambah Menu Baru
         </Button>
       )}
@@ -361,7 +420,7 @@ function ManageCoffeeShopMenu({ theme }) {
                 .filter((item) => item.category === "coffee")
                 .map((item) => (
                   <div className="menu-card" key={item.id}>
-                    {userRole === 'superadmin' && ( // Conditionally render edit icon
+                    {userRole === "superadmin" && ( // Conditionally render edit icon
                       <FontAwesomeIcon
                         icon={faEdit}
                         className="edit-icon"
@@ -384,7 +443,7 @@ function ManageCoffeeShopMenu({ theme }) {
                       >
                         Tambah
                       </Button>
-                      {userRole === 'superadmin' && ( // Conditionally render delete button
+                      {userRole === "superadmin" && ( // Conditionally render delete button
                         <Button
                           className="btn btn-delete"
                           onClick={() => handleDeleteClick(item)}
@@ -406,7 +465,7 @@ function ManageCoffeeShopMenu({ theme }) {
                 .filter((item) => item.category === "non-coffee")
                 .map((item) => (
                   <div className="menu-card" key={item.id}>
-                    {userRole === 'superadmin' && ( // Conditionally render edit icon
+                    {userRole === "superadmin" && ( // Conditionally render edit icon
                       <FontAwesomeIcon
                         icon={faEdit}
                         className="edit-icon"
@@ -429,7 +488,7 @@ function ManageCoffeeShopMenu({ theme }) {
                       >
                         Tambah
                       </Button>
-                      {userRole === 'superadmin' && ( // Conditionally render delete button
+                      {userRole === "superadmin" && ( // Conditionally render delete button
                         <Button
                           className="btn btn-delete"
                           onClick={() => handleDeleteClick(item)}
@@ -451,7 +510,7 @@ function ManageCoffeeShopMenu({ theme }) {
                 .filter((item) => item.category === "snack")
                 .map((item) => (
                   <div className="menu-card" key={item.id}>
-                    {userRole === 'superadmin' && ( // Conditionally render edit icon
+                    {userRole === "superadmin" && ( // Conditionally render edit icon
                       <FontAwesomeIcon
                         icon={faEdit}
                         className="edit-icon"
@@ -474,7 +533,7 @@ function ManageCoffeeShopMenu({ theme }) {
                       >
                         Tambah
                       </Button>
-                      {userRole === 'superadmin' && ( // Conditionally render delete button
+                      {userRole === "superadmin" && ( // Conditionally render delete button
                         <Button
                           className="btn btn-delete"
                           onClick={() => handleDeleteClick(item)}
@@ -580,19 +639,11 @@ function ManageCoffeeShopMenu({ theme }) {
         <Modal.Footer>
           <Button onClick={() => setCart([])} className="action-button">
             Kosongkan Keranjang
-          </Button>
+          </Button>{" "}
           <Button
             onClick={() => {
               if (cart.length === 0) {
-                toast.warn("Keranjang masih kosong. Silahkan pilih menu!", {
-                  position: "top-right",
-                  autoClose: 3000,
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: true,
-                  progress: undefined,
-                });
+                showErrorToast("Keranjang masih kosong. Silahkan pilih menu!");
                 return;
               }
               localStorage.setItem("cart", JSON.stringify(cart));
@@ -604,17 +655,29 @@ function ManageCoffeeShopMenu({ theme }) {
           </Button>
         </Modal.Footer>
       </Modal>
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme={theme === "dark" ? "dark" : "light"}
+      />
 
       {/* Add/Edit Modal */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>
             {currentItem ? "Edit Menu" : "Tambah Menu Baru"}
-          </Modal.Title>
+          </Modal.Title>{" "}
         </Modal.Header>
         <Modal.Body>
           {error && <Alert variant="danger">{error}</Alert>}
+          {success && <Alert variant="success">{success}</Alert>}
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formMenuName">
               <Form.Label>Nama Menu</Form.Label>
@@ -709,7 +772,11 @@ function ManageCoffeeShopMenu({ theme }) {
       </Modal>
 
       {/* Delete Confirmation Modal */}
-      <Modal show={showDeleteConfirmModal} onHide={() => setShowDeleteConfirmModal(false)} centered>
+      <Modal
+        show={showDeleteConfirmModal}
+        onHide={() => setShowDeleteConfirmModal(false)}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Konfirmasi Hapus Menu</Modal.Title>
         </Modal.Header>
@@ -717,7 +784,10 @@ function ManageCoffeeShopMenu({ theme }) {
           Apakah Anda yakin ingin menghapus menu "{itemToDelete?.name}"?
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteConfirmModal(false)}>
+          <Button
+            variant="secondary"
+            onClick={() => setShowDeleteConfirmModal(false)}
+          >
             Batal
           </Button>
           <Button variant="danger" onClick={handleDeleteConfirm}>

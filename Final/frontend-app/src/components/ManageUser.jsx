@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 // Import Table component from react-bootstrap
 import { Button, Modal, Form, Table } from "react-bootstrap";
-import { FaTrashAlt, FaEdit, FaPlus, FaArrowLeft } from "react-icons/fa"; // Import necessary icons
+import { FaTrashAlt, FaEdit, FaPlus, FaArrowLeft, FaCheckCircle } from "react-icons/fa"; // Import necessary icons
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Footer from "./Footer"; // Import the Footer component
 import "./ManageUser.css"; // Import the new CSS file
+import "./SuccessModal.css"; // Import the success modal CSS
 
 const ManageUser = () => {
   const navigate = useNavigate(); // Initialize navigate
@@ -13,6 +14,8 @@ const ManageUser = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const [userToDelete, setUserToDelete] = useState(null);
   const [newUser, setNewUser] = useState({
     username: "",
@@ -69,13 +72,21 @@ const ManageUser = () => {
       console.error("Authentication token not found. Cannot create user.");
       return;
     }
-    try {
-      await axios.post("http://localhost:3001/api/users", newUser, {
+    try {      await axios.post("http://localhost:3001/api/users", newUser, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setShowCreateModal(false);
       setNewUser({ username: "", password: "", role: "" });
-      fetchUsers();
+      
+      // Show success message
+      setSuccessMessage("Pengguna berhasil ditambahkan!");
+      setShowSuccessModal(true);
+      
+      // Auto close success modal after 2 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        fetchUsers();
+      }, 2000);
     } catch (error) {
       console.error(
         "Error creating user:",
@@ -113,12 +124,20 @@ const ManageUser = () => {
         updateData,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+        }      );
 
       setShowEditModal(false);
       setEditingUser(null);
-      fetchUsers();
+      
+      // Show success message
+      setSuccessMessage("Pengguna berhasil diperbarui!");
+      setShowSuccessModal(true);
+      
+      // Auto close success modal after 2 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        fetchUsers();
+      }, 2000);
     } catch (error) {
       console.error(
         "Error updating user:",
@@ -140,13 +159,21 @@ const ManageUser = () => {
       console.error("Authentication token or user to delete not found. Please log in again.");
       return;
     }
-    try {
-      await axios.delete(`http://localhost:3001/api/users/${userToDelete.id}`, {
+    try {      await axios.delete(`http://localhost:3001/api/users/${userToDelete.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setUsers(users.filter((user) => user.id !== userToDelete.id));
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userToDelete.id));
       setShowDeleteConfirmModal(false);
       setUserToDelete(null);
+      
+      // Show success message
+      setSuccessMessage("Pengguna berhasil dihapus!");
+      setShowSuccessModal(true);
+      
+      // Auto close success modal after 2 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+      }, 2000);
     } catch (error) {
       console.error(
         "Error deleting user:",
@@ -178,10 +205,8 @@ const ManageUser = () => {
 
       {/* User Table */}
       <div className="table-responsive">
-        {" "}
         {/* Make table responsive */}
         <Table striped bordered hover className="user-table">
-          {" "}
           {/* Add class for potential styling */}
           <thead>
             <tr>
@@ -192,7 +217,7 @@ const ManageUser = () => {
             </tr>
           </thead>
           <tbody>
-            {users.length > 0 ? (
+            {users && users.length > 0 ? (
               users.map((user, index) => (
                 <tr key={user.id}>
                   <td>{index + 1}</td>
@@ -202,7 +227,7 @@ const ManageUser = () => {
                     <Button
                       variant="outline-primary"
                       size="sm"
-                      className="me-2" // Margin end for spacing
+                      className="me-2"
                       onClick={() => handleEditClick(user)}
                     >
                       <FaEdit /> Edit
@@ -227,9 +252,6 @@ const ManageUser = () => {
           </tbody>
         </Table>
       </div>
-
-      {/* Include the Footer component */}
-      <Footer />
 
       {/* Create User Modal */}
       <Modal show={showCreateModal} onHide={() => setShowCreateModal(true)}>
@@ -344,10 +366,24 @@ const ManageUser = () => {
             Batal
           </Button>
           <Button variant="danger" onClick={handleDeleteConfirm}>
-            Hapus
-          </Button>
+            Hapus          </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Success Modal */}
+      <Modal 
+        show={showSuccessModal} 
+        onHide={() => setShowSuccessModal(false)}
+        centered
+        className="success-modal"
+      >
+        <Modal.Body className="text-center p-4">
+          <div className="success-checkmark-container">
+            <FaCheckCircle className="success-checkmark-icon" />
+          </div>          <h4 className="mt-3">{successMessage}</h4>
+        </Modal.Body>      </Modal>
+      
+      {/* Hapus pemanggilan Footer di sini karena sudah dihandle oleh Dashboard */}
     </div>
   );
 };
