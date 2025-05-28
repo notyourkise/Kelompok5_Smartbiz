@@ -2,17 +2,27 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 // Import Button, Modal, Form from react-bootstrap, remove Card, Row, Col
 import { Button, Modal, Form } from "react-bootstrap";
-import { FaTrashAlt, FaEdit, FaPlus, FaArrowLeft, FaInfoCircle } from "react-icons/fa"; // Added FaInfoCircle
+import {
+  FaTrashAlt,
+  FaEdit,
+  FaPlus,
+  FaArrowLeft,
+  FaInfoCircle,
+} from "react-icons/fa"; // Added FaInfoCircle
 import { useNavigate } from "react-router-dom"; // Untuk navigasi
-import Footer from './Footer'; // Pastikan Footer diimpor
-import './ManageInventaris.css'; // Import the new CSS file
+import Footer from "./Footer"; // Pastikan Footer diimpor
+import "./ManageInventaris.css"; // Import the new CSS file
 
 const ManageInventaris = () => {
   const navigate = useNavigate();
   const [inventaris, setInventaris] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false); // Modal untuk Create
   const [showEditModal, setShowEditModal] = useState(false); // Modal untuk Edit
-  const [newItem, setNewItem] = useState({ item_name: "", stock: 0, minimum_stock: 0 }); // Form untuk item baru
+  const [newItem, setNewItem] = useState({
+    item_name: "",
+    stock: 0,
+    minimum_stock: 0,
+  }); // Form untuk item baru
   const [editingItem, setEditingItem] = useState(null); // Item yang sedang diedit
 
   // Mengambil data inventaris dari API
@@ -104,13 +114,19 @@ const ManageInventaris = () => {
   const handleUpdateItem = async () => {
     const token = localStorage.getItem("token");
     if (!token || !editingItem) {
-      console.error("Authentication token or editing item data not found. Cannot update item.");
+      console.error(
+        "Authentication token or editing item data not found. Cannot update item."
+      );
       return;
     }
     try {
-      await axios.put(`http://localhost:3001/api/inventaris/${editingItem.id}`, editingItem, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(
+        `http://localhost:3001/api/inventaris/${editingItem.id}`,
+        editingItem,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setShowEditModal(false); // Tutup modal setelah update
       setEditingItem(null); // Reset editing item
       fetchInventaris(); // Refresh data
@@ -132,9 +148,10 @@ const ManageInventaris = () => {
         >
           <FaArrowLeft />
         </Button>
-        <h2 className="manage-inventaris-title">Manajemen Inventaris</h2> {/* Add title */}
+        <h2 className="manage-inventaris-title">Manajemen Inventaris</h2>{" "}
+        {/* Add title */}
         {/* Create Item Button */}
-         <Button
+        <Button
           variant="primary" // Keep variant for base styling, override with class
           onClick={handleCreateModal}
           className="action-button" // Apply CSS class
@@ -142,47 +159,58 @@ const ManageInventaris = () => {
           <FaPlus /> Tambah Item
         </Button>
       </header>
-
       {/* Inventaris Card Layout */}
       <div className="inventaris-card-list">
-          {inventaris.length > 0 ? (
-            inventaris.map((item) => (
-              <div className="menu-card" key={item.id}> {/* Changed to div with menu-card class */}
-                  <FaInfoCircle className="info-icon" onClick={() => alert(`Info for ${item.item_name}`)} /> {/* Basic info click handler */}
-                  <h5>{item.item_name}</h5> {/* Changed to h5 */}
-                  <div className="item-details">
-                      <p className="item-stock">Stok Barang: {item.stock}
-                        {item.stock <= item.minimum_stock && (
-                          <span className="stock-warning-text"> (Minimum!)</span>
-                        )}
-                      </p>
-                      <p className="item-min-stock">Minimum Stok: {item.minimum_stock}</p>
-                    </div>
-                  <div className="menu-card-actions"> {/* Added actions div */}
-                    <Button
-                      variant="link"
-                      size="sm"
-                      className="edit-button"
-                      onClick={() => handleEditClick(item)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="link"
-                      size="sm"
-                      className="delete-button"
-                      onClick={() => handleDelete(item.id)}
-                    >
-                      Delete
-                    </Button>
-                  </div> {/* End actions div */}
-              </div> // End menu-card div
-            ))
-          ) : (
-              <p className="text-center w-100">Tidak ada data inventaris.</p>
-          )}
-      </div> {/* End inventaris-card-list */}
-
+        {inventaris.length > 0 ? (
+          inventaris.map((item) => (
+            <div className="menu-card" key={item.id}>
+              {" "}
+              {/* Changed to div with menu-card class */}
+              <FaInfoCircle
+                className="info-icon"
+                onClick={() => alert(`Info for ${item.item_name}`)}
+              />{" "}
+              {/* Basic info click handler */}
+              <h5>{item.item_name}</h5> {/* Changed to h5 */}
+              <div className="item-details">
+                <p className="item-stock">
+                  Stok Barang: {item.stock}
+                  {item.stock <= item.minimum_stock && (
+                    <span className="stock-warning-text"> (Minimum!)</span>
+                  )}
+                </p>
+                <p className="item-min-stock">
+                  Minimum Stok: {item.minimum_stock}
+                </p>
+              </div>
+              <div className="menu-card-actions">
+                {" "}
+                {/* Added actions div */}
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="edit-button"
+                  onClick={() => handleEditClick(item)}
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="delete-button"
+                  onClick={() => handleDelete(item.id)}
+                >
+                  Delete
+                </Button>
+              </div>{" "}
+              {/* End actions div */}
+            </div> // End menu-card div
+          ))
+        ) : (
+          <p className="text-center w-100">Tidak ada data inventaris.</p>
+        )}
+      </div>{" "}
+      {/* End inventaris-card-list */}
       {/* Modal Create Item */}
       <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)}>
         <Modal.Header closeButton>
@@ -231,7 +259,6 @@ const ManageInventaris = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-
       {/* Modal Edit Item */}
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
         <Modal.Header closeButton>
@@ -278,8 +305,8 @@ const ManageInventaris = () => {
           <Button variant="primary" onClick={handleUpdateItem}>
             Simpan Perubahan
           </Button>
-        </Modal.Footer>      </Modal>
-
+        </Modal.Footer>{" "}
+      </Modal>
       {/* Footer dihapus karena sudah dihandle oleh Dashboard */}
     </div>
   );

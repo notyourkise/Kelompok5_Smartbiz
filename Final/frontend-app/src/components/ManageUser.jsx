@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 // Import Table component from react-bootstrap
-import { Button, Modal, Form, Table } from "react-bootstrap";
-import { FaTrashAlt, FaEdit, FaPlus, FaArrowLeft, FaCheckCircle } from "react-icons/fa"; // Import necessary icons
+import { Button, Modal, Form, Table, Alert } from "react-bootstrap";
+import {
+  FaTrashAlt,
+  FaEdit,
+  FaPlus,
+  FaArrowLeft,
+  FaCheckCircle,
+} from "react-icons/fa"; // Import necessary icons
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Footer from "./Footer"; // Import the Footer component
 import "./ManageUser.css"; // Import the new CSS file
@@ -17,6 +23,7 @@ const ManageUser = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [userToDelete, setUserToDelete] = useState(null);
+  const [validationError, setValidationError] = useState("");
   const [newUser, setNewUser] = useState({
     username: "",
     password: "",
@@ -52,11 +59,19 @@ const ManageUser = () => {
   const handleBack = () => {
     navigate("/dashboard"); // Navigate to Dashboard
   };
-
   // Handle input changes for new user form
   const handleNewUserInputChange = (e) => {
     const { name, value } = e.target;
     setNewUser({ ...newUser, [name]: value });
+
+    // Clear validation error when user types in any field
+    if (validationError) {
+      // Only clear error if all fields are filled
+      const updatedUser = { ...newUser, [name]: value };
+      if (updatedUser.username && updatedUser.password && updatedUser.role) {
+        setValidationError("");
+      }
+    }
   };
 
   // Handle input changes for edit user form
@@ -72,16 +87,28 @@ const ManageUser = () => {
       console.error("Authentication token not found. Cannot create user.");
       return;
     }
-    try {      await axios.post("http://localhost:3001/api/users", newUser, {
+    // Validasi semua field required telah diisi
+    if (!newUser.username || !newUser.password || !newUser.role) {
+      setValidationError(
+        "Mohon isi semua kolom yang ditandai dengan tanda bintang (*) untuk menambahkan pengguna."
+      );
+      return;
+    }
+
+    // Reset error message if validation passes
+    setValidationError("");
+
+    try {
+      await axios.post("http://localhost:3001/api/users", newUser, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setShowCreateModal(false);
       setNewUser({ username: "", password: "", role: "" });
-      
+
       // Show success message
       setSuccessMessage("Pengguna berhasil ditambahkan!");
       setShowSuccessModal(true);
-      
+
       // Auto close success modal after 2 seconds
       setTimeout(() => {
         setShowSuccessModal(false);
@@ -124,15 +151,16 @@ const ManageUser = () => {
         updateData,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }      );
+        }
+      );
 
       setShowEditModal(false);
       setEditingUser(null);
-      
+
       // Show success message
       setSuccessMessage("Pengguna berhasil diperbarui!");
       setShowSuccessModal(true);
-      
+
       // Auto close success modal after 2 seconds
       setTimeout(() => {
         setShowSuccessModal(false);
@@ -156,20 +184,25 @@ const ManageUser = () => {
   const handleDeleteConfirm = async () => {
     const token = localStorage.getItem("token");
     if (!token || !userToDelete) {
-      console.error("Authentication token or user to delete not found. Please log in again.");
+      console.error(
+        "Authentication token or user to delete not found. Please log in again."
+      );
       return;
     }
-    try {      await axios.delete(`http://localhost:3001/api/users/${userToDelete.id}`, {
+    try {
+      await axios.delete(`http://localhost:3001/api/users/${userToDelete.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userToDelete.id));
+      setUsers((prevUsers) =>
+        prevUsers.filter((user) => user.id !== userToDelete.id)
+      );
       setShowDeleteConfirmModal(false);
       setUserToDelete(null);
-      
+
       // Show success message
       setSuccessMessage("Pengguna berhasil dihapus!");
       setShowSuccessModal(true);
-      
+
       // Auto close success modal after 2 seconds
       setTimeout(() => {
         setShowSuccessModal(false);
@@ -190,13 +223,15 @@ const ManageUser = () => {
       {/* Header with Back Button and Title */}
       <header className="manage-user-header">
         {/* Back Button with CSS class */}
-
         <h2 className="manage-user-title">Manajemen Pengguna</h2>{" "}
         {/* Add title */}
-        {/* Create User Button */}
+        {/* Create User Button */}{" "}
         <Button
           variant="primary" // Keep variant for base styling, override with class
-          onClick={() => setShowCreateModal(true)}
+          onClick={() => {
+            setShowCreateModal(true);
+            setValidationError(""); // Reset validation error when opening modal
+          }}
           className="action-button" // Apply CSS class
         >
           <FaPlus /> Tambah Pengguna
@@ -254,46 +289,82 @@ const ManageUser = () => {
       </div>
 
       {/* Create User Modal */}
-      <Modal show={showCreateModal} onHide={() => setShowCreateModal(true)}>
+      <Modal
+        show={showCreateModal}
+        onHide={() => {
+          setShowCreateModal(false);
+          setValidationError("");
+        }}
+      >
+        {" "}
         <Modal.Header closeButton>
           <Modal.Title>Tambah Pengguna Baru</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          {validationError && (
+            <Alert
+              variant="danger"
+              onClose={() => setValidationError("")}
+              dismissible
+            >
+              {validationError}
+            </Alert>
+          )}
+          <p style={{ color: "white" }} className="small mb-2">
+            Kolom dengan tanda <span className="text-danger">*</span> wajib
+            diisi
+          </p>
+          <Form onSubmit={(e) => e.preventDefault()}>
             <Form.Group className="mb-3">
-              <Form.Label>Username</Form.Label>
+              <Form.Label>
+                Username <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
                 name="username"
                 value={newUser.username}
                 onChange={handleNewUserInputChange}
                 placeholder="Masukkan Username"
+                required
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Password</Form.Label>
+              <Form.Label>
+                Password <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="password"
                 name="password"
                 value={newUser.password}
                 onChange={handleNewUserInputChange}
                 placeholder="Masukkan Password"
+                required
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Role</Form.Label>
+              <Form.Label>
+                Role <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
                 name="role"
                 value={newUser.role}
                 onChange={handleNewUserInputChange}
                 placeholder="Masukkan Role"
+                required
               />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowCreateModal(false)}>
+          {" "}
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setShowCreateModal(false);
+              setValidationError("");
+            }}
+          >
             Batal
           </Button>
           <Button variant="primary" onClick={handleCreateUser}>
@@ -354,7 +425,10 @@ const ManageUser = () => {
       </Modal>
 
       {/* Delete Confirmation Modal */}
-      <Modal show={showDeleteConfirmModal} onHide={() => setShowDeleteConfirmModal(false)}>
+      <Modal
+        show={showDeleteConfirmModal}
+        onHide={() => setShowDeleteConfirmModal(false)}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Konfirmasi Hapus Pengguna</Modal.Title>
         </Modal.Header>
@@ -362,17 +436,21 @@ const ManageUser = () => {
           Apakah Anda yakin ingin menghapus pengguna "{userToDelete?.username}"?
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDeleteConfirmModal(false)}>
+          <Button
+            variant="secondary"
+            onClick={() => setShowDeleteConfirmModal(false)}
+          >
             Batal
           </Button>
           <Button variant="danger" onClick={handleDeleteConfirm}>
-            Hapus          </Button>
+            Hapus{" "}
+          </Button>
         </Modal.Footer>
       </Modal>
 
       {/* Success Modal */}
-      <Modal 
-        show={showSuccessModal} 
+      <Modal
+        show={showSuccessModal}
         onHide={() => setShowSuccessModal(false)}
         centered
         className="success-modal"
@@ -380,9 +458,11 @@ const ManageUser = () => {
         <Modal.Body className="text-center p-4">
           <div className="success-checkmark-container">
             <FaCheckCircle className="success-checkmark-icon" />
-          </div>          <h4 className="mt-3">{successMessage}</h4>
-        </Modal.Body>      </Modal>
-      
+          </div>{" "}
+          <h4 className="mt-3">{successMessage}</h4>
+        </Modal.Body>{" "}
+      </Modal>
+
       {/* Hapus pemanggilan Footer di sini karena sudah dihandle oleh Dashboard */}
     </div>
   );

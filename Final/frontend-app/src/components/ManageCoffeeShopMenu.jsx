@@ -677,10 +677,12 @@ function ManageCoffeeShopMenu({ theme }) {
         </Modal.Header>
         <Modal.Body>
           {error && <Alert variant="danger">{error}</Alert>}
-          {success && <Alert variant="success">{success}</Alert>}
+          {success && <Alert variant="success">{success}</Alert>}{" "}
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formMenuName">
-              <Form.Label>Nama Menu</Form.Label>
+              <Form.Label>
+                Nama Menu <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Masukkan nama menu"
@@ -692,7 +694,9 @@ function ManageCoffeeShopMenu({ theme }) {
             </Form.Group>
 
             <Form.Group controlId="formMenuPrice">
-              <Form.Label>Harga (Rp)</Form.Label>
+              <Form.Label>
+                Harga (Rp) <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="number"
                 placeholder="Masukkan harga"
@@ -705,7 +709,9 @@ function ManageCoffeeShopMenu({ theme }) {
               />
             </Form.Group>
             <Form.Group controlId="formMenuCategory">
-              <Form.Label>Kategori</Form.Label>
+              <Form.Label>
+                Kategori <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 as="select"
                 name="category"
@@ -721,7 +727,9 @@ function ManageCoffeeShopMenu({ theme }) {
             </Form.Group>
 
             <Form.Group controlId="formMenuDescription">
-              <Form.Label>Deskripsi</Form.Label>
+              <Form.Label>
+                Deskripsi <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 as="textarea"
                 placeholder="Masukkan deskripsi menu"
@@ -729,16 +737,20 @@ function ManageCoffeeShopMenu({ theme }) {
                 value={formData.description}
                 onChange={handleInputChange}
                 rows={3}
+                required
               />
             </Form.Group>
 
             <Form.Group controlId="formMenuAvailability">
-              <Form.Label>Status</Form.Label>
+              <Form.Label>
+                Status <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 as="select"
                 name="availability"
                 value={formData.availability}
                 onChange={handleInputChange}
+                required
               >
                 <option value="available">Tersedia</option>
                 <option value="unavailable">Tidak Tersedia</option>

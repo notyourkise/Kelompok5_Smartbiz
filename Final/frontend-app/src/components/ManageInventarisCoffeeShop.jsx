@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Button, Modal, Form } from "react-bootstrap";
+import { Button, Modal, Form, Alert } from "react-bootstrap";
 import {
   FaTrashAlt,
   FaEdit,
@@ -16,12 +16,14 @@ import "./SuccessModal.css";
 
 const ManageInventarisCoffeeShop = () => {
   const navigate = useNavigate();
-  const [inventaris, setInventaris] = useState([]);  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [inventaris, setInventaris] = useState([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [deleteItemId, setDeleteItemId] = useState(null);
+  const [validationError, setValidationError] = useState("");
   const [newItem, setNewItem] = useState({
     item_name: "",
     stock: 0,
@@ -66,17 +68,18 @@ const ManageInventarisCoffeeShop = () => {
       console.error("Authentication token not found. Cannot delete item.");
       return;
     }
-    try {      await axios.delete(`http://localhost:3001/api/inventaris/${id}`, {
+    try {
+      await axios.delete(`http://localhost:3001/api/inventaris/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setInventaris(inventaris.filter((item) => item.id !== id));
       setShowDeleteModal(false);
       setDeleteItemId(null);
-      
+
       // Show success message
       setSuccessMessage("Item inventaris coffee shop berhasil dihapus!");
       setShowSuccessModal(true);
-      
+
       // Auto close success modal after 2 seconds
       setTimeout(() => {
         setShowSuccessModal(false);
@@ -86,7 +89,10 @@ const ManageInventarisCoffeeShop = () => {
     }
   };
 
-  const handleCreateModal = () => setShowCreateModal(true);
+  const handleCreateModal = () => {
+    setValidationError("");
+    setShowCreateModal(true);
+  };
   const handleNewItemInputChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image") {
@@ -112,6 +118,23 @@ const ManageInventarisCoffeeShop = () => {
       return;
     }
 
+    // Validasi semua field required telah diisi
+    if (
+      !newItem.item_name ||
+      !newItem.stock ||
+      !newItem.minimum_stock ||
+      !newItem.image ||
+      !newItem.expiration_date
+    ) {
+      setValidationError(
+        "Mohon isi semua kolom yang ditandai dengan tanda bintang (*) untuk menambahkan item."
+      );
+      return;
+    }
+
+    // Reset error message if validation passes
+    setValidationError("");
+
     const formData = new FormData();
     formData.append("item_name", newItem.item_name);
     formData.append("stock", newItem.stock);
@@ -129,12 +152,13 @@ const ManageInventarisCoffeeShop = () => {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
-        },      });
+        },
+      });
 
       setShowCreateModal(false);
       setSuccessMessage("Item inventaris coffee shop berhasil ditambahkan!");
       setShowSuccessModal(true);
-      
+
       // Reset form
       setNewItem({
         item_name: "",
@@ -143,7 +167,7 @@ const ManageInventarisCoffeeShop = () => {
         image: null,
         expiration_date: "",
       });
-      
+
       // Auto close success modal after 2 seconds
       setTimeout(() => {
         setShowSuccessModal(false);
@@ -153,12 +177,11 @@ const ManageInventarisCoffeeShop = () => {
       console.error("Error creating item:", error);
     }
   };
-
   const handleEditClick = (item) => {
+    setValidationError("");
     setEditingItem(item);
     setShowEditModal(true);
   };
-
   const handleUpdateItem = async () => {
     const token = localStorage.getItem("token");
     if (!token || !editingItem) {
@@ -167,6 +190,22 @@ const ManageInventarisCoffeeShop = () => {
       );
       return;
     }
+
+    // Validasi semua field required telah diisi
+    if (
+      !editingItem.item_name ||
+      !editingItem.stock ||
+      !editingItem.minimum_stock ||
+      !editingItem.expiration_date
+    ) {
+      setValidationError(
+        "Mohon isi semua kolom yang ditandai dengan tanda bintang (*) untuk memperbarui item."
+      );
+      return;
+    }
+
+    // Reset error message if validation passes
+    setValidationError("");
 
     const formData = new FormData();
     formData.append("item_name", editingItem.item_name);
@@ -189,12 +228,13 @@ const ManageInventarisCoffeeShop = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
-        }      );
+        }
+      );
       setShowEditModal(false);
       setSuccessMessage("Item inventaris coffee shop berhasil diperbarui!");
       setShowSuccessModal(true);
       setEditingItem(null);
-      
+
       // Auto close success modal after 2 seconds
       setTimeout(() => {
         setShowSuccessModal(false);
@@ -219,7 +259,6 @@ const ManageInventarisCoffeeShop = () => {
           <FaPlus /> Tambah Item
         </Button>
       </header>
-
       {/* Card Layout for Inventaris */}
       <div className="inventaris-card-list">
         {inventaris.length > 0 ? (
@@ -233,15 +272,21 @@ const ManageInventarisCoffeeShop = () => {
                     className="card-image"
                   />
                 )}
-                <FaInfoCircle className="info-icon" onClick={() => alert(`Info for ${item.item_name}`)} />
+                <FaInfoCircle
+                  className="info-icon"
+                  onClick={() => alert(`Info for ${item.item_name}`)}
+                />
                 <h5>{item.item_name}</h5>
                 <div className="item-details">
-                  <p className="item-stock">Stok Barang: {item.stock}
+                  <p className="item-stock">
+                    Stok Barang: {item.stock}
                     {item.stock <= item.minimum_stock && (
                       <span className="stock-warning-text"> (Minimum!)</span>
                     )}
                   </p>
-                  <p className="item-min-stock">Minimum Stok: {item.minimum_stock}</p>
+                  <p className="item-min-stock">
+                    Minimum Stok: {item.minimum_stock}
+                  </p>
                   {item.expiration_date && (
                     <p
                       className={`item-expiration ${
@@ -252,7 +297,9 @@ const ManageInventarisCoffeeShop = () => {
                     >
                       {new Date(item.expiration_date) < new Date()
                         ? "Expired"
-                        : `Valid Until: ${new Date(item.expiration_date).toLocaleDateString()}`}
+                        : `Valid Until: ${new Date(
+                            item.expiration_date
+                          ).toLocaleDateString()}`}
                     </p>
                   )}
                 </div>
@@ -281,102 +328,163 @@ const ManageInventarisCoffeeShop = () => {
           <p className="text-center w-100">Tidak ada data inventaris.</p>
         )}
       </div>
-
-      {/* Modals remain the same */}
-      <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)}>
+      {/* Modals remain the same */}{" "}
+      <Modal
+        show={showCreateModal}
+        onHide={() => {
+          setShowCreateModal(false);
+          setValidationError("");
+        }}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Tambah Item Inventaris</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {validationError && (
+            <Alert
+              variant="danger"
+              onClose={() => setValidationError("")}
+              dismissible
+            >
+              {validationError}
+            </Alert>
+          )}
+          <p style={{ color: "white" }}>Kolom dengan tanda * wajib diisi</p>
           <Form>
             <Form.Group className="mb-3">
-              <Form.Label>Nama Item</Form.Label>
+              <Form.Label>
+                Nama Item <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
                 name="item_name"
                 value={newItem.item_name}
                 onChange={handleNewItemInputChange}
+                required
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Stok</Form.Label>
+              <Form.Label>
+                Stok <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="number"
                 name="stock"
                 value={newItem.stock}
                 onChange={handleNewItemInputChange}
+                required
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Minimum Stock</Form.Label>
+              <Form.Label>
+                Minimum Stock <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="number"
                 name="minimum_stock"
                 value={newItem.minimum_stock}
                 onChange={handleNewItemInputChange}
+                required
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Gambar Produk</Form.Label>
+              <Form.Label>
+                Gambar Produk <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="file"
                 name="image"
                 accept="image/*"
                 onChange={handleNewItemInputChange}
+                required
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Tanggal Kadaluarsa</Form.Label>
+              <Form.Label>
+                Tanggal Kadaluarsa <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="date"
                 name="expiration_date"
                 value={newItem.expiration_date}
                 onChange={handleNewItemInputChange}
+                required
               />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowCreateModal(false)}>
+          {" "}
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setShowCreateModal(false);
+              setValidationError("");
+            }}
+          >
             Batal
           </Button>
           <Button variant="primary" onClick={handleCreateItem}>
             Simpan
           </Button>
         </Modal.Footer>
-      </Modal>
-
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+      </Modal>{" "}
+      <Modal
+        show={showEditModal}
+        onHide={() => {
+          setShowEditModal(false);
+          setValidationError("");
+        }}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Edit Item Inventaris</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {validationError && (
+            <Alert
+              variant="danger"
+              onClose={() => setValidationError("")}
+              dismissible
+            >
+              {validationError}
+            </Alert>
+          )}
+          <p style={{ color: "blue" }}>Kolom dengan tanda * wajib diisi</p>
           <Form>
             <Form.Group className="mb-3">
-              <Form.Label>Nama Item</Form.Label>
+              <Form.Label>
+                Nama Item <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
                 name="item_name"
                 value={editingItem?.item_name || ""}
                 onChange={handleEditingItemInputChange}
+                required
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Stok</Form.Label>
+              <Form.Label>
+                Stok <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="number"
                 name="stock"
                 value={editingItem?.stock || ""}
                 onChange={handleEditingItemInputChange}
+                required
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Minimum Stock</Form.Label>
+              <Form.Label>
+                Minimum Stock <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="number"
                 name="minimum_stock"
                 value={editingItem?.minimum_stock || ""}
                 onChange={handleEditingItemInputChange}
+                required
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -389,18 +497,28 @@ const ManageInventarisCoffeeShop = () => {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Tanggal Kadaluarsa</Form.Label>
+              <Form.Label>
+                Tanggal Kadaluarsa <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="date"
                 name="expiration_date"
                 value={editingItem?.expiration_date || ""}
                 onChange={handleEditingItemInputChange}
+                required
               />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+          {" "}
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setShowEditModal(false);
+              setValidationError("");
+            }}
+          >
             Batal
           </Button>
           <Button variant="primary" onClick={handleUpdateItem}>
@@ -408,7 +526,6 @@ const ManageInventarisCoffeeShop = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-
       {/* Delete Confirmation Modal */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
@@ -424,10 +541,9 @@ const ManageInventarisCoffeeShop = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-
       {/* Success Modal */}
-      <Modal 
-        show={showSuccessModal} 
+      <Modal
+        show={showSuccessModal}
         onHide={() => setShowSuccessModal(false)}
         centered
         className="success-modal"
@@ -436,9 +552,9 @@ const ManageInventarisCoffeeShop = () => {
           <div className="success-checkmark-container">
             <FaCheckCircle className="success-checkmark-icon" />
           </div>
-          <h4 className="mt-3">{successMessage}</h4>        </Modal.Body>
+          <h4 className="mt-3">{successMessage}</h4>{" "}
+        </Modal.Body>
       </Modal>
-
       {/* Footer dihapus karena sudah dihandle oleh Dashboard */}
     </div>
   );
