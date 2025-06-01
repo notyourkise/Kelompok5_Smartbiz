@@ -66,11 +66,10 @@ const ManageCoffeeShopFinance = () => {
   const [authError, setAuthError] = useState(null); // New state for auth errors
   const [timeFilter, setTimeFilter] = useState("all"); // State for time filter
   const [displayedTransactions, setDisplayedTransactions] = useState([]); // State for transactions to display
-
   // State for modal and form
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newTransaction, setNewTransaction] = useState({
-    type: "income", // Default set to 'income'
+    type: "expense", // Default set to 'expense' instead of 'income'
     amount: "", // Changed initial amount to empty string
     description: "",
     category: "Coffee Shop",
@@ -272,11 +271,10 @@ const ManageCoffeeShopFinance = () => {
   const handleCreateModal = () => {
     setShowCreateModal(true); // Show Create Transaction Modal
   };
-
   const handleCloseCreateModal = () => {
     setShowCreateModal(false); // Close the modal
     setNewTransaction({
-      type: "income",
+      type: "expense", // Changed from "income" to "expense"
       amount: "", // Reset amount to empty string for consistency
       description: "",
       category: "Coffee Shop",
@@ -332,12 +330,10 @@ const ManageCoffeeShopFinance = () => {
         [...prevTransactions, data].sort(
           (a, b) => new Date(a.created_at) - new Date(b.created_at)
         )
-      );
-
-      // Close Modal and reset form
+      ); // Close Modal and reset form
       setShowCreateModal(false);
       setNewTransaction({
-        type: "income",
+        type: "expense", // Changed from "income" to "expense"
         amount: "", // Reset amount to empty string for consistency
         description: "",
         category: "Coffee Shop",
@@ -806,7 +802,7 @@ const ManageCoffeeShopFinance = () => {
                 onClick={handleCreateModal}
                 className="add-button"
               >
-                <FaPlus /> Tambah Transaksi
+                <FaPlus /> Tambah Transaksi Pengeluaran
               </Button>
               <div className="print-button-container">
                 <DropdownButton
@@ -905,21 +901,10 @@ const ManageCoffeeShopFinance = () => {
         <Modal show={showCreateModal} onHide={handleCloseCreateModal}>
           <Modal.Header closeButton>
             <Modal.Title>Tambah Transaksi</Modal.Title>
-          </Modal.Header>
+          </Modal.Header>{" "}
           <Modal.Body>
             <Form>
-              <Form.Group className="mb-3">
-                <Form.Label>Jenis Transaksi</Form.Label>
-                <Form.Control
-                  as="select"
-                  name="type"
-                  value={newTransaction.type}
-                  onChange={handleNewTransactionInputChange}
-                >
-                  <option value="income">Pemasukan</option>
-                  <option value="expense">Pengeluaran</option>
-                </Form.Control>
-              </Form.Group>
+              {/* Removed Jenis Transaksi dropdown - always expense now */}
 
               <Form.Group className="mb-3">
                 <Form.Label>Jumlah</Form.Label>
@@ -927,10 +912,9 @@ const ManageCoffeeShopFinance = () => {
                   name="amount"
                   value={newTransaction.amount}
                   onValueChange={(values) => {
-                    const { formattedValue, value } = values;
                     setNewTransaction({
                       ...newTransaction,
-                      amount: value, // Simpan nilai mentah untuk pengolahan lebih lanjut
+                      amount: values.value, // react-number-format mengembalikan 'value' sebagai float/number
                     });
                   }}
                   thousandSeparator="."
@@ -938,6 +922,7 @@ const ManageCoffeeShopFinance = () => {
                   prefix="Rp. "
                   placeholder="Masukkan jumlah"
                   className="form-control"
+                  allowNegative={false}
                 />
               </Form.Group>
 

@@ -93,6 +93,27 @@ const ManageInventarisKost = () => {
     setShowDeleteModal(true);
   };
 
+  // Function to validate image file format
+  const validateImageFormat = (file) => {
+    // List of allowed image formats
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+    ];
+
+    if (file && !allowedTypes.includes(file.type)) {
+      setValidationError(
+        `Format file tidak valid. Format yang diizinkan: JPG, JPEG, PNG, GIF, WEBP.`
+      );
+      return false;
+    }
+    setValidationError(""); // Clear error if format is valid
+    return true;
+  };
+
   const handleCreateModal = () => {
     setValidationError("");
     setShowCreateModal(true);
@@ -100,18 +121,44 @@ const ManageInventarisKost = () => {
   const handleNewItemInputChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image") {
-      setNewItem({ ...newItem, [name]: files[0] });
+      if (files[0] && validateImageFormat(files[0])) {
+        setNewItem({ ...newItem, [name]: files[0] });
+      } else if (files[0]) {
+        // If validation failed, reset the file input
+        e.target.value = null;
+      }
     } else {
       setNewItem({ ...newItem, [name]: value });
     }
   };
 
   const handleEditingItemInputChange = (e) => {
-    const { name, value, files } = e.target;
+    const { name, value, files } = e.target; // files is a FileList
     if (name === "image") {
-      setEditingItem({ ...editingItem, [name]: files[0] });
+      const file = files && files.length > 0 ? files[0] : null;
+
+      if (file) { // Berkas dipilih dari dialog
+        if (validateImageFormat(file)) {
+          // Berkas baru yang valid dipilih, siapkan untuk diunggah
+          setEditingItem(prev => ({ ...prev, image: file }));
+        } else {
+          // Berkas yang dipilih tidak valid.
+          // validateImageFormat sudah mengatur pesan kesalahan.
+          // Kosongkan input dan pastikan tidak ada berkas baru (yang tidak valid) yang disiapkan.
+          setEditingItem(prev => ({ ...prev, image: null })); // Atur secara eksplisit ke null
+          if (e.target) e.target.value = null; // Reset input file secara visual
+        }
+      } else {
+        // Tidak ada berkas yang dipilih (misalnya, dialog dibatalkan, atau input dikosongkan)
+        // Ini berarti pengguna ingin kembali ke \"tidak ada gambar baru\" atau belum memilih.
+        // Pastikan tidak ada berkas baru yang disiapkan.
+        setEditingItem(prev => ({ ...prev, image: null })); // Atur secara eksplisit ke null
+        // Coba kosongkan input secara visual jika perlu, meskipun `files` yang kosong sering berarti sudah kosong secara visual.
+        if (e.target) e.target.value = null;
+      }
     } else {
-      setEditingItem({ ...editingItem, [name]: value });
+      // Tangani jenis input lainnya
+      setEditingItem(prev => ({ ...prev, [name]: value }));
     }
   };
   const handleCreateItem = async () => {
@@ -126,8 +173,7 @@ const ManageInventarisKost = () => {
       !newItem.item_name ||
       !newItem.stock ||
       !newItem.minimum_stock ||
-      !newItem.image ||
-      !newItem.expiration_date
+      !newItem.image
     ) {
       setValidationError(
         "Mohon isi semua kolom yang ditandai dengan tanda bintang (*) untuk menambahkan item."
@@ -135,8 +181,23 @@ const ManageInventarisKost = () => {
       return;
     }
 
+    // Validate stock and minimum_stock
+    if (parseInt(newItem.stock, 10) < 1) {
+      setValidationError("Stok tidak boleh kurang dari 1.");
+      return;
+    }
+    if (parseInt(newItem.minimum_stock, 10) < 1) {
+      setValidationError("Minimum Stok tidak boleh kurang dari 1.");
+      return;
+    }
+
     // Reset error message if validation passes
     setValidationError("");
+
+    // Validate image format
+    if (!validateImageFormat(newItem.image)) {
+      return;
+    }
 
     const formData = new FormData();
     formData.append("item_name", newItem.item_name);
@@ -183,7 +244,27 @@ const ManageInventarisKost = () => {
   };
   const handleEditClick = (item) => {
     setValidationError("");
-    setEditingItem(item);
+    let formattedExpirationDate = "";
+    if (item.expiration_date) {
+      try {
+        const date = new Date(item.expiration_date);
+        if (!isNaN(date.getTime())) {
+          formattedExpirationDate = date.toISOString().split("T")[0];
+        } else {
+          console.warn("Invalid expiration_date from backend:", item.expiration_date);
+          formattedExpirationDate = ""; // Or handle as per backend expectation
+        }
+      } catch (e) {
+        console.error("Error formatting expiration date:", e);
+        formattedExpirationDate = item.expiration_date; // Fallback
+      }
+    }
+
+    setEditingItem({
+      ...item, // Includes id, item_name, stock, minimum_stock, image_url, category
+      expiration_date: formattedExpirationDate,
+      image: null, // This field will hold the new File object if a new image is selected
+    });
     setShowEditModal(true);
   };
   const handleUpdateItem = async () => {
@@ -199,8 +280,7 @@ const ManageInventarisKost = () => {
     if (
       !editingItem.item_name ||
       !editingItem.stock ||
-      !editingItem.minimum_stock ||
-      !editingItem.expiration_date
+      !editingItem.minimum_stock
     ) {
       setValidationError(
         "Mohon isi semua kolom yang ditandai dengan tanda bintang (*) untuk memperbarui item."
@@ -208,8 +288,23 @@ const ManageInventarisKost = () => {
       return;
     }
 
+    // Validate stock and minimum_stock
+    if (parseInt(editingItem.stock, 10) < 1) {
+      setValidationError("Stok tidak boleh kurang dari 1.");
+      return;
+    }
+    if (parseInt(editingItem.minimum_stock, 10) < 1) {
+      setValidationError("Minimum Stok tidak boleh kurang dari 1.");
+      return;
+    }
+
     // Reset error message if validation passes
     setValidationError("");
+
+    // Validate image format
+    if (editingItem.image instanceof File && !validateImageFormat(editingItem.image)) {
+      return;
+    }
 
     const formData = new FormData();
     formData.append("item_name", editingItem.item_name);
@@ -355,7 +450,7 @@ const ManageInventarisKost = () => {
               {validationError}
             </Alert>
           )}
-          <p style={{ color: "blue" }}>Kolom dengan tanda * wajib diisi</p>
+          <p style={{ color: "white" }}>Kolom dengan tanda * wajib diisi</p>
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>
@@ -378,6 +473,7 @@ const ManageInventarisKost = () => {
                 name="stock"
                 value={newItem.stock}
                 onChange={handleNewItemInputChange}
+                min="1"
                 required
               />
             </Form.Group>
@@ -390,6 +486,7 @@ const ManageInventarisKost = () => {
                 name="minimum_stock"
                 value={newItem.minimum_stock}
                 onChange={handleNewItemInputChange}
+                min="1"
                 required
               />
             </Form.Group>
@@ -400,10 +497,11 @@ const ManageInventarisKost = () => {
               <Form.Control
                 type="file"
                 name="image"
-                accept="image/*"
+                accept="image/jpeg, image/jpg, image/png, image/gif, image/webp"
                 onChange={handleNewItemInputChange}
                 required
               />
+              <Form.Text className="text-muted">Format yang diizinkan: JPG, JPEG, PNG, GIF, dan WEBP. Ukuran maksimal 2MB.</Form.Text>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>
@@ -455,7 +553,7 @@ const ManageInventarisKost = () => {
               {validationError}
             </Alert>
           )}
-          <p style={{ color: "blue" }}>Kolom dengan tanda * wajib diisi</p>
+          <p style={{ color: "white" }}>Kolom dengan tanda * wajib diisi</p>
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>
@@ -478,6 +576,7 @@ const ManageInventarisKost = () => {
                 name="stock"
                 value={editingItem?.stock || ""}
                 onChange={handleEditingItemInputChange}
+                min="1"
                 required
               />
             </Form.Group>
@@ -490,17 +589,31 @@ const ManageInventarisKost = () => {
                 name="minimum_stock"
                 value={editingItem?.minimum_stock || ""}
                 onChange={handleEditingItemInputChange}
+                min="1"
                 required
               />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Gambar Produk</Form.Label>
+              {editingItem && editingItem.image_url && (
+                <div className="mb-2">
+                  <img
+                    src={`http://localhost:3001/${editingItem.image_url}`}
+                    alt="Current item"
+                    style={{ maxWidth: "100px", maxHeight: "100px", display: "block", marginBottom: "10px" }}
+                  />
+                  <small className="text-muted d-block mb-1">Gambar saat ini. Unggah gambar baru di bawah untuk menggantinya.</small>
+                </div>
+              )}
               <Form.Control
                 type="file"
                 name="image"
-                accept="image/*"
+                accept="image/jpeg, image/jpg, image/png, image/gif, image/webp"
                 onChange={handleEditingItemInputChange}
               />
+              <Form.Text className="text-muted">
+                Format yang diterima: JPG, JPEG, PNG, GIF, WEBP. Ukuran maksimal 2MB.
+              </Form.Text>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>

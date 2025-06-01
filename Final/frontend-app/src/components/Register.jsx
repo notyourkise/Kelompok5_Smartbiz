@@ -40,7 +40,11 @@ const Register = ({ onSwitchToLogin }) => { // Added onSwitchToLogin prop
       });
       setShowModal(true);
     } catch (error) {
-      setErrorMessage("Gagal mendaftar. Coba lagi.");
+      if (error.response && error.response.status === 409) { // Assuming 409 Conflict for duplicate username
+        setErrorMessage("Username sudah digunakan. Silakan gunakan username lain.");
+      } else {
+        setErrorMessage("Gagal mendaftar. Coba lagi.");
+      }
     }
   };
 

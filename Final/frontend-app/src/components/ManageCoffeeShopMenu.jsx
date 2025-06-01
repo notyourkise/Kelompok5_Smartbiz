@@ -32,6 +32,11 @@ function ManageCoffeeShopMenu({ theme }) {
   const [itemToDelete, setItemToDelete] = useState(null);
   const cartIconRef = useRef(null); // Ref for the cart icon
 
+  // Utility function to calculate total cart quantity
+  const getTotalCartQuantity = (cartItems) => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
+  };
+
   // Toast notification utility functions
   const showSuccessToast = (message) => {
     toast.success(message, {
@@ -105,6 +110,17 @@ function ManageCoffeeShopMenu({ theme }) {
     } else {
       setUserRole(null); // Set role to null if no token is found
       console.log("User Role: null (no token)"); // Log null role
+    }
+
+    // Load cart from localStorage
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) {
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        setCart(parsedCart);
+      } catch (error) {
+        console.error("Error parsing cart from localStorage:", error);
+      }
     }
   }, []);
 
@@ -379,6 +395,7 @@ function ManageCoffeeShopMenu({ theme }) {
         theme === "dark" ? "theme-dark" : "theme-light"
       }`}
     >
+      {" "}
       <div className="manage-coffee-menu-header">
         <h2 className="manage-coffee-title">Manajemen Menu Coffee Shop</h2>
         <div className="cart-container">
@@ -387,14 +404,14 @@ function ManageCoffeeShopMenu({ theme }) {
             icon={faShoppingCart}
             className="cart-icon"
             onClick={() => setShowCartModal(true)}
-          />
-          {cart.length > 0 && <span className="cart-badge">{cart.length}</span>}
+          />{" "}
+          {cart.length > 0 && (
+            <span className="cart-badge">{getTotalCartQuantity(cart)}</span>
+          )}
         </div>
       </div>
-
       {error && <Alert variant="danger">{error}</Alert>}
       {success && <Alert variant="success">{success}</Alert>}
-
       {userRole === "superadmin" && ( // Conditionally render "Tambah Menu Baru" button
         <Button
           className="action-button mb-4"
@@ -403,7 +420,6 @@ function ManageCoffeeShopMenu({ theme }) {
           <FontAwesomeIcon icon={faPlus} /> Tambah Menu Baru
         </Button>
       )}
-
       {isLoading && !menus.length ? (
         <div className="text-center">
           <Spinner animation="border" role="status">
@@ -548,7 +564,6 @@ function ManageCoffeeShopMenu({ theme }) {
           </div>
         </div>
       )}
-
       {/* Description Modal */}
       {currentDescriptionItem && (
         <Modal
@@ -576,7 +591,6 @@ function ManageCoffeeShopMenu({ theme }) {
           </Modal.Footer>
         </Modal>
       )}
-
       {/* Keranjang Popup */}
       <Modal
         show={showCartModal}
@@ -586,7 +600,7 @@ function ManageCoffeeShopMenu({ theme }) {
       >
         <Modal.Header closeButton>
           <Modal.Title>Keranjang</Modal.Title>
-        </Modal.Header>
+        </Modal.Header>{" "}
         <Modal.Body>
           <Table striped bordered hover>
             <thead>
@@ -595,6 +609,7 @@ function ManageCoffeeShopMenu({ theme }) {
                 <th>Nama Menu</th>
                 <th>Jumlah</th>
                 <th>Total</th>
+                <th>Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -621,7 +636,8 @@ function ManageCoffeeShopMenu({ theme }) {
                 </tr>
               ))}
               <tr>
-                <td colSpan="3">Total</td>
+                <td colSpan="2">Total Item</td>
+                <td>{getTotalCartQuantity(cart)}</td>
                 <td>
                   Rp{" "}
                   {cart
@@ -637,7 +653,14 @@ function ManageCoffeeShopMenu({ theme }) {
           </Table>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={() => setCart([])} className="action-button">
+          {" "}
+          <Button
+            onClick={() => {
+              setCart([]);
+              localStorage.setItem("cart", JSON.stringify([]));
+            }}
+            className="action-button"
+          >
             Kosongkan Keranjang
           </Button>{" "}
           <Button
@@ -667,7 +690,6 @@ function ManageCoffeeShopMenu({ theme }) {
         pauseOnHover
         theme={theme === "dark" ? "dark" : "light"}
       />
-
       {/* Add/Edit Modal */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
@@ -782,7 +804,6 @@ function ManageCoffeeShopMenu({ theme }) {
           </Form>
         </Modal.Body>
       </Modal>
-
       {/* Delete Confirmation Modal */}
       <Modal
         show={showDeleteConfirmModal}
