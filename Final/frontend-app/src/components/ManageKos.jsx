@@ -327,10 +327,15 @@ const ManageKos = () => {
     setUploadError("");
     setUploadSuccessMessage("");
   };
-
   const handleNewPaymentInputChange = (e) => {
     const { name, value } = e.target;
-    setNewPaymentData((prev) => ({ ...prev, [name]: value }));
+    if (name === "jumlah_bayar") {
+      // Remove non-digit characters for storing raw number
+      const rawValue = value.replace(/[^\d]/g, "");
+      setNewPaymentData((prev) => ({ ...prev, [name]: rawValue }));
+    } else {
+      setNewPaymentData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleNewPaymentFileChange = (e) => {
@@ -345,6 +350,18 @@ const ManageKos = () => {
     setUploadError("");
     setUploadSuccessMessage("");
     setUploadLoading(true);
+
+    // Validasi jumlah bayar
+    const jumlahBayarRaw = newPaymentData.jumlah_bayar.replace(/[^\d]/g, "");
+    if (
+      !jumlahBayarRaw ||
+      isNaN(Number(jumlahBayarRaw)) ||
+      Number(jumlahBayarRaw) <= 0
+    ) {
+      setUploadError("Jumlah bayar tidak valid. Masukkan angka lebih dari 0.");
+      setUploadLoading(false);
+      return;
+    }
 
     console.log(
       "Attempting to upload. Selected Room for Upload:",
@@ -369,7 +386,8 @@ const ManageKos = () => {
     const formData = new FormData();
     formData.append("penghuni_id", selectedRoomForHistory.id);
     formData.append("bulan_tagihan", newPaymentData.bulan_tagihan);
-    formData.append("jumlah_bayar", newPaymentData.jumlah_bayar);
+    // Ensure raw numeric value is sent for jumlah_bayar
+    formData.append("jumlah_bayar", jumlahBayarRaw);
     formData.append("status_pembayaran", newPaymentData.status_pembayaran);
     if (newPaymentData.tanggal_pembayaran_lunas)
       formData.append(
@@ -856,15 +874,24 @@ const ManageKos = () => {
                 </Col>
                 <Col md={6}>
                   <Form.Group className="mb-3">
-                    <Form.Label>Jumlah Pembayaran (Rp)*</Form.Label>
+                    <Form.Label>
+                      Jumlah Pembayaran (Rp)
+                      <span className="text-danger">*</span>
+                    </Form.Label>
                     <Form.Control
-                      type="number"
+                      type="text" // Change to text to allow formatting
                       name="jumlah_bayar"
-                      value={newPaymentData.jumlah_bayar}
+                      value={
+                        newPaymentData.jumlah_bayar
+                          ? parseInt(
+                              newPaymentData.jumlah_bayar,
+                              10
+                            ).toLocaleString("id-ID")
+                          : ""
+                      }
                       onChange={handleNewPaymentInputChange}
+                      placeholder="e.g., 1.600.000"
                       required
-                      min="0"
-                      step="0.01"
                     />
                   </Form.Group>
                 </Col>

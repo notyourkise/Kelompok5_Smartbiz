@@ -86,7 +86,8 @@ const ManageInventarisCoffeeShop = () => {
   const handleCreateModal = () => {
     setValidationError("");
     setShowCreateModal(true);
-  };  const handleNewItemInputChange = (e) => {
+  };
+  const handleNewItemInputChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image") {
       if (files[0] && validateImageFormat(files[0])) {
@@ -105,28 +106,29 @@ const ManageInventarisCoffeeShop = () => {
     if (name === "image") {
       const file = files && files.length > 0 ? files[0] : null;
 
-      if (file) { // Berkas dipilih dari dialog
+      if (file) {
+        // Berkas dipilih dari dialog
         if (validateImageFormat(file)) {
           // Berkas baru yang valid dipilih, siapkan untuk diunggah
-          setEditingItem(prev => ({ ...prev, image: file }));
+          setEditingItem((prev) => ({ ...prev, image: file }));
         } else {
           // Berkas yang dipilih tidak valid.
           // validateImageFormat sudah mengatur pesan kesalahan.
           // Kosongkan input dan pastikan tidak ada berkas baru (yang tidak valid) yang disiapkan.
-          setEditingItem(prev => ({ ...prev, image: null })); // Atur secara eksplisit ke null
+          setEditingItem((prev) => ({ ...prev, image: null })); // Atur secara eksplisit ke null
           if (e.target) e.target.value = null; // Reset input file secara visual
         }
       } else {
         // Tidak ada berkas yang dipilih (misalnya, dialog dibatalkan, atau input dikosongkan)
         // Ini berarti pengguna ingin kembali ke "tidak ada gambar baru" atau belum memilih.
         // Pastikan tidak ada berkas baru yang disiapkan.
-        setEditingItem(prev => ({ ...prev, image: null })); // Atur secara eksplisit ke null
+        setEditingItem((prev) => ({ ...prev, image: null })); // Atur secara eksplisit ke null
         // Coba kosongkan input secara visual jika perlu, meskipun `files` yang kosong sering berarti sudah kosong secara visual.
         if (e.target) e.target.value = null;
       }
     } else {
       // Tangani jenis input lainnya
-      setEditingItem(prev => ({ ...prev, [name]: value }));
+      setEditingItem((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -210,7 +212,8 @@ const ManageInventarisCoffeeShop = () => {
     } catch (error) {
       console.error("Error creating item:", error);
     }
-  };  const handleEditClick = (item) => {
+  };
+  const handleEditClick = (item) => {
     setValidationError("");
     let formattedExpirationDate = "";
     if (item.expiration_date) {
@@ -219,7 +222,10 @@ const ManageInventarisCoffeeShop = () => {
         if (!isNaN(date.getTime())) {
           formattedExpirationDate = date.toISOString().split("T")[0];
         } else {
-          console.warn("Invalid expiration_date from backend:", item.expiration_date);
+          console.warn(
+            "Invalid expiration_date from backend:",
+            item.expiration_date
+          );
           formattedExpirationDate = ""; // Or handle as per backend expectation
         }
       } catch (e) {
@@ -271,7 +277,10 @@ const ManageInventarisCoffeeShop = () => {
     setValidationError("");
 
     // Validate image format
-    if (editingItem.image instanceof File && !validateImageFormat(editingItem.image)) {
+    if (
+      editingItem.image instanceof File &&
+      !validateImageFormat(editingItem.image)
+    ) {
       return;
     }
 
@@ -456,7 +465,8 @@ const ManageInventarisCoffeeShop = () => {
                 min="1"
                 required
               />
-            </Form.Group>            <Form.Group className="mb-3">
+            </Form.Group>{" "}
+            <Form.Group className="mb-3">
               <Form.Label>
                 Gambar Produk <span className="text-danger">*</span>
               </Form.Label>
@@ -467,7 +477,9 @@ const ManageInventarisCoffeeShop = () => {
                 onChange={handleNewItemInputChange}
                 required
               />
-              <small className="text-muted">Format yang diizinkan: JPG, JPEG, PNG, GIF, dan WEBP.</small>
+              <small className="text-muted">
+                Format yang diizinkan: JPG, JPEG, PNG, GIF, dan WEBP.
+              </small>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>
@@ -558,16 +570,25 @@ const ManageInventarisCoffeeShop = () => {
                 min="1"
                 required
               />
-            </Form.Group>            <Form.Group className="mb-3">
+            </Form.Group>{" "}
+            <Form.Group className="mb-3">
               <Form.Label>Gambar Produk</Form.Label>
               {editingItem && editingItem.image_url && (
                 <div className="mb-2">
                   <img
                     src={`http://localhost:3001/${editingItem.image_url}`}
                     alt="Current item"
-                    style={{ maxWidth: "100px", maxHeight: "100px", display: "block", marginBottom: "10px" }}
+                    style={{
+                      maxWidth: "100px",
+                      maxHeight: "100px",
+                      display: "block",
+                      marginBottom: "10px",
+                    }}
                   />
-                  <small className="text-muted d-block mb-1">Gambar saat ini. Unggah gambar baru di bawah untuk menggantinya.</small>
+                  <small className="text-muted d-block mb-1">
+                    Gambar saat ini. Unggah gambar baru di bawah untuk
+                    menggantinya.
+                  </small>
                 </div>
               )}
               <Form.Control
@@ -577,7 +598,8 @@ const ManageInventarisCoffeeShop = () => {
                 onChange={handleEditingItemInputChange}
               />
               <Form.Text className="text-muted">
-                Format yang diterima: JPG, JPEG, PNG, GIF, WEBP. Ukuran maksimal 2MB.
+                Format yang diterima: JPG, JPEG, PNG, GIF, WEBP. Ukuran maksimal
+                2MB.
               </Form.Text>
             </Form.Group>
             <Form.Group className="mb-3">

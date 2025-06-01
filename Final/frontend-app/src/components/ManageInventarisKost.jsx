@@ -137,28 +137,29 @@ const ManageInventarisKost = () => {
     if (name === "image") {
       const file = files && files.length > 0 ? files[0] : null;
 
-      if (file) { // Berkas dipilih dari dialog
+      if (file) {
+        // Berkas dipilih dari dialog
         if (validateImageFormat(file)) {
           // Berkas baru yang valid dipilih, siapkan untuk diunggah
-          setEditingItem(prev => ({ ...prev, image: file }));
+          setEditingItem((prev) => ({ ...prev, image: file }));
         } else {
           // Berkas yang dipilih tidak valid.
           // validateImageFormat sudah mengatur pesan kesalahan.
           // Kosongkan input dan pastikan tidak ada berkas baru (yang tidak valid) yang disiapkan.
-          setEditingItem(prev => ({ ...prev, image: null })); // Atur secara eksplisit ke null
+          setEditingItem((prev) => ({ ...prev, image: null })); // Atur secara eksplisit ke null
           if (e.target) e.target.value = null; // Reset input file secara visual
         }
       } else {
         // Tidak ada berkas yang dipilih (misalnya, dialog dibatalkan, atau input dikosongkan)
         // Ini berarti pengguna ingin kembali ke \"tidak ada gambar baru\" atau belum memilih.
         // Pastikan tidak ada berkas baru yang disiapkan.
-        setEditingItem(prev => ({ ...prev, image: null })); // Atur secara eksplisit ke null
+        setEditingItem((prev) => ({ ...prev, image: null })); // Atur secara eksplisit ke null
         // Coba kosongkan input secara visual jika perlu, meskipun `files` yang kosong sering berarti sudah kosong secara visual.
         if (e.target) e.target.value = null;
       }
     } else {
       // Tangani jenis input lainnya
-      setEditingItem(prev => ({ ...prev, [name]: value }));
+      setEditingItem((prev) => ({ ...prev, [name]: value }));
     }
   };
   const handleCreateItem = async () => {
@@ -251,7 +252,10 @@ const ManageInventarisKost = () => {
         if (!isNaN(date.getTime())) {
           formattedExpirationDate = date.toISOString().split("T")[0];
         } else {
-          console.warn("Invalid expiration_date from backend:", item.expiration_date);
+          console.warn(
+            "Invalid expiration_date from backend:",
+            item.expiration_date
+          );
           formattedExpirationDate = ""; // Or handle as per backend expectation
         }
       } catch (e) {
@@ -302,7 +306,10 @@ const ManageInventarisKost = () => {
     setValidationError("");
 
     // Validate image format
-    if (editingItem.image instanceof File && !validateImageFormat(editingItem.image)) {
+    if (
+      editingItem.image instanceof File &&
+      !validateImageFormat(editingItem.image)
+    ) {
       return;
     }
 
@@ -501,7 +508,10 @@ const ManageInventarisKost = () => {
                 onChange={handleNewItemInputChange}
                 required
               />
-              <Form.Text className="text-muted">Format yang diizinkan: JPG, JPEG, PNG, GIF, dan WEBP. Ukuran maksimal 2MB.</Form.Text>
+              <Form.Text className="text-muted">
+                Format yang diizinkan: JPG, JPEG, PNG, GIF, dan WEBP. Ukuran
+                maksimal 2MB.
+              </Form.Text>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>
@@ -600,9 +610,17 @@ const ManageInventarisKost = () => {
                   <img
                     src={`http://localhost:3001/${editingItem.image_url}`}
                     alt="Current item"
-                    style={{ maxWidth: "100px", maxHeight: "100px", display: "block", marginBottom: "10px" }}
+                    style={{
+                      maxWidth: "100px",
+                      maxHeight: "100px",
+                      display: "block",
+                      marginBottom: "10px",
+                    }}
                   />
-                  <small className="text-muted d-block mb-1">Gambar saat ini. Unggah gambar baru di bawah untuk menggantinya.</small>
+                  <small className="text-muted d-block mb-1">
+                    Gambar saat ini. Unggah gambar baru di bawah untuk
+                    menggantinya.
+                  </small>
                 </div>
               )}
               <Form.Control
@@ -612,7 +630,8 @@ const ManageInventarisKost = () => {
                 onChange={handleEditingItemInputChange}
               />
               <Form.Text className="text-muted">
-                Format yang diterima: JPG, JPEG, PNG, GIF, WEBP. Ukuran maksimal 2MB.
+                Format yang diterima: JPG, JPEG, PNG, GIF, WEBP. Ukuran maksimal
+                2MB.
               </Form.Text>
             </Form.Group>
             <Form.Group className="mb-3">
