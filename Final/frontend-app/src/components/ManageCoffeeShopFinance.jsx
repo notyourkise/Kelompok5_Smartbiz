@@ -848,48 +848,56 @@ const ManageCoffeeShopFinance = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {displayedTransactions.map(
-                    (
-                      item,
-                      index // Use displayedTransactions
-                    ) => (
-                      <tr key={item.id}>
-                        <td>{index + 1}</td>
-                        <td>{item.description}</td>
-                        <td>{item.payment_method}</td>
-                        <td>{item.formattedDate}</td>
-                        <td>
-                          {item.type === "income"
-                            ? formatRupiah(item.amount)
-                            : 0}
-                        </td>
-                        <td>
-                          {item.type === "expense"
-                            ? formatRupiah(item.amount)
-                            : 0}
-                        </td>
-                        <td>{formatRupiah(item.saldo)}</td>
-                        <td>
-                          {" "}
-                          {/* Actions buttons */}
-                          <Button
-                            variant="outline-primary"
-                            size="sm"
-                            onClick={() => handleEditModal(item)}
-                            style={{ marginRight: "5px" }}
-                          >
-                            <FaEdit />
-                          </Button>
-                          <Button
-                            variant="outline-danger"
-                            size="sm"
-                            onClick={() => handleDeleteModal(item.id)}
-                          >
-                            <FaTrash />
-                          </Button>
-                        </td>
-                      </tr>
+                  {displayedTransactions.length > 0 ? (
+                    displayedTransactions.map(
+                      (
+                        item,
+                        index // Use displayedTransactions
+                      ) => (
+                        <tr key={item.id}>
+                          <td>{index + 1}</td>
+                          <td>{item.description}</td>
+                          <td>{item.payment_method}</td>
+                          <td>{item.formattedDate}</td>
+                          <td>
+                            {item.type === "income"
+                              ? formatRupiah(item.amount)
+                              : 0}
+                          </td>
+                          <td>
+                            {item.type === "expense"
+                              ? formatRupiah(item.amount)
+                              : 0}
+                          </td>
+                          <td>{formatRupiah(item.saldo)}</td>
+                          <td>
+                            {" "}
+                            {/* Actions buttons */}
+                            <Button
+                              variant="outline-primary"
+                              size="sm"
+                              onClick={() => handleEditModal(item)}
+                              style={{ marginRight: "5px" }}
+                            >
+                              <FaEdit />
+                            </Button>
+                            <Button
+                              variant="outline-danger"
+                              size="sm"
+                              onClick={() => handleDeleteModal(item.id)}
+                            >
+                              <FaTrash />
+                            </Button>
+                          </td>
+                        </tr>
+                      )
                     )
+                  ) : (
+                    <tr>
+                      <td colSpan="8" className="text-center">
+                        Tidak ada data keuangan yang tersedia.
+                      </td>
+                    </tr>
                   )}
                 </tbody>
               </table>

@@ -78,6 +78,15 @@ const ManageUser = () => {
   const handleEditingUserInputChange = (e) => {
     const { name, value } = e.target;
     setEditingUser({ ...editingUser, [name]: value });
+
+    // Clear validation error when user types in any field
+    if (validationError) {
+      // Only clear error if all fields are filled
+      const updatedUser = { ...editingUser, [name]: value };
+      if (updatedUser.username && updatedUser.role && (updatedUser.password || !editingUser.password)) {
+        setValidationError("");
+      }
+    }
   };
 
   // Handle creating a new user
@@ -95,6 +104,21 @@ const ManageUser = () => {
       return;
     }
 
+    // Validate role
+    if (newUser.role.toLowerCase() !== "admin" && newUser.role.toLowerCase() !== "superadmin") {
+      setValidationError("Role harus diisi dengan role admin atau superadmin.");
+      return;
+    }
+
+    // Validate username uniqueness
+    const isUsernameTaken = users.some(
+      (user) => user.username.toLowerCase() === newUser.username.toLowerCase()
+    );
+    if (isUsernameTaken) {
+      setValidationError("Username sudah digunakan. Silakan gunakan username lain.");
+      return;
+    }
+
     // Reset error message if validation passes
     setValidationError("");
 
@@ -104,6 +128,7 @@ const ManageUser = () => {
       });
       setShowCreateModal(false);
       setNewUser({ username: "", password: "", role: "" });
+      fetchUsers(); // Refresh user list after successful creation
 
       // Show success message
       setSuccessMessage("Pengguna berhasil ditambahkan!");
@@ -126,6 +151,7 @@ const ManageUser = () => {
   const handleEditClick = (user) => {
     setEditingUser({ ...user, password: "" });
     setShowEditModal(true);
+    setValidationError(""); // Reset validation error when opening modal
   };
 
   // Handle updating user details
@@ -137,6 +163,27 @@ const ManageUser = () => {
       );
       return;
     }
+
+    // Validate role
+    if (editingUser.role.toLowerCase() !== "admin" && editingUser.role.toLowerCase() !== "superadmin") {
+      setValidationError("Role harus diisi dengan role admin atau superadmin.");
+      return;
+    }
+
+    // Validate username uniqueness (excluding the current user being edited)
+    const isUsernameTaken = users.some(
+      (user) =>
+        user.id !== editingUser.id &&
+        user.username.toLowerCase() === editingUser.username.toLowerCase()
+    );
+    if (isUsernameTaken) {
+      setValidationError("Username sudah digunakan. Silakan gunakan username lain.");
+      return;
+    }
+
+    // Reset error message if validation passes
+    setValidationError("");
+
     try {
       const updateData = {
         username: editingUser.username,
@@ -156,6 +203,7 @@ const ManageUser = () => {
 
       setShowEditModal(false);
       setEditingUser(null);
+      fetchUsers(); // Refresh user list after successful update
 
       // Show success message
       setSuccessMessage("Pengguna berhasil diperbarui!");
@@ -374,11 +422,26 @@ const ManageUser = () => {
       </Modal>
 
       {/* Edit User Modal */}
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+      <Modal
+        show={showEditModal}
+        onHide={() => {
+          setShowEditModal(false);
+          setValidationError(""); // Reset validation error when closing modal
+        }}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Edit Pengguna</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {validationError && (
+            <Alert
+              variant="danger"
+              onClose={() => setValidationError("")}
+              dismissible
+            >
+              {validationError}
+            </Alert>
+          )}
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>Username</Form.Label>

@@ -478,6 +478,7 @@ function ManageCoffeeShopMenu({ theme }) {
                       <Button
                         className="btn btn-add-to-cart"
                         onClick={(e) => addToCart(item, e)}
+                        disabled={item.availability === "unavailable"}
                       >
                         Tambah
                       </Button>
@@ -523,6 +524,7 @@ function ManageCoffeeShopMenu({ theme }) {
                       <Button
                         className="btn btn-add-to-cart"
                         onClick={(e) => addToCart(item, e)}
+                        disabled={item.availability === "unavailable"}
                       >
                         Tambah
                       </Button>
@@ -568,6 +570,7 @@ function ManageCoffeeShopMenu({ theme }) {
                       <Button
                         className="btn btn-add-to-cart"
                         onClick={(e) => addToCart(item, e)}
+                        disabled={item.availability === "unavailable"}
                       >
                         Tambah
                       </Button>
