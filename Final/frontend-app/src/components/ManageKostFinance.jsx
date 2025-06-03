@@ -87,10 +87,12 @@ const ManageKostFinance = () => {
     category: "Kost",
     payment_method: "cash",
   });
+  const [createErrors, setCreateErrors] = useState({}); // New state for create form errors
 
   // State for Edit Modal
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null); // Store the transaction being edited
+  const [editErrors, setEditErrors] = useState({}); // New state for edit form errors
 
   // State for Delete Modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -322,6 +324,7 @@ const ManageKostFinance = () => {
       category: "Kost",
       payment_method: "cash", // Reset payment method to 'cash'
     }); // Reset the form
+    setCreateErrors({}); // Clear errors when closing modal
   };
 
   // Handle creating a new transaction
@@ -332,13 +335,19 @@ const ManageKostFinance = () => {
       return;
     }
 
-    // Basic validation
-    if (
-      !newTransaction.amount ||
-      !newTransaction.description ||
-      !newTransaction.payment_method
-    ) {
-      console.error("Amount, description, and payment method are required.");
+    const errors = {};
+    if (!newTransaction.amount) {
+      errors.amount = "Jumlah wajib diisi.";
+    }
+    if (!newTransaction.description) {
+      errors.description = "Deskripsi wajib diisi.";
+    }
+    if (!newTransaction.payment_method) {
+      errors.payment_method = "Metode Pembayaran wajib diisi.";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setCreateErrors(errors);
       return;
     }
 
@@ -379,8 +388,9 @@ const ManageKostFinance = () => {
         amount: "", // Reset amount to empty string for consistency
         description: "",
         category: "Kost",
-        payment_method: "",
+        payment_method: "cash", // Reset payment method to 'cash'
       });
+      setCreateErrors({}); // Clear errors on successful submission
 
       // Re-fetch transactions to update the table
       // No need to re-fetch here as we optimistically updated the state
@@ -401,6 +411,7 @@ const ManageKostFinance = () => {
   const handleCloseEditModal = () => {
     setShowEditModal(false);
     setEditingTransaction(null); // Clear editing state
+    setEditErrors({}); // Clear errors when closing modal
   };
 
   const handleEditTransactionInputChange = (e) => {
@@ -420,16 +431,20 @@ const ManageKostFinance = () => {
       return;
     }
 
-    // Basic validation
-    if (
-      !editingTransaction.amount ||
-      !editingTransaction.description ||
-      !editingTransaction.payment_method
-    ) {
-      console.error(
-        "Amount, description, and payment method are required for update."
-      );
-      // Optionally set an error state to show in the modal
+    const errors = {};
+    if (!editingTransaction.amount) {
+      errors.amount = "Jumlah wajib diisi.";
+    }
+    if (!editingTransaction.description) {
+      errors.description = "Deskripsi wajib diisi.";
+    }
+    // Payment method is a dropdown, so it should always have a value.
+    // if (!editingTransaction.payment_method) {
+    //   errors.payment_method = "Metode Pembayaran wajib diisi.";
+    // }
+
+    if (Object.keys(errors).length > 0) {
+      setEditErrors(errors);
       return;
     }
 
@@ -955,7 +970,7 @@ const ManageKostFinance = () => {
               {/* Removed Jenis Transaksi dropdown - always expense now */}
 
               <Form.Group className="mb-3">
-                <Form.Label>Jumlah</Form.Label>
+                <Form.Label>Jumlah <span className="text-danger">*</span></Form.Label>
                 <NumericFormat
                   name="amount"
                   value={newTransaction.amount}
@@ -964,40 +979,60 @@ const ManageKostFinance = () => {
                       ...newTransaction,
                       amount: values.value, // react-number-format mengembalikan 'value' sebagai float/number
                     });
+                    setCreateErrors((prev) => ({ ...prev, amount: null })); // Clear error on change
                   }}
                   thousandSeparator="."
                   decimalSeparator=","
                   prefix="Rp. "
                   placeholder="Masukkan jumlah"
-                  className="form-control"
+                  className={`form-control ${createErrors.amount ? 'is-invalid' : ''}`}
                   allowNegative={false}
+                  isInvalid={!!createErrors.amount}
+                  required // Added required attribute
                 />
+                <Form.Control.Feedback type="invalid">
+                  {createErrors.amount}
+                </Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>Deskripsi</Form.Label>
+                <Form.Label>Deskripsi <span className="text-danger">*</span></Form.Label>
                 <Form.Control
                   type="text"
                   name="description"
                   value={newTransaction.description}
-                  onChange={handleNewTransactionInputChange}
+                  onChange={(e) => {
+                    handleNewTransactionInputChange(e);
+                    setCreateErrors((prev) => ({ ...prev, description: null })); // Clear error on change
+                  }}
                   placeholder="Masukkan deskripsi"
+                  isInvalid={!!createErrors.description}
                 />
+                <Form.Control.Feedback type="invalid">
+                  {createErrors.description}
+                </Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>Metode Pembayaran</Form.Label>
+                <Form.Label>Metode Pembayaran <span className="text-danger">*</span></Form.Label>
                 <Form.Control
                   as="select" // Menjadikan ini dropdown menu
                   name="payment_method"
                   value={newTransaction.payment_method}
-                  onChange={handleNewTransactionInputChange}
+                  onChange={(e) => {
+                    handleNewTransactionInputChange(e);
+                    setCreateErrors((prev) => ({ ...prev, payment_method: null })); // Clear error on change
+                  }}
+                  isInvalid={!!createErrors.payment_method}
                 >
                   <option value="cash">Tunai</option>{" "}
                   {/* Contoh metode pembayaran Tunai */}
                   <option value="qris">QRIS</option>{" "}
                   {/* Contoh metode pembayaran QRIS */}
                 </Form.Control>
+                <Form.Control.Feedback type="invalid">
+                  {createErrors.payment_method}
+                </Form.Control.Feedback>
               </Form.Group>
             </Form>
           </Modal.Body>
@@ -1033,7 +1068,7 @@ const ManageKostFinance = () => {
                 </Form.Group>
 
                 <Form.Group className="mb-3">
-                  <Form.Label>Jumlah</Form.Label>
+                  <Form.Label>Jumlah <span className="text-danger">*</span></Form.Label>
                   <NumericFormat
                     name="amount"
                     value={editingTransaction.amount}
@@ -1042,25 +1077,39 @@ const ManageKostFinance = () => {
                         ...editingTransaction,
                         amount: values.value, // react-number-format mengembalikan 'value' sebagai float/number
                       });
+                      setEditErrors((prev) => ({ ...prev, amount: null })); // Clear error on change
                     }}
                     thousandSeparator="."
                     decimalSeparator=","
                     prefix="Rp. "
                     placeholder="Masukkan jumlah"
-                    className="form-control"
+                    className={`form-control ${editErrors.amount ? 'is-invalid' : ''}`}
                     allowNegative={false}
+                    isInvalid={!!editErrors.amount}
+                    required // Added required attribute
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {editErrors.amount}
+                  </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group className="mb-3">
-                  <Form.Label>Deskripsi</Form.Label>
+                  <Form.Label>Deskripsi <span className="text-danger">*</span></Form.Label>
                   <Form.Control
                     type="text"
                     name="description"
                     value={editingTransaction.description}
-                    onChange={handleEditTransactionInputChange}
+                    onChange={(e) => {
+                      handleEditTransactionInputChange(e);
+                      setEditErrors((prev) => ({ ...prev, description: null })); // Clear error on change
+                    }}
                     placeholder="Masukkan deskripsi"
+                    isInvalid={!!editErrors.description}
+                    required // Added required attribute
                   />
+                  <Form.Control.Feedback type="invalid">
+                    {editErrors.description}
+                  </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group className="mb-3">

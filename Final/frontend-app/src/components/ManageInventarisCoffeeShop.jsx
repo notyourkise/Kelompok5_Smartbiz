@@ -57,6 +57,36 @@ const ManageInventarisCoffeeShop = () => {
   }, []);
 
   const handleBack = () => navigate("/dashboard");
+  const handleDelete = async (id) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error(
+        "Token autentikasi tidak ditemukan. Tidak dapat menghapus item."
+      );
+      return;
+    }
+    try {
+      await axios.delete(`http://localhost:3001/api/inventaris/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setInventaris(inventaris.filter((item) => item.id !== id));
+      setShowDeleteModal(false);
+      setDeleteItemId(null);
+
+      // Show success message
+      setSuccessMessage("Item inventaris coffee shop berhasil dihapus!");
+      setShowSuccessModal(true);
+
+      // Auto close success modal after 2 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+      }, 2000);
+    } catch (error) {
+      console.error("Error saat menghapus item:", error);
+      // Optionally show an error modal or message here
+    }
+  };
+
   const handleDeleteClick = (id) => {
     setDeleteItemId(id);
     setShowDeleteModal(true);
