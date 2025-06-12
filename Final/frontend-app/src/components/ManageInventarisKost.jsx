@@ -30,7 +30,6 @@ const ManageInventarisKost = () => {
     stock: 0,
     minimum_stock: 0,
     image: null,
-    expiration_date: "",
   });
   const [editingItem, setEditingItem] = useState(null);
 
@@ -100,13 +99,12 @@ const ManageInventarisKost = () => {
       "image/jpeg",
       "image/jpg",
       "image/png",
-      "image/gif",
       "image/webp",
     ];
 
     if (file && !allowedTypes.includes(file.type)) {
       setValidationError(
-        `Format file tidak valid. Format yang diizinkan: JPG, JPEG, PNG, GIF, WEBP.`
+        `Format file tidak valid. Format yang diizinkan: JPG, JPEG, PNG, WEBP.`
       );
       return false;
     }
@@ -208,9 +206,6 @@ const ManageInventarisKost = () => {
     if (newItem.image) {
       formData.append("image", newItem.image);
     }
-    if (newItem.expiration_date) {
-      formData.append("expiration_date", newItem.expiration_date);
-    }
 
     try {
       await axios.post("http://localhost:3001/api/inventaris", formData, {
@@ -230,7 +225,6 @@ const ManageInventarisKost = () => {
         stock: 0,
         minimum_stock: 0,
         image: null,
-        expiration_date: "",
       });
 
       // Auto close success modal after 2 seconds
@@ -266,7 +260,6 @@ const ManageInventarisKost = () => {
 
     setEditingItem({
       ...item, // Includes id, item_name, stock, minimum_stock, image_url, category
-      expiration_date: formattedExpirationDate,
       image: null, // This field will hold the new File object if a new image is selected
     });
     setShowEditModal(true);
@@ -320,9 +313,6 @@ const ManageInventarisKost = () => {
     formData.append("category", "kost");
     if (editingItem.image instanceof File) {
       formData.append("image", editingItem.image);
-    }
-    if (editingItem.expiration_date) {
-      formData.append("expiration_date", editingItem.expiration_date);
     }
 
     try {
@@ -393,21 +383,6 @@ const ManageInventarisKost = () => {
                 <p className="item-min-stock">
                   Minimum Stok: {item.minimum_stock}
                 </p>
-                {item.expiration_date && (
-                  <p
-                    className={`item-expiration ${
-                      new Date(item.expiration_date) < new Date()
-                        ? "expired"
-                        : "valid"
-                    }`}
-                  >
-                    {new Date(item.expiration_date) < new Date()
-                      ? "Expired"
-                      : `Valid Until: ${new Date(
-                          item.expiration_date
-                        ).toLocaleDateString()}`}
-                  </p>
-                )}
               </div>
               <div className="menu-card-actions">
                 {" "}
@@ -504,26 +479,14 @@ const ManageInventarisKost = () => {
               <Form.Control
                 type="file"
                 name="image"
-                accept="image/jpeg, image/jpg, image/png, image/gif, image/webp"
+                accept="image/jpeg, image/jpg, image/png, image/webp"
                 onChange={handleNewItemInputChange}
                 required
               />
               <Form.Text className="text-muted">
-                Format yang diizinkan: JPG, JPEG, PNG, GIF, dan WEBP. Ukuran
+                Format yang diizinkan: JPG, JPEG, PNG, dan WEBP. Ukuran
                 maksimal 2MB.
               </Form.Text>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>
-                Tanggal Kadaluarsa <span className="text-danger">*</span>
-              </Form.Label>
-              <Form.Control
-                type="date"
-                name="expiration_date"
-                value={newItem.expiration_date}
-                onChange={handleNewItemInputChange}
-                required
-              />
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -626,25 +589,13 @@ const ManageInventarisKost = () => {
               <Form.Control
                 type="file"
                 name="image"
-                accept="image/jpeg, image/jpg, image/png, image/gif, image/webp"
+                accept="image/jpeg, image/jpg, image/png, image/webp"
                 onChange={handleEditingItemInputChange}
               />
               <Form.Text className="text-muted">
-                Format yang diterima: JPG, JPEG, PNG, GIF, WEBP. Ukuran maksimal
+                Format yang diterima: JPG, JPEG, PNG, WEBP. Ukuran maksimal
                 2MB.
               </Form.Text>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>
-                Tanggal Kadaluarsa <span className="text-danger">*</span>
-              </Form.Label>
-              <Form.Control
-                type="date"
-                name="expiration_date"
-                value={editingItem?.expiration_date || ""}
-                onChange={handleEditingItemInputChange}
-                required
-              />
             </Form.Group>
           </Form>
         </Modal.Body>

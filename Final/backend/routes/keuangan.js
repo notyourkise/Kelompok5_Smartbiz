@@ -10,7 +10,7 @@ router.get('/detail', protect, keuanganController.getAllTransactionsDetail);
 
 // Endpoint untuk menambahkan transaksi baru (Hanya untuk Superadmin)
 // Gunakan 'protect' untuk otentikasi dan 'authorize' untuk otorisasi peran
-router.post('/detail', protect, authorize(['superadmin']), keuanganController.createTransactionDetail);
+router.post('/detail', protect, authorize(['superadmin', 'admin']), keuanganController.createTransactionDetail);
 
 // Endpoint untuk mengupdate transaksi (Hanya untuk Superadmin)
 router.put('/detail/:id', protect, authorize(['superadmin']), keuanganController.updateTransactionDetail);

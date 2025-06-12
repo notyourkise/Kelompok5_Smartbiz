@@ -99,13 +99,12 @@ const ManageInventarisCoffeeShop = () => {
       "image/jpeg",
       "image/jpg",
       "image/png",
-      "image/gif",
       "image/webp",
     ];
 
     if (file && !allowedTypes.includes(file.type)) {
       setValidationError(
-        `Format file tidak valid. Format yang diizinkan: JPG, JPEG, PNG, GIF, WEBP.`
+        `Format file tidak valid. Format yang diizinkan: JPG, JPEG, PNG, WEBP.`
       );
       return false;
     }
@@ -503,12 +502,12 @@ const ManageInventarisCoffeeShop = () => {
               <Form.Control
                 type="file"
                 name="image"
-                accept="image/jpeg, image/jpg, image/png, image/gif, image/webp"
+                accept="image/jpeg, image/jpg, image/png, image/webp"
                 onChange={handleNewItemInputChange}
                 required
               />
               <small className="text-muted">
-                Format yang diizinkan: JPG, JPEG, PNG, GIF, dan WEBP.
+                Format yang diizinkan: JPG, JPEG, PNG, dan WEBP.
               </small>
             </Form.Group>
             <Form.Group className="mb-3">
@@ -624,11 +623,11 @@ const ManageInventarisCoffeeShop = () => {
               <Form.Control
                 type="file"
                 name="image"
-                accept="image/jpeg, image/jpg, image/png, image/gif, image/webp"
+                accept="image/jpeg, image/jpg, image/png, image/webp"
                 onChange={handleEditingItemInputChange}
               />
               <Form.Text className="text-muted">
-                Format yang diterima: JPG, JPEG, PNG, GIF, WEBP. Ukuran maksimal
+                Format yang diterima: JPG, JPEG, PNG, WEBP. Ukuran maksimal
                 2MB.
               </Form.Text>
             </Form.Group>

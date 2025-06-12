@@ -73,15 +73,23 @@ const deleteUser = async (req, res) => {
   }
 
   try {
+    await db.query('BEGIN'); // Start transaction
+
+    // Delete related transactions first
+    await db.query("DELETE FROM transactions WHERE created_by = $1", [userId]);
+
+    // Then delete the user
     const result = await db.query("DELETE FROM users WHERE id = $1", [userId]);
 
-    // Use rowCount for pg
     if (result.rowCount === 0) {
+      await db.query('ROLLBACK'); // Rollback if user not found
       return res.status(404).json({ error: "Pengguna tidak ditemukan" });
     }
 
+    await db.query('COMMIT'); // Commit transaction
     res.status(200).json({ message: "Pengguna berhasil dihapus" });
   } catch (err) {
+    await db.query('ROLLBACK'); // Rollback on error
     console.error("❌ Error menghapus pengguna:", err);
     res.status(500).json({ error: "Gagal menghapus pengguna" });
   }
