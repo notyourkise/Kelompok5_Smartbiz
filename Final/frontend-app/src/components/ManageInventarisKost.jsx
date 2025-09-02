@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 // Import Card instead of Table
 import { Button, Modal, Form, Card, Row, Col } from "react-bootstrap";
 import {
@@ -33,7 +34,7 @@ const ManageInventarisKost = () => {
     }
     try {
       const response = await axios.get(
-        "http://localhost:3001/api/inventaris?category=kost",
+        `${API_URL}/api/inventaris?category=kost`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -57,7 +58,7 @@ const ManageInventarisKost = () => {
       return;
     }
     try {
-      await axios.delete(`http://localhost:3001/api/inventaris/${itemId}`, {
+      await axios.delete(`${API_URL}/api/inventaris/${itemId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setInventaris(inventaris.filter((item) => item.id !== itemId));
@@ -85,13 +86,9 @@ const ManageInventarisKost = () => {
         category: "kost", // Menambahkan kategori kost
       };
 
-      await axios.post(
-        "http://localhost:3001/api/inventaris",
-        newItemWithCategory,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await axios.post(`${API_URL}/api/inventaris`, newItemWithCategory, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       setShowCreateModal(false);
       setNewItem({ item_name: "", stock: 0, minimum_stock: 0 });
@@ -116,7 +113,7 @@ const ManageInventarisKost = () => {
     }
     try {
       await axios.put(
-        `http://localhost:3001/api/inventaris/${editingItem.id}`,
+        `${API_URL}/api/inventaris/${editingItem.id}`,
         editingItem,
         {
           headers: { Authorization: `Bearer ${token}` },

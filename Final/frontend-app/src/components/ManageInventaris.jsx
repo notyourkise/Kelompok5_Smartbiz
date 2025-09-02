@@ -1,18 +1,29 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 // Import Card, Row, Col from react-bootstrap
-import { Button, Modal, Form, Card, Row, Col } from "react-bootstrap"; 
-import { FaTrashAlt, FaEdit, FaPlus, FaArrowLeft, FaInfoCircle } from "react-icons/fa"; // Added FaInfoCircle
+import { Button, Modal, Form, Card, Row, Col } from "react-bootstrap";
+import {
+  FaTrashAlt,
+  FaEdit,
+  FaPlus,
+  FaArrowLeft,
+  FaInfoCircle,
+} from "react-icons/fa"; // Added FaInfoCircle
 import { useNavigate } from "react-router-dom"; // Untuk navigasi
-import Footer from './Footer'; // Pastikan Footer diimpor
-import './ManageInventaris.css'; // Import the new CSS file
+import Footer from "./Footer"; // Pastikan Footer diimpor
+import "./ManageInventaris.css"; // Import the new CSS file
 
 const ManageInventaris = () => {
   const navigate = useNavigate();
   const [inventaris, setInventaris] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false); // Modal untuk Create
   const [showEditModal, setShowEditModal] = useState(false); // Modal untuk Edit
-  const [newItem, setNewItem] = useState({ item_name: "", stock: 0, minimum_stock: 0 }); // Form untuk item baru
+  const [newItem, setNewItem] = useState({
+    item_name: "",
+    stock: 0,
+    minimum_stock: 0,
+  }); // Form untuk item baru
   const [editingItem, setEditingItem] = useState(null); // Item yang sedang diedit
 
   // Mengambil data inventaris dari API
@@ -23,7 +34,7 @@ const ManageInventaris = () => {
       return;
     }
     try {
-      const response = await axios.get("http://localhost:3001/api/inventaris", {
+      const response = await axios.get(`${API_URL}/api/inventaris`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setInventaris(response.data); // Menyimpan data inventaris
@@ -49,7 +60,7 @@ const ManageInventaris = () => {
       return;
     }
     try {
-      await axios.delete(`http://localhost:3001/api/inventaris/${itemId}`, {
+      await axios.delete(`${API_URL}/api/inventaris/${itemId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setInventaris(inventaris.filter((item) => item.id !== itemId)); // Menghapus item dari state
@@ -83,7 +94,7 @@ const ManageInventaris = () => {
       return;
     }
     try {
-      await axios.post("http://localhost:3001/api/inventaris", newItem, {
+      await axios.post(`${API_URL}/api/inventaris`, newItem, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setShowCreateModal(false);
@@ -104,13 +115,19 @@ const ManageInventaris = () => {
   const handleUpdateItem = async () => {
     const token = localStorage.getItem("token");
     if (!token || !editingItem) {
-      console.error("Authentication token or editing item data not found. Cannot update item.");
+      console.error(
+        "Authentication token or editing item data not found. Cannot update item."
+      );
       return;
     }
     try {
-      await axios.put(`http://localhost:3001/api/inventaris/${editingItem.id}`, editingItem, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(
+        `${API_URL}/api/inventaris/${editingItem.id}`,
+        editingItem,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setShowEditModal(false); // Tutup modal setelah update
       setEditingItem(null); // Reset editing item
       fetchInventaris(); // Refresh data
@@ -121,7 +138,7 @@ const ManageInventaris = () => {
 
   return (
     // Use the new container class
-    <div className="manage-inventaris-container"> 
+    <div className="manage-inventaris-container">
       {/* Header with Back Button and Title */}
       <header className="manage-inventaris-header">
         {/* Back Button with CSS class */}
@@ -132,9 +149,10 @@ const ManageInventaris = () => {
         >
           <FaArrowLeft />
         </Button>
-        <h2 className="manage-inventaris-title">Manajemen Inventaris</h2> {/* Add title */}
+        <h2 className="manage-inventaris-title">Manajemen Inventaris</h2>{" "}
+        {/* Add title */}
         {/* Create Item Button */}
-         <Button
+        <Button
           variant="primary" // Keep variant for base styling, override with class
           onClick={handleCreateModal}
           className="action-button" // Apply CSS class
@@ -145,24 +163,38 @@ const ManageInventaris = () => {
 
       {/* Inventaris Card Layout */}
       <div className="inventaris-card-list">
-        <Row xs={1} md={2} lg={3} className="g-4"> {/* Responsive Grid */}
+        <Row xs={1} md={2} lg={3} className="g-4">
+          {" "}
+          {/* Responsive Grid */}
           {inventaris.length > 0 ? (
             inventaris.map((item) => (
               <Col key={item.id}>
                 <Card className="inventaris-card">
                   <div className="card-image-placeholder">
                     {/* Placeholder for image */}
-                    <FaInfoCircle className="info-icon" onClick={() => alert(`Info for ${item.item_name}`)} /> {/* Basic info click handler */}
+                    <FaInfoCircle
+                      className="info-icon"
+                      onClick={() => alert(`Info for ${item.item_name}`)}
+                    />{" "}
+                    {/* Basic info click handler */}
                   </div>
                   <Card.Body>
-                    <Card.Title className="item-name">{item.item_name}</Card.Title>
+                    <Card.Title className="item-name">
+                      {item.item_name}
+                    </Card.Title>
                     <div className="item-details">
-                      <p className="item-stock">Stok Barang: {item.stock}
+                      <p className="item-stock">
+                        Stok Barang: {item.stock}
                         {item.stock <= item.minimum_stock && (
-                          <span className="stock-warning-text"> (Minimum!)</span>
+                          <span className="stock-warning-text">
+                            {" "}
+                            (Minimum!)
+                          </span>
                         )}
                       </p>
-                      <p className="item-min-stock">Minimum Stok: {item.minimum_stock}</p>
+                      <p className="item-min-stock">
+                        Minimum Stok: {item.minimum_stock}
+                      </p>
                     </div>
                   </Card.Body>
                   <Card.Footer>

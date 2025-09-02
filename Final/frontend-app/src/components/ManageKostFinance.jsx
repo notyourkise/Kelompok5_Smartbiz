@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { API_URL } from "../config";
 import "./ManageKostFinance.css";
 import { Button, Modal, Form, Dropdown, DropdownButton } from "react-bootstrap";
 import { FaPlus, FaPrint, FaArrowLeft, FaEdit, FaTrash } from "react-icons/fa"; // Add Edit and Trash icons
@@ -7,7 +8,7 @@ import { Doughnut, Bar } from "react-chartjs-2";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver"; // Import file-saver for CSV download
 // import { NumberFormatBase } from "react-number-format"; // Ganti ini
-import { NumericFormat } from 'react-number-format'; // Dengan ini
+import { NumericFormat } from "react-number-format"; // Dengan ini
 
 // Style sementara dihapus karena tidak menyelesaikan masalah overflow dan bisa mengganggu debugging
 // const modalStyleFix = `
@@ -107,7 +108,7 @@ const ManageKostFinance = () => {
       }
 
       const response = await fetch(
-        "http://localhost:3001/keuangan/detail", // Menghapus filter ?category=kost dari URL
+        `${API_URL}/keuangan/detail`, // Menghapus filter ?category=kost dari URL
         {
           method: "GET",
           headers: {
@@ -165,14 +166,17 @@ const ManageKostFinance = () => {
     }
 
     // Filter transaksi agar hanya menampilkan yang berkaitan dengan "Kost" atau "Pendapatan Kos" atau "Pengeluaran Kos"
-    let relevantTransactions = transactions.filter(t => 
-      t.category && (
-        t.category.toLowerCase() === "kost" || 
-        t.category.toLowerCase() === "pendapatan kos" ||
-        t.category.toLowerCase() === "pengeluaran kos" // Jika Anda memiliki kategori ini juga
-      )
+    let relevantTransactions = transactions.filter(
+      (t) =>
+        t.category &&
+        (t.category.toLowerCase() === "kost" ||
+          t.category.toLowerCase() === "pendapatan kos" ||
+          t.category.toLowerCase() === "pengeluaran kos") // Jika Anda memiliki kategori ini juga
     );
-    console.log("ManageKostFinance: Transactions after category filter:", relevantTransactions); // DEBUG
+    console.log(
+      "ManageKostFinance: Transactions after category filter:",
+      relevantTransactions
+    ); // DEBUG
 
     let filteredForDate = relevantTransactions;
     if (timeFilter !== "all") {
@@ -195,76 +199,106 @@ const ManageKostFinance = () => {
           break;
         case "1m":
           startDate.setMonth(now.getMonth() - 1);
-          startDate.setDate(1); 
-          startDate.setHours(0,0,0,0);
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
           break;
         case "2m":
           startDate.setMonth(now.getMonth() - 2);
           startDate.setDate(1);
-          startDate.setHours(0,0,0,0);
+          startDate.setHours(0, 0, 0, 0);
           break;
         case "3m":
           startDate.setMonth(now.getMonth() - 3);
           startDate.setDate(1);
-          startDate.setHours(0,0,0,0);
+          startDate.setHours(0, 0, 0, 0);
           break;
         case "6m":
           startDate.setMonth(now.getMonth() - 6);
           startDate.setDate(1);
-          startDate.setHours(0,0,0,0);
+          startDate.setHours(0, 0, 0, 0);
           break;
         case "1y":
           startDate.setFullYear(now.getFullYear() - 1);
-          startDate.setMonth(0); 
-          startDate.setDate(1);  
-          startDate.setHours(0,0,0,0);
+          startDate.setMonth(0);
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
           break;
         default:
           break;
       }
-      
-      filteredForDate = relevantTransactions.filter(t => {
+
+      filteredForDate = relevantTransactions.filter((t) => {
         const transactionDate = new Date(t.created_at);
-        if (timeFilter === "all") return true; 
+        if (timeFilter === "all") return true;
         return transactionDate >= startDate && transactionDate <= now;
       });
     }
 
-    const processedAndFiltered = filteredForDate.reduce((acc, transaction, index) => {
-      const previousSaldo = index === 0 ? 0 : acc[index - 1].saldo;
-      let currentSaldo = previousSaldo;
-      const amount = parseFloat(transaction.amount) || 0;
+    const processedAndFiltered = filteredForDate.reduce(
+      (acc, transaction, index) => {
+        const previousSaldo = index === 0 ? 0 : acc[index - 1].saldo;
+        let currentSaldo = previousSaldo;
+        const amount = parseFloat(transaction.amount) || 0;
 
-      if (transaction.type === "income") {
-        currentSaldo += amount;
-      } else if (transaction.type === "expense") {
-        currentSaldo -= amount;
-      }
+        if (transaction.type === "income") {
+          currentSaldo += amount;
+        } else if (transaction.type === "expense") {
+          currentSaldo -= amount;
+        }
 
-      let formattedDate = "Tanggal tidak valid";
-      try {
-        if (transaction.created_at && typeof transaction.created_at === 'string') {
-          const [datePart, timePart] = transaction.created_at.split(" ");
-          if (datePart && timePart) {
-            const [year, month, day] = datePart.split("-").map(Number);
-            const [hour, minute, second] = timePart.split(":").map(Number);
-            if (!isNaN(year) && !isNaN(month) && !isNaN(day) && !isNaN(hour) && !isNaN(minute) && !isNaN(second)) {
-              const dateObj = new Date(year, month - 1, day, hour, minute, second);
-              if (!isNaN(dateObj.getTime())) {
-                formattedDate = dateObj.toLocaleString("id-ID", {
-                  weekday: "short", year: "numeric", month: "short", day: "numeric",
-                  hour: "numeric", minute: "numeric", second: "numeric", timeZone: "Asia/Makassar",
-                });
+        let formattedDate = "Tanggal tidak valid";
+        try {
+          if (
+            transaction.created_at &&
+            typeof transaction.created_at === "string"
+          ) {
+            const [datePart, timePart] = transaction.created_at.split(" ");
+            if (datePart && timePart) {
+              const [year, month, day] = datePart.split("-").map(Number);
+              const [hour, minute, second] = timePart.split(":").map(Number);
+              if (
+                !isNaN(year) &&
+                !isNaN(month) &&
+                !isNaN(day) &&
+                !isNaN(hour) &&
+                !isNaN(minute) &&
+                !isNaN(second)
+              ) {
+                const dateObj = new Date(
+                  year,
+                  month - 1,
+                  day,
+                  hour,
+                  minute,
+                  second
+                );
+                if (!isNaN(dateObj.getTime())) {
+                  formattedDate = dateObj.toLocaleString("id-ID", {
+                    weekday: "short",
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric",
+                    timeZone: "Asia/Makassar",
+                  });
+                }
               }
             }
           }
+        } catch (err) {
+          console.error(
+            "Error formatting date in filter useEffect (Kost):",
+            err,
+            transaction.created_at
+          );
         }
-      } catch (err) {
-        console.error("Error formatting date in filter useEffect (Kost):", err, transaction.created_at);
-      }
-      acc.push({ ...transaction, saldo: currentSaldo, formattedDate });
-      return acc;
-    }, []);
+        acc.push({ ...transaction, saldo: currentSaldo, formattedDate });
+        return acc;
+      },
+      []
+    );
     setDisplayedTransactions(processedAndFiltered);
   }, [transactions, timeFilter]);
 
@@ -312,7 +346,7 @@ const ManageKostFinance = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3001/keuangan/detail", {
+      const response = await fetch(`${API_URL}/keuangan/detail`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -397,42 +431,64 @@ const ManageKostFinance = () => {
       !editingTransaction.description ||
       !editingTransaction.payment_method
     ) {
-      console.error("Amount, description, and payment method are required for update.");
+      console.error(
+        "Amount, description, and payment method are required for update."
+      );
       // Optionally set an error state to show in the modal
       return;
     }
 
-
     try {
-      const response = await fetch(`http://localhost:3001/keuangan/detail/${editingTransaction.id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...editingTransaction,
-          amount: parseFloat(editingTransaction.amount), // Ensure amount is a number
-        }),
-      });
+      const response = await fetch(
+        `${API_URL}/keuangan/detail/${editingTransaction.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...editingTransaction,
+            amount: parseFloat(editingTransaction.amount), // Ensure amount is a number
+          }),
+        }
+      );
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+        const errorData = await response
+          .json()
+          .catch(() => ({ message: `HTTP error! status: ${response.status}` }));
         if (response.status === 401 || response.status === 403) {
-          setAuthError("Authentication failed or insufficient permissions. Please log in again.");
+          setAuthError(
+            "Authentication failed or insufficient permissions. Please log in again."
+          );
         } else {
-          setError(new Error(errorData.message || `HTTP error! status: ${response.status}`));
+          setError(
+            new Error(
+              errorData.message || `HTTP error! status: ${response.status}`
+            )
+          );
         }
-        throw new Error(errorData.message || `Update failed with status ${response.status}`);
+        throw new Error(
+          errorData.message || `Update failed with status ${response.status}`
+        );
       }
 
       // Update the transaction in the local state
-      setTransactions(prevTransactions =>
-        prevTransactions.map(t =>
-          t.id === editingTransaction.id ? { ...editingTransaction, amount: parseFloat(editingTransaction.amount) } : t // Update the specific transaction
-        ).sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) // Re-sort after update
+      setTransactions(
+        (prevTransactions) =>
+          prevTransactions
+            .map(
+              (t) =>
+                t.id === editingTransaction.id
+                  ? {
+                      ...editingTransaction,
+                      amount: parseFloat(editingTransaction.amount),
+                    }
+                  : t // Update the specific transaction
+            )
+            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) // Re-sort after update
       );
-
 
       handleCloseEditModal(); // Close modal on success
     } catch (error) {
@@ -440,7 +496,6 @@ const ManageKostFinance = () => {
       // Error state is set within the try block for specific errors
     }
   };
-
 
   // --- Delete Transaction Logic ---
 
@@ -464,32 +519,45 @@ const ManageKostFinance = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3001/keuangan/detail/${deletingTransactionId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${API_URL}/keuangan/detail/${deletingTransactionId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
-         const errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
-         if (response.status === 401 || response.status === 403) {
-           setAuthError("Authentication failed or insufficient permissions. Please log in again.");
-         } else {
-           setError(new Error(errorData.message || `HTTP error! status: ${response.status}`));
-         }
-         throw new Error(errorData.message || `Delete failed with status ${response.status}`);
+        const errorData = await response
+          .json()
+          .catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+        if (response.status === 401 || response.status === 403) {
+          setAuthError(
+            "Authentication failed or insufficient permissions. Please log in again."
+          );
+        } else {
+          setError(
+            new Error(
+              errorData.message || `HTTP error! status: ${response.status}`
+            )
+          );
+        }
+        throw new Error(
+          errorData.message || `Delete failed with status ${response.status}`
+        );
       }
 
       // Remove the transaction from the local state
-      setTransactions(prevTransactions =>
-        prevTransactions.filter(t => t.id !== deletingTransactionId)
+      setTransactions((prevTransactions) =>
+        prevTransactions.filter((t) => t.id !== deletingTransactionId)
       );
 
       handleCloseDeleteModal(); // Close modal on success
     } catch (error) {
       console.error("Error deleting transaction:", error);
-       // Error state is set within the try block for specific errors
+      // Error state is set within the try block for specific errors
     }
   };
 
@@ -506,7 +574,10 @@ const ManageKostFinance = () => {
   // Aggregate data by month for the bar chart using displayedTransactions
   const monthlyData = displayedTransactions.reduce((acc, transaction) => {
     const date = new Date(transaction.created_at);
-    const monthYear = date.toLocaleString("id-ID", { month: "long", year: "numeric" });
+    const monthYear = date.toLocaleString("id-ID", {
+      month: "long",
+      year: "numeric",
+    });
 
     if (!acc[monthYear]) {
       acc[monthYear] = { income: 0, expense: 0 };
@@ -522,9 +593,8 @@ const ManageKostFinance = () => {
   }, {});
 
   const months = Object.keys(monthlyData);
-  const monthlyIncome = months.map(month => monthlyData[month].income);
-  const monthlyExpense = months.map(month => monthlyData[month].expense);
-
+  const monthlyIncome = months.map((month) => monthlyData[month].income);
+  const monthlyExpense = months.map((month) => monthlyData[month].expense);
 
   // Create data for Pie chart (Distribusi Pemasukan vs Pengeluaran) using displayedTransactions
   const pieChartData = {
@@ -616,23 +686,23 @@ const ManageKostFinance = () => {
     },
     plugins: {
       legend: {
-        position: 'top',
+        position: "top",
       },
       tooltip: {
         callbacks: {
-          label: function(context) {
-            let label = context.dataset.label || '';
+          label: function (context) {
+            let label = context.dataset.label || "";
             if (label) {
-              label += ': ';
+              label += ": ";
             }
             if (context.parsed.y !== null) {
               label += formatRupiah(context.parsed.y);
             }
             return label;
-          }
-        }
-      }
-    }
+          },
+        },
+      },
+    },
   };
 
   const handlePrint = (type) => {
@@ -645,14 +715,17 @@ const ManageKostFinance = () => {
         "Saldo",
       ];
 
-      const dataRows = displayedTransactions.map((item) => // Use displayedTransactions
-        [
-          `"${item.description.replace(/"/g, '""')}"`,
-          `"${item.payment_method.replace(/"/g, '""')}"`,
-          item.type === "income" ? item.amount : 0,
-          item.type === "expense" ? item.amount : 0,
-          item.saldo,
-        ].join(",")
+      const dataRows = displayedTransactions.map(
+        (
+          item // Use displayedTransactions
+        ) =>
+          [
+            `"${item.description.replace(/"/g, '""')}"`,
+            `"${item.payment_method.replace(/"/g, '""')}"`,
+            item.type === "income" ? item.amount : 0,
+            item.type === "expense" ? item.amount : 0,
+            item.saldo,
+          ].join(",")
       );
 
       const csvContent = [header.join(","), ...dataRows].join("\n");
@@ -671,7 +744,8 @@ const ManageKostFinance = () => {
         "Saldo",
       ];
 
-      const dataRows = displayedTransactions.map((item) => ({ // Use displayedTransactions
+      const dataRows = displayedTransactions.map((item) => ({
+        // Use displayedTransactions
         Keterangan: item.description,
         Metode: item.payment_method,
         Pemasukan: item.type === "income" ? item.amount : 0,
@@ -697,28 +771,45 @@ const ManageKostFinance = () => {
             className="back-icon"
             onClick={() => navigate("/dashboard")}
           />
-          <h2 className="manage-kost-finance-title">
-            Manajemen Keuangan Kost
-          </h2>
+          <h2 className="manage-kost-finance-title">Manajemen Keuangan Kost</h2>
         </header>
         {loading && <p>Loading transactions...</p>}
         {authError && <p className="error-message">{authError}</p>}
         {error && <p>Error loading transactions: {error.message}</p>}
         {!loading && !error && (
           <>
-            <div className="filter-controls-container" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'flex-end', paddingRight: '2.5rem' }}>
+            <div
+              className="filter-controls-container"
+              style={{
+                marginBottom: "20px",
+                display: "flex",
+                justifyContent: "flex-end",
+                paddingRight: "2.5rem",
+              }}
+            >
               <DropdownButton
                 id="time-filter-dropdown-kost"
-                title={`Filter: ${timeFilter === 'all' ? 'Semua Waktu' : 
-                                      timeFilter === '1d' ? '1 Hari Terakhir' :
-                                      timeFilter === '3d' ? '3 Hari Terakhir' :
-                                      timeFilter === '7d' ? '7 Hari Terakhir' :
-                                      timeFilter === '1m' ? '1 Bulan Terakhir' :
-                                      timeFilter === '2m' ? '2 Bulan Terakhir' :
-                                      timeFilter === '3m' ? '3 Bulan Terakhir' :
-                                      timeFilter === '6m' ? '6 Bulan Terakhir' :
-                                      timeFilter === '1y' ? '1 Tahun Terakhir' : 'Semua Waktu'
-                                    }`}
+                title={`Filter: ${
+                  timeFilter === "all"
+                    ? "Semua Waktu"
+                    : timeFilter === "1d"
+                    ? "1 Hari Terakhir"
+                    : timeFilter === "3d"
+                    ? "3 Hari Terakhir"
+                    : timeFilter === "7d"
+                    ? "7 Hari Terakhir"
+                    : timeFilter === "1m"
+                    ? "1 Bulan Terakhir"
+                    : timeFilter === "2m"
+                    ? "2 Bulan Terakhir"
+                    : timeFilter === "3m"
+                    ? "3 Bulan Terakhir"
+                    : timeFilter === "6m"
+                    ? "6 Bulan Terakhir"
+                    : timeFilter === "1y"
+                    ? "1 Tahun Terakhir"
+                    : "Semua Waktu"
+                }`}
                 onSelect={handleTimeFilterChange}
                 variant="info"
               >
@@ -733,7 +824,7 @@ const ManageKostFinance = () => {
                 <Dropdown.Item eventKey="1y">1 Tahun Terakhir</Dropdown.Item>
               </DropdownButton>
             </div>
-            
+
             <div className="finance-summary">
               <div className="chart-container">
                 <h5>Distribusi Pemasukan vs Pengeluaran</h5>
@@ -802,31 +893,49 @@ const ManageKostFinance = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {displayedTransactions.map((item, index) => ( // Use displayedTransactions
-                    <tr key={item.id}>
-                      <td>{index + 1}</td>
-                      <td>{item.description}</td>
-                      <td>{item.payment_method}</td>
-                      <td>{item.formattedDate}</td>
-                      <td>
-                        {item.type === "income" ? formatRupiah(item.amount) : 0}
-                      </td>
-                      <td>
-                        {item.type === "expense"
-                          ? formatRupiah(item.amount)
-                          : 0}
-                      </td>
-                      <td>{formatRupiah(item.saldo)}</td>
-                      <td> {/* Actions buttons */}
-                        <Button variant="outline-primary" size="sm" onClick={() => handleEditModal(item)} style={{ marginRight: '5px' }}>
-                          <FaEdit />
-                        </Button>
-                        <Button variant="outline-danger" size="sm" onClick={() => handleDeleteModal(item.id)}>
-                          <FaTrash />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
+                  {displayedTransactions.map(
+                    (
+                      item,
+                      index // Use displayedTransactions
+                    ) => (
+                      <tr key={item.id}>
+                        <td>{index + 1}</td>
+                        <td>{item.description}</td>
+                        <td>{item.payment_method}</td>
+                        <td>{item.formattedDate}</td>
+                        <td>
+                          {item.type === "income"
+                            ? formatRupiah(item.amount)
+                            : 0}
+                        </td>
+                        <td>
+                          {item.type === "expense"
+                            ? formatRupiah(item.amount)
+                            : 0}
+                        </td>
+                        <td>{formatRupiah(item.saldo)}</td>
+                        <td>
+                          {" "}
+                          {/* Actions buttons */}
+                          <Button
+                            variant="outline-primary"
+                            size="sm"
+                            onClick={() => handleEditModal(item)}
+                            style={{ marginRight: "5px" }}
+                          >
+                            <FaEdit />
+                          </Button>
+                          <Button
+                            variant="outline-danger"
+                            size="sm"
+                            onClick={() => handleDeleteModal(item.id)}
+                          >
+                            <FaTrash />
+                          </Button>
+                        </td>
+                      </tr>
+                    )
+                  )}
                 </tbody>
               </table>
             </div>
@@ -933,22 +1042,22 @@ const ManageKostFinance = () => {
 
                 <Form.Group className="mb-3">
                   <Form.Label>Jumlah</Form.Label>
-                   <NumericFormat
-                      name="amount"
-                      value={editingTransaction.amount}
-                      onValueChange={(values) => {
-                        setEditingTransaction({
-                          ...editingTransaction,
-                          amount: values.value, // react-number-format mengembalikan 'value' sebagai float/number
-                        });
-                      }}
-                      thousandSeparator="."
-                      decimalSeparator=","
-                      prefix="Rp. "
-                      placeholder="Masukkan jumlah"
-                      className="form-control"
-                      allowNegative={false}
-                    />
+                  <NumericFormat
+                    name="amount"
+                    value={editingTransaction.amount}
+                    onValueChange={(values) => {
+                      setEditingTransaction({
+                        ...editingTransaction,
+                        amount: values.value, // react-number-format mengembalikan 'value' sebagai float/number
+                      });
+                    }}
+                    thousandSeparator="."
+                    decimalSeparator=","
+                    prefix="Rp. "
+                    placeholder="Masukkan jumlah"
+                    className="form-control"
+                    allowNegative={false}
+                  />
                 </Form.Group>
 
                 <Form.Group className="mb-3">
@@ -987,13 +1096,14 @@ const ManageKostFinance = () => {
           </Modal.Footer>
         </Modal>
 
-         {/* Modal Konfirmasi Hapus */}
-         <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered>
+        {/* Modal Konfirmasi Hapus */}
+        <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered>
           <Modal.Header closeButton>
             <Modal.Title>Konfirmasi Hapus</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan.
+            Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak
+            dapat dibatalkan.
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseDeleteModal}>
@@ -1004,7 +1114,6 @@ const ManageKostFinance = () => {
             </Button>
           </Modal.Footer>
         </Modal>
-
       </div>
     </ErrorBoundary>
   );

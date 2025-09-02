@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { API_URL } from "../config";
 import "./ManageCoffeeShopFinance.css";
 import { Button, Modal, Form, Dropdown, DropdownButton } from "react-bootstrap";
 import { FaPlus, FaPrint, FaArrowLeft, FaEdit, FaTrash } from "react-icons/fa"; // Add Edit and Trash icons
@@ -95,7 +96,7 @@ const ManageCoffeeShopFinance = () => {
       }
 
       const response = await fetch(
-        "http://localhost:3001/keuangan/detail?category=coffee shop",
+        `${API_URL}/keuangan/detail?category=coffee shop`,
         {
           method: "GET",
           headers: {
@@ -152,7 +153,9 @@ const ManageCoffeeShopFinance = () => {
       return;
     }
 
-    let relevantTransactions = transactions.filter(t => t.category === "Coffee Shop");
+    let relevantTransactions = transactions.filter(
+      (t) => t.category === "Coffee Shop"
+    );
 
     let filteredForDate = relevantTransactions;
     if (timeFilter !== "all") {
@@ -176,79 +179,109 @@ const ManageCoffeeShopFinance = () => {
         case "1m":
           startDate.setMonth(now.getMonth() - 1);
           startDate.setDate(1); // Start of the month
-          startDate.setHours(0,0,0,0);
+          startDate.setHours(0, 0, 0, 0);
           break;
         case "2m":
           startDate.setMonth(now.getMonth() - 2);
           startDate.setDate(1);
-          startDate.setHours(0,0,0,0);
+          startDate.setHours(0, 0, 0, 0);
           break;
         case "3m":
           startDate.setMonth(now.getMonth() - 3);
           startDate.setDate(1);
-          startDate.setHours(0,0,0,0);
+          startDate.setHours(0, 0, 0, 0);
           break;
         case "6m":
           startDate.setMonth(now.getMonth() - 6);
           startDate.setDate(1);
-          startDate.setHours(0,0,0,0);
+          startDate.setHours(0, 0, 0, 0);
           break;
         case "1y":
           startDate.setFullYear(now.getFullYear() - 1);
           startDate.setMonth(0); // January
-          startDate.setDate(1);  // 1st
-          startDate.setHours(0,0,0,0);
+          startDate.setDate(1); // 1st
+          startDate.setHours(0, 0, 0, 0);
           break;
         default:
           // 'all' or unhandled
           break;
       }
-      
-      filteredForDate = relevantTransactions.filter(t => {
+
+      filteredForDate = relevantTransactions.filter((t) => {
         const transactionDate = new Date(t.created_at);
         // For 'all', startDate might not be modified from 'now', so this check is important
-        if (timeFilter === "all") return true; 
+        if (timeFilter === "all") return true;
         return transactionDate >= startDate && transactionDate <= now;
       });
     }
 
     // Recalculate saldo and formattedDate for the filtered transactions
-    const processedAndFiltered = filteredForDate.reduce((acc, transaction, index) => {
-      const previousSaldo = index === 0 ? 0 : acc[index - 1].saldo;
-      let currentSaldo = previousSaldo;
-      const amount = parseFloat(transaction.amount) || 0;
+    const processedAndFiltered = filteredForDate.reduce(
+      (acc, transaction, index) => {
+        const previousSaldo = index === 0 ? 0 : acc[index - 1].saldo;
+        let currentSaldo = previousSaldo;
+        const amount = parseFloat(transaction.amount) || 0;
 
-      if (transaction.type === "income") {
-        currentSaldo += amount;
-      } else if (transaction.type === "expense") {
-        currentSaldo -= amount;
-      }
+        if (transaction.type === "income") {
+          currentSaldo += amount;
+        } else if (transaction.type === "expense") {
+          currentSaldo -= amount;
+        }
 
-      let formattedDate = "Tanggal tidak valid";
-      try {
-        if (transaction.created_at && typeof transaction.created_at === 'string') {
-          const [datePart, timePart] = transaction.created_at.split(" ");
-          if (datePart && timePart) {
-            const [year, month, day] = datePart.split("-").map(Number);
-            const [hour, minute, second] = timePart.split(":").map(Number);
-            if (!isNaN(year) && !isNaN(month) && !isNaN(day) && !isNaN(hour) && !isNaN(minute) && !isNaN(second)) {
-              const dateObj = new Date(year, month - 1, day, hour, minute, second);
-              if (!isNaN(dateObj.getTime())) {
-                formattedDate = dateObj.toLocaleString("id-ID", {
-                  weekday: "short", year: "numeric", month: "short", day: "numeric",
-                  hour: "numeric", minute: "numeric", second: "numeric", timeZone: "Asia/Makassar",
-                });
+        let formattedDate = "Tanggal tidak valid";
+        try {
+          if (
+            transaction.created_at &&
+            typeof transaction.created_at === "string"
+          ) {
+            const [datePart, timePart] = transaction.created_at.split(" ");
+            if (datePart && timePart) {
+              const [year, month, day] = datePart.split("-").map(Number);
+              const [hour, minute, second] = timePart.split(":").map(Number);
+              if (
+                !isNaN(year) &&
+                !isNaN(month) &&
+                !isNaN(day) &&
+                !isNaN(hour) &&
+                !isNaN(minute) &&
+                !isNaN(second)
+              ) {
+                const dateObj = new Date(
+                  year,
+                  month - 1,
+                  day,
+                  hour,
+                  minute,
+                  second
+                );
+                if (!isNaN(dateObj.getTime())) {
+                  formattedDate = dateObj.toLocaleString("id-ID", {
+                    weekday: "short",
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric",
+                    timeZone: "Asia/Makassar",
+                  });
+                }
               }
             }
           }
+        } catch (err) {
+          console.error(
+            "Error formatting date in filter useEffect:",
+            err,
+            transaction.created_at
+          );
         }
-      } catch (err) {
-        console.error("Error formatting date in filter useEffect:", err, transaction.created_at);
-      }
 
-      acc.push({ ...transaction, saldo: currentSaldo, formattedDate });
-      return acc;
-    }, []);
+        acc.push({ ...transaction, saldo: currentSaldo, formattedDate });
+        return acc;
+      },
+      []
+    );
 
     setDisplayedTransactions(processedAndFiltered);
   }, [transactions, timeFilter]);
@@ -297,7 +330,7 @@ const ManageCoffeeShopFinance = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3001/keuangan/detail", {
+      const response = await fetch(`${API_URL}/keuangan/detail`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -391,7 +424,7 @@ const ManageCoffeeShopFinance = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/keuangan/detail/${editingTransaction.id}`,
+        `${API_URL}/keuangan/detail/${editingTransaction.id}`,
         {
           method: "PUT",
           headers: {
@@ -471,7 +504,7 @@ const ManageCoffeeShopFinance = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/keuangan/detail/${deletingTransactionId}`,
+        `${API_URL}/keuangan/detail/${deletingTransactionId}`,
         {
           method: "DELETE",
           headers: {
@@ -667,14 +700,17 @@ const ManageCoffeeShopFinance = () => {
         "Saldo",
       ];
 
-      const dataRows = displayedTransactions.map((item) => // Use displayedTransactions
-        [
-          `"${item.description.replace(/"/g, '""')}"`,
-          `"${item.payment_method.replace(/"/g, '""')}"`,
-          item.type === "income" ? item.amount : 0,
-          item.type === "expense" ? item.amount : 0,
-          item.saldo,
-        ].join(",")
+      const dataRows = displayedTransactions.map(
+        (
+          item // Use displayedTransactions
+        ) =>
+          [
+            `"${item.description.replace(/"/g, '""')}"`,
+            `"${item.payment_method.replace(/"/g, '""')}"`,
+            item.type === "income" ? item.amount : 0,
+            item.type === "expense" ? item.amount : 0,
+            item.saldo,
+          ].join(",")
       );
 
       const csvContent = [header.join(","), ...dataRows].join("\n");
@@ -693,7 +729,8 @@ const ManageCoffeeShopFinance = () => {
         "Saldo",
       ];
 
-      const dataRows = displayedTransactions.map((item) => ({ // Use displayedTransactions
+      const dataRows = displayedTransactions.map((item) => ({
+        // Use displayedTransactions
         Keterangan: item.description,
         Metode: item.payment_method,
         Pemasukan: item.type === "income" ? item.amount : 0,
@@ -727,19 +764,38 @@ const ManageCoffeeShopFinance = () => {
         {error && <p>Error loading transactions: {error.message}</p>}
         {!loading && !error && (
           <>
-            <div className="filter-controls-container" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'flex-end', paddingRight: '2.5rem' }}>
+            <div
+              className="filter-controls-container"
+              style={{
+                marginBottom: "20px",
+                display: "flex",
+                justifyContent: "flex-end",
+                paddingRight: "2.5rem",
+              }}
+            >
               <DropdownButton
                 id="time-filter-dropdown"
-                title={`Filter: ${timeFilter === 'all' ? 'Semua Waktu' : 
-                                      timeFilter === '1d' ? '1 Hari Terakhir' :
-                                      timeFilter === '3d' ? '3 Hari Terakhir' :
-                                      timeFilter === '7d' ? '7 Hari Terakhir' :
-                                      timeFilter === '1m' ? '1 Bulan Terakhir' :
-                                      timeFilter === '2m' ? '2 Bulan Terakhir' :
-                                      timeFilter === '3m' ? '3 Bulan Terakhir' :
-                                      timeFilter === '6m' ? '6 Bulan Terakhir' :
-                                      timeFilter === '1y' ? '1 Tahun Terakhir' : 'Semua Waktu'
-                                    }`}
+                title={`Filter: ${
+                  timeFilter === "all"
+                    ? "Semua Waktu"
+                    : timeFilter === "1d"
+                    ? "1 Hari Terakhir"
+                    : timeFilter === "3d"
+                    ? "3 Hari Terakhir"
+                    : timeFilter === "7d"
+                    ? "7 Hari Terakhir"
+                    : timeFilter === "1m"
+                    ? "1 Bulan Terakhir"
+                    : timeFilter === "2m"
+                    ? "2 Bulan Terakhir"
+                    : timeFilter === "3m"
+                    ? "3 Bulan Terakhir"
+                    : timeFilter === "6m"
+                    ? "6 Bulan Terakhir"
+                    : timeFilter === "1y"
+                    ? "1 Tahun Terakhir"
+                    : "Semua Waktu"
+                }`}
                 onSelect={handleTimeFilterChange}
                 variant="info" // Will be styled by CSS later
               >
@@ -823,42 +879,49 @@ const ManageCoffeeShopFinance = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {displayedTransactions.map((item, index) => ( // Use displayedTransactions
-                    <tr key={item.id}>
-                      <td>{index + 1}</td>
-                      <td>{item.description}</td>
-                      <td>{item.payment_method}</td>
-                      <td>{item.formattedDate}</td>
-                      <td>
-                        {item.type === "income" ? formatRupiah(item.amount) : 0}
-                      </td>
-                      <td>
-                        {item.type === "expense"
-                          ? formatRupiah(item.amount)
-                          : 0}
-                      </td>
-                      <td>{formatRupiah(item.saldo)}</td>
-                      <td>
-                        {" "}
-                        {/* Actions buttons */}
-                        <Button
-                          variant="outline-primary"
-                          size="sm"
-                          onClick={() => handleEditModal(item)}
-                          style={{ marginRight: "5px" }}
-                        >
-                          <FaEdit />
-                        </Button>
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={() => handleDeleteModal(item.id)}
-                        >
-                          <FaTrash />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
+                  {displayedTransactions.map(
+                    (
+                      item,
+                      index // Use displayedTransactions
+                    ) => (
+                      <tr key={item.id}>
+                        <td>{index + 1}</td>
+                        <td>{item.description}</td>
+                        <td>{item.payment_method}</td>
+                        <td>{item.formattedDate}</td>
+                        <td>
+                          {item.type === "income"
+                            ? formatRupiah(item.amount)
+                            : 0}
+                        </td>
+                        <td>
+                          {item.type === "expense"
+                            ? formatRupiah(item.amount)
+                            : 0}
+                        </td>
+                        <td>{formatRupiah(item.saldo)}</td>
+                        <td>
+                          {" "}
+                          {/* Actions buttons */}
+                          <Button
+                            variant="outline-primary"
+                            size="sm"
+                            onClick={() => handleEditModal(item)}
+                            style={{ marginRight: "5px" }}
+                          >
+                            <FaEdit />
+                          </Button>
+                          <Button
+                            variant="outline-danger"
+                            size="sm"
+                            onClick={() => handleDeleteModal(item.id)}
+                          >
+                            <FaTrash />
+                          </Button>
+                        </td>
+                      </tr>
+                    )
+                  )}
                 </tbody>
               </table>
             </div>

@@ -2,18 +2,20 @@
 
 import React, { useState } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 import { useNavigate } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 import { FaCheckCircle, FaUser, FaLock } from "react-icons/fa";
 // Removed import "./Register.css";
 // Removed import logo from "../assets/smartbizlogo.png";
 
-const Register = ({ onSwitchToLogin }) => { // Added onSwitchToLogin prop
+const Register = ({ onSwitchToLogin }) => {
+  // Added onSwitchToLogin prop
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  // Removed role state: const [role, setRole] = useState("admin"); 
+  // Removed role state: const [role, setRole] = useState("admin");
   const [errorMessage, setErrorMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
 
@@ -21,7 +23,7 @@ const Register = ({ onSwitchToLogin }) => { // Added onSwitchToLogin prop
     e.preventDefault();
 
     // Removed role from validation: if (!username || !password || !confirmPassword || !role) {
-    if (!username || !password || !confirmPassword) { 
+    if (!username || !password || !confirmPassword) {
       setErrorMessage("Semua kolom harus diisi.");
       return;
     }
@@ -33,10 +35,10 @@ const Register = ({ onSwitchToLogin }) => { // Added onSwitchToLogin prop
 
     try {
       // Hardcode role to 'admin' in the request payload
-      await axios.post("http://localhost:3001/auth/register", {
+      await axios.post(`${API_URL}/auth/register`, {
         username,
         password,
-        role: 'admin', 
+        role: "admin",
       });
       setShowModal(true);
     } catch (error) {
@@ -52,7 +54,7 @@ const Register = ({ onSwitchToLogin }) => { // Added onSwitchToLogin prop
     if (onSwitchToLogin) {
       onSwitchToLogin(); // This will trigger the slide back to login
     } else {
-      navigate('/login'); // Fallback if prop not passed, though AuthPage should handle it
+      navigate("/login"); // Fallback if prop not passed, though AuthPage should handle it
     }
   };
 
@@ -106,10 +108,10 @@ const Register = ({ onSwitchToLogin }) => { // Added onSwitchToLogin prop
 
         {errorMessage && <div className="error-message">{errorMessage}</div>}
 
-        <button type="submit" className="auth-button">Register</button>
+        <button type="submit" className="auth-button">
+          Register
+        </button>
       </form>
-
-      
 
       {/* Modal Pop-up remains part of this component but styled by AuthPage.css */}
       <Modal show={showModal} onHide={closeModal} centered>

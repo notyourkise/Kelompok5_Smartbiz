@@ -14,9 +14,11 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const API_URL = "http://localhost:3001/coffee-shop"; // Backend URL
+import { API_URL as BASE } from "../config";
+const API_URL = `${BASE}/coffee-shop`; // Backend URL
 
-function ManageCoffeeShopMenu({ theme }) { // Added theme prop
+function ManageCoffeeShopMenu({ theme }) {
+  // Added theme prop
   const navigate = useNavigate();
   const [menus, setMenus] = useState([]);
   const [cart, setCart] = useState([]);
@@ -290,7 +292,11 @@ function ManageCoffeeShopMenu({ theme }) { // Added theme prop
   };
 
   return (
-    <div className={`manage-coffee-menu-container ${theme === 'dark' ? 'theme-dark' : 'theme-light'}`}>
+    <div
+      className={`manage-coffee-menu-container ${
+        theme === "dark" ? "theme-dark" : "theme-light"
+      }`}
+    >
       <div className="manage-coffee-menu-header">
         <h2 className="manage-coffee-title">Manage Coffee Shop Menu</h2>
         <div className="cart-container">

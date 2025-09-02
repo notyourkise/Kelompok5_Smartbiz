@@ -33,6 +33,7 @@ import {
   FaChevronUp, // Icon for dropdown
 } from "react-icons/fa";
 import axios from "axios";
+import { API_URL } from "../config";
 import Footer from "./Footer";
 import ManageUser from "./ManageUser"; // Impor ManageUser
 import ManageKos from "./ManageKos"; // Impor ManageKos
@@ -55,7 +56,7 @@ const Dashboard = () => {
     if (!Array.isArray(transactions)) return [];
     const now = new Date();
     let startDate = new Date(now); // Initialize startDate
-    let endDate = new Date(now);   // Initialize endDate
+    let endDate = new Date(now); // Initialize endDate
 
     endDate.setHours(23, 59, 59, 999); // End of current day for all filters
 
@@ -79,16 +80,18 @@ const Dashboard = () => {
         break;
       default:
         // If filterType is 'allTime' or unknown, or if no case matches, return an empty array.
-        console.warn(`Unhandled filterType in getFilteredTransactionsByDate: ${filterType}`);
-        return []; 
+        console.warn(
+          `Unhandled filterType in getFilteredTransactionsByDate: ${filterType}`
+        );
+        return [];
     }
 
-    return transactions.filter(t => {
-      if (!t.created_at || typeof t.created_at !== 'string') {
+    return transactions.filter((t) => {
+      if (!t.created_at || typeof t.created_at !== "string") {
         // console.warn('Invalid or missing created_at for transaction:', t);
         return false;
       }
-      
+
       // Robust date parsing for "YYYY-MM-DD HH:MM:SS" format
       let transactionDate;
       const dateTimeParts = t.created_at.split(" ");
@@ -102,7 +105,7 @@ const Dashboard = () => {
           const hour = parseInt(timeParts[0], 10);
           const minute = parseInt(timeParts[1], 10);
           const second = parseInt(timeParts[2], 10);
-          
+
           // Check if all parts are valid numbers
           if (![year, month, day, hour, minute, second].some(isNaN)) {
             transactionDate = new Date(year, month, day, hour, minute, second);
@@ -114,7 +117,7 @@ const Dashboard = () => {
         // console.warn('Failed to parse created_at string to valid date:', t.created_at, t);
         return false; // If date is invalid or parsing failed, exclude it
       }
-      
+
       return transactionDate >= startDate && transactionDate <= endDate;
     });
   };
@@ -164,16 +167,18 @@ const Dashboard = () => {
     const updateClock = () => {
       const now = new Date();
       const options = {
-        weekday: 'long', // "Senin"
-        day: 'numeric', // "10"
-        month: 'long', // "Mei"
-        year: 'numeric', // "2025"
-        hour: '2-digit', // "23"
-        minute: '2-digit', // "58"
-        timeZone: 'Asia/Makassar', // WITA
+        weekday: "long", // "Senin"
+        day: "numeric", // "10"
+        month: "long", // "Mei"
+        year: "numeric", // "2025"
+        hour: "2-digit", // "23"
+        minute: "2-digit", // "58"
+        timeZone: "Asia/Makassar", // WITA
         hour12: false, // Use 24-hour format
       };
-      setCurrentTimeString(now.toLocaleString('id-ID', options).replace(/\./g, ':')); // Replace dots with colons for time
+      setCurrentTimeString(
+        now.toLocaleString("id-ID", options).replace(/\./g, ":")
+      ); // Replace dots with colons for time
     };
 
     updateClock(); // Initial call to set the clock immediately
@@ -207,16 +212,16 @@ const Dashboard = () => {
       };
 
       try {
-        const userEndpoint = "http://localhost:3001/api/users";
-        const roomEndpoint = "http://localhost:3001/api/kos";
-        const menuEndpoint = "http://localhost:3001/coffee-shop/menus";
-        const allFinanceEndpoint = "http://localhost:3001/keuangan/detail"; // Fetch ALL finance data
+        const userEndpoint = `${API_URL}/api/users`;
+        const roomEndpoint = `${API_URL}/api/kos`;
+        const menuEndpoint = `${API_URL}/coffee-shop/menus`;
+        const allFinanceEndpoint = `${API_URL}/keuangan/detail`; // Fetch ALL finance data
 
         const results = await Promise.allSettled([
-          axios.get(userEndpoint, config),        // 0: userResult
-          axios.get(roomEndpoint, config),        // 1: roomResult
-          axios.get(menuEndpoint, config),        // 2: menuResult
-          axios.get(allFinanceEndpoint, config)   // 3: allFinanceResult
+          axios.get(userEndpoint, config), // 0: userResult
+          axios.get(roomEndpoint, config), // 1: roomResult
+          axios.get(menuEndpoint, config), // 2: menuResult
+          axios.get(allFinanceEndpoint, config), // 3: allFinanceResult
         ]);
 
         const userResult = results[0];
@@ -225,21 +230,30 @@ const Dashboard = () => {
         const allFinanceResult = results[3]; // Renamed for clarity
 
         let totalUsers = "Error";
-        if (userResult.status === 'fulfilled' && Array.isArray(userResult.value.data)) {
+        if (
+          userResult.status === "fulfilled" &&
+          Array.isArray(userResult.value.data)
+        ) {
           totalUsers = userResult.value.data.length;
-        } else if (userResult.status === 'rejected') {
+        } else if (userResult.status === "rejected") {
           console.error("Error fetching users:", userResult.reason);
         }
 
         let menuItems = "Error";
-        if (menuResult.status === 'fulfilled' && Array.isArray(menuResult.value.data)) {
+        if (
+          menuResult.status === "fulfilled" &&
+          Array.isArray(menuResult.value.data)
+        ) {
           menuItems = menuResult.value.data.length;
-        } else if (menuResult.status === 'rejected') {
+        } else if (menuResult.status === "rejected") {
           console.error("Error fetching menu items:", menuResult.reason);
         }
 
         let availableRooms = "Error";
-        if (roomResult.status === 'fulfilled' && Array.isArray(roomResult.value.data)) {
+        if (
+          roomResult.status === "fulfilled" &&
+          Array.isArray(roomResult.value.data)
+        ) {
           try {
             availableRooms = roomResult.value.data.filter(
               (room) => String(room.availability).toLowerCase() === "true"
@@ -247,48 +261,71 @@ const Dashboard = () => {
           } catch (filterError) {
             console.error("Error filtering rooms:", filterError);
           }
-        } else if (roomResult.status === 'rejected') {
+        } else if (roomResult.status === "rejected") {
           console.error("Error fetching rooms:", roomResult.reason);
         }
-
 
         let rawKostFinanceData = [];
         let rawCoffeeFinanceData = [];
         let financeDataError = false;
 
-        if (allFinanceResult.status === 'fulfilled' && Array.isArray(allFinanceResult.value.data)) {
+        if (
+          allFinanceResult.status === "fulfilled" &&
+          Array.isArray(allFinanceResult.value.data)
+        ) {
           const allTransactions = allFinanceResult.value.data;
-          rawKostFinanceData = allTransactions.filter(t =>
-            t.category && (
-              t.category.toLowerCase() === "kost" ||
-              t.category.toLowerCase() === "pendapatan kos" ||
-              t.category.toLowerCase() === "pengeluaran kos"
-            )
+          rawKostFinanceData = allTransactions.filter(
+            (t) =>
+              t.category &&
+              (t.category.toLowerCase() === "kost" ||
+                t.category.toLowerCase() === "pendapatan kos" ||
+                t.category.toLowerCase() === "pengeluaran kos")
           );
-          rawCoffeeFinanceData = allTransactions.filter(t =>
-            t.category && t.category.toLowerCase() === "coffee shop"
+          rawCoffeeFinanceData = allTransactions.filter(
+            (t) => t.category && t.category.toLowerCase() === "coffee shop"
           );
-        } else if (allFinanceResult.status === 'rejected') {
-          console.error("Error fetching All finance data:", allFinanceResult.reason);
+        } else if (allFinanceResult.status === "rejected") {
+          console.error(
+            "Error fetching All finance data:",
+            allFinanceResult.reason
+          );
           financeDataError = true;
         }
 
         // Apply frontend date filtering based on timeFilter state
-        const filteredKostData = getFilteredTransactionsByDate(rawKostFinanceData, timeFilter);
-        const filteredCoffeeData = getFilteredTransactionsByDate(rawCoffeeFinanceData, timeFilter);
-        
+        const filteredKostData = getFilteredTransactionsByDate(
+          rawKostFinanceData,
+          timeFilter
+        );
+        const filteredCoffeeData = getFilteredTransactionsByDate(
+          rawCoffeeFinanceData,
+          timeFilter
+        );
+
         let calculatedFilteredIncome = financeDataError ? "Error" : "Rp 0";
         if (!financeDataError) {
           try {
-            const kostTransactionsIncome = filteredKostData.filter(t => t.type === "income");
-            const coffeeTransactionsIncome = filteredCoffeeData.filter(t => t.type === "income");
-            const totalFilteredIncome = [...kostTransactionsIncome, ...coffeeTransactionsIncome]
-              .reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
+            const kostTransactionsIncome = filteredKostData.filter(
+              (t) => t.type === "income"
+            );
+            const coffeeTransactionsIncome = filteredCoffeeData.filter(
+              (t) => t.type === "income"
+            );
+            const totalFilteredIncome = [
+              ...kostTransactionsIncome,
+              ...coffeeTransactionsIncome,
+            ].reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
             calculatedFilteredIncome = new Intl.NumberFormat("id-ID", {
-              style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0,
+              style: "currency",
+              currency: "IDR",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
             }).format(totalFilteredIncome);
           } catch (calcError) {
-            console.error("Error calculating filtered income for dashboard:", calcError);
+            console.error(
+              "Error calculating filtered income for dashboard:",
+              calcError
+            );
             calculatedFilteredIncome = "Error";
           }
         }
@@ -296,25 +333,38 @@ const Dashboard = () => {
         let calculatedFilteredExpense = financeDataError ? "Error" : "Rp 0";
         if (!financeDataError) {
           try {
-            const kostTransactionsExpense = filteredKostData.filter(t => t.type === "expense");
-            const coffeeTransactionsExpense = filteredCoffeeData.filter(t => t.type === "expense");
-            const totalFilteredExpense = [...kostTransactionsExpense, ...coffeeTransactionsExpense]
-              .reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
+            const kostTransactionsExpense = filteredKostData.filter(
+              (t) => t.type === "expense"
+            );
+            const coffeeTransactionsExpense = filteredCoffeeData.filter(
+              (t) => t.type === "expense"
+            );
+            const totalFilteredExpense = [
+              ...kostTransactionsExpense,
+              ...coffeeTransactionsExpense,
+            ].reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
             calculatedFilteredExpense = new Intl.NumberFormat("id-ID", {
-              style: "currency", currency: "IDR", minimumFractionDigits: 0, maximumFractionDigits: 0,
+              style: "currency",
+              currency: "IDR",
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
             }).format(totalFilteredExpense);
           } catch (calcError) {
-            console.error("Error calculating filtered expense for dashboard:", calcError);
+            console.error(
+              "Error calculating filtered expense for dashboard:",
+              calcError
+            );
             calculatedFilteredExpense = "Error";
           }
         }
 
         // Check if all primary data sources failed, to set a general error message
-        const criticalDataFailed = userResult.status === 'rejected' && 
-                                   roomResult.status === 'rejected' && 
-                                   menuResult.status === 'rejected' &&
-                                   allFinanceResult.status === 'rejected'; 
-        
+        const criticalDataFailed =
+          userResult.status === "rejected" &&
+          roomResult.status === "rejected" &&
+          menuResult.status === "rejected" &&
+          allFinanceResult.status === "rejected";
+
         setStats({
           totalUsers,
           monthlyIncome: calculatedFilteredIncome,
@@ -322,17 +372,24 @@ const Dashboard = () => {
           availableRooms,
           menuItems,
           loading: false,
-          error: criticalDataFailed ? "Gagal mengambil sebagian data statistik penting." : (financeDataError ? "Gagal mengambil data keuangan." : null),
+          error: criticalDataFailed
+            ? "Gagal mengambil sebagian data statistik penting."
+            : financeDataError
+            ? "Gagal mengambil data keuangan."
+            : null,
         });
-
       } catch (err) {
         // This catch is for errors outside the Promise.allSettled scope, e.g., setup errors
         console.error("Outer error in fetchStats setup:", err);
         setStats((prev) => ({
           ...prev,
-          totalUsers: "Error", availableRooms: "Error", menuItems: "Error",
-          monthlyIncome: "Error", monthlyExpense: "Error", // Keep existing values or set to Error
-          loading: false, error: "Terjadi kesalahan saat memuat data.",
+          totalUsers: "Error",
+          availableRooms: "Error",
+          menuItems: "Error",
+          monthlyIncome: "Error",
+          monthlyExpense: "Error", // Keep existing values or set to Error
+          loading: false,
+          error: "Terjadi kesalahan saat memuat data.",
         }));
       }
     };
@@ -355,7 +412,8 @@ const Dashboard = () => {
   const handleKostFinanceClick = () => navigate("/finance/kost"); // Keep navigation for finance for now
   const handleManageUser = () => setActiveView("manageUser");
   const handleManageKos = () => setActiveView("manageKos");
-  const handleManageCoffeeShopMenu = () => setActiveView("manageCoffeeShopMenu"); // Diubah untuk mengatur activeView
+  const handleManageCoffeeShopMenu = () =>
+    setActiveView("manageCoffeeShopMenu"); // Diubah untuk mengatur activeView
   const handleAboutClick = () => setActiveView("about"); // Handler for About menu
 
   // --- Render Konten ---
@@ -495,26 +553,37 @@ const Dashboard = () => {
                   id="dropdown-filter"
                   size="sm"
                 >
-                  <FaFilter /> {
-                    {
-                      "today": "Hari Ini",
-                      "last7days": "7 Hari Terakhir",
-                      "thisMonth": "Bulan Ini",
-                      "thisYear": "Tahun Ini"
-                    }[timeFilter] || "Filter Waktu"
-                  }
+                  <FaFilter />{" "}
+                  {{
+                    today: "Hari Ini",
+                    last7days: "7 Hari Terakhir",
+                    thisMonth: "Bulan Ini",
+                    thisYear: "Tahun Ini",
+                  }[timeFilter] || "Filter Waktu"}
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  <Dropdown.Item onClick={() => handleTimeFilterChange("today")} active={timeFilter === "today"}>
+                  <Dropdown.Item
+                    onClick={() => handleTimeFilterChange("today")}
+                    active={timeFilter === "today"}
+                  >
                     Hari Ini
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => handleTimeFilterChange("last7days")} active={timeFilter === "last7days"}>
+                  <Dropdown.Item
+                    onClick={() => handleTimeFilterChange("last7days")}
+                    active={timeFilter === "last7days"}
+                  >
                     7 Hari Terakhir
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => handleTimeFilterChange("thisMonth")} active={timeFilter === "thisMonth"}>
+                  <Dropdown.Item
+                    onClick={() => handleTimeFilterChange("thisMonth")}
+                    active={timeFilter === "thisMonth"}
+                  >
                     Bulan Ini
                   </Dropdown.Item>
-                  <Dropdown.Item onClick={() => handleTimeFilterChange("thisYear")} active={timeFilter === "thisYear"}>
+                  <Dropdown.Item
+                    onClick={() => handleTimeFilterChange("thisYear")}
+                    active={timeFilter === "thisYear"}
+                  >
                     Tahun Ini
                   </Dropdown.Item>
                 </Dropdown.Menu>
@@ -549,12 +618,15 @@ const Dashboard = () => {
                     </div>
                     <div className="widget-content">
                       <Card.Subtitle className="text-muted">
-                        Pendapatan 
+                        Pendapatan
                       </Card.Subtitle>
                       <Card.Title className="widget-value">
                         {stats.loading ? (
                           <Spinner animation="border" size="sm" />
-                        ) : stats.monthlyIncome === "Error" || (stats.error && !stats.monthlyIncome && !stats.monthlyExpense) ? ( // Adjusted error condition
+                        ) : stats.monthlyIncome === "Error" ||
+                          (stats.error &&
+                            !stats.monthlyIncome &&
+                            !stats.monthlyExpense) ? ( // Adjusted error condition
                           <FaExclamationCircle
                             className="text-danger"
                             title={stats.error || "Gagal menghitung pendapatan"}
@@ -575,15 +647,20 @@ const Dashboard = () => {
                     </div>
                     <div className="widget-content">
                       <Card.Subtitle className="text-muted">
-                        Pengeluaran 
+                        Pengeluaran
                       </Card.Subtitle>
                       <Card.Title className="widget-value">
                         {stats.loading ? (
                           <Spinner animation="border" size="sm" />
-                        ) : stats.monthlyExpense === "Error" || (stats.error && !stats.monthlyIncome && !stats.monthlyExpense) ? ( // Adjusted error condition
+                        ) : stats.monthlyExpense === "Error" ||
+                          (stats.error &&
+                            !stats.monthlyIncome &&
+                            !stats.monthlyExpense) ? ( // Adjusted error condition
                           <FaExclamationCircle
                             className="text-danger"
-                            title={stats.error || "Gagal menghitung pengeluaran"}
+                            title={
+                              stats.error || "Gagal menghitung pengeluaran"
+                            }
                           />
                         ) : (
                           stats.monthlyExpense ?? "-" // monthlyExpense now holds filtered expense
@@ -652,26 +729,34 @@ const Dashboard = () => {
         {/* Finance Dropdown (Superadmin only) */}
         {role === "superadmin" && (
           <>
-            <Nav.Link 
-              onClick={toggleFinanceDropdown} 
+            <Nav.Link
+              onClick={toggleFinanceDropdown}
               className="d-flex justify-content-between align-items-center"
               // active={activeView === "financeCoffeeShop" || activeView === "financeKost"} // Optional: highlight main if sub is active
             >
               <span>
-                <FaDollarSign className="sidebar-icon icon-finance" /> Manajemen Keuangan
+                <FaDollarSign className="sidebar-icon icon-finance" /> Manajemen
+                Keuangan
               </span>
               {isFinanceOpen ? <FaChevronUp /> : <FaChevronDown />}
             </Nav.Link>
             {isFinanceOpen && (
               <Nav className="flex-column ms-3 sub-menu">
-                <Nav.Link 
-                  onClick={() => { setActiveView("financeCoffeeShop"); handleCoffeeShopFinanceClick(); }}
+                <Nav.Link
+                  onClick={() => {
+                    setActiveView("financeCoffeeShop");
+                    handleCoffeeShopFinanceClick();
+                  }}
                   active={activeView === "financeCoffeeShop"}
                 >
-                  <FaStore className="sidebar-icon sub-icon" /> Keuangan Coffee Shop
+                  <FaStore className="sidebar-icon sub-icon" /> Keuangan Coffee
+                  Shop
                 </Nav.Link>
-                <Nav.Link 
-                  onClick={() => { setActiveView("financeKost"); handleKostFinanceClick(); }}
+                <Nav.Link
+                  onClick={() => {
+                    setActiveView("financeKost");
+                    handleKostFinanceClick();
+                  }}
                   active={activeView === "financeKost"}
                 >
                   <FaBed className="sidebar-icon sub-icon" /> Keuangan Kost
@@ -684,19 +769,28 @@ const Dashboard = () => {
 
         {/* Manage Kos Link (Superadmin only) */}
         {role === "superadmin" && (
-          <Nav.Link onClick={handleManageKos} active={activeView === "manageKos"}>
+          <Nav.Link
+            onClick={handleManageKos}
+            active={activeView === "manageKos"}
+          >
             <FaBed className="sidebar-icon icon-kos" /> Manajemen Kamar Kos
           </Nav.Link>
         )}
 
         {/* Coffee Shop Menu Link */}
-        <Nav.Link onClick={handleManageCoffeeShopMenu} active={activeView === "manageCoffeeShopMenu"}>
+        <Nav.Link
+          onClick={handleManageCoffeeShopMenu}
+          active={activeView === "manageCoffeeShopMenu"}
+        >
           <FaCoffee className="sidebar-icon icon-coffee" /> Coffee Shop Menu
         </Nav.Link>
 
         {/* Manage User Link (Superadmin only) */}
         {role === "superadmin" && (
-          <Nav.Link onClick={handleManageUser} active={activeView === "manageUser"}>
+          <Nav.Link
+            onClick={handleManageUser}
+            active={activeView === "manageUser"}
+          >
             <FaUser className="sidebar-icon icon-user" /> Manajemen User
           </Nav.Link>
         )}
@@ -704,18 +798,29 @@ const Dashboard = () => {
         {/* Inventory Dropdown (Superadmin only) */}
         {role === "superadmin" && (
           <>
-            <Nav.Link onClick={toggleInventoryDropdown} className="d-flex justify-content-between align-items-center inventory-toggle">
+            <Nav.Link
+              onClick={toggleInventoryDropdown}
+              className="d-flex justify-content-between align-items-center inventory-toggle"
+            >
               <span>
                 <FaBox className="sidebar-icon icon-inventory" /> Inventaris
               </span>
               {isInventoryOpen ? <FaChevronUp /> : <FaChevronDown />}
             </Nav.Link>
             {isInventoryOpen && (
-              <Nav className="flex-column ms-3 sub-menu"> {/* Indentation for sub-menu */}
-                <Nav.Link onClick={() => setActiveView("manageInventarisCoffeeShop")} active={activeView === "manageInventarisCoffeeShop"}>
+              <Nav className="flex-column ms-3 sub-menu">
+                {" "}
+                {/* Indentation for sub-menu */}
+                <Nav.Link
+                  onClick={() => setActiveView("manageInventarisCoffeeShop")}
+                  active={activeView === "manageInventarisCoffeeShop"}
+                >
                   <FaStore className="sidebar-icon sub-icon" /> Coffee Shop
                 </Nav.Link>
-                <Nav.Link onClick={() => setActiveView("manageInventarisKost")} active={activeView === "manageInventarisKost"}>
+                <Nav.Link
+                  onClick={() => setActiveView("manageInventarisKost")}
+                  active={activeView === "manageInventarisKost"}
+                >
                   <FaWarehouse className="sidebar-icon sub-icon" /> Kost
                 </Nav.Link>
               </Nav>
@@ -728,7 +833,6 @@ const Dashboard = () => {
         <Nav.Link onClick={handleAboutClick} active={activeView === "about"}>
           <FaInfoCircle className="sidebar-icon icon-about" /> Tentang Kami
         </Nav.Link>
-
       </Nav>
 
       {/* Main Content Area */}
@@ -744,15 +848,21 @@ const Dashboard = () => {
           </div>
           {/* Clock, Theme Toggle, and User Dropdown */}
           <div className="header-actions d-flex align-items-center">
-            <div className="clock-display me-3"> {/* Added me-3 for margin */}
+            <div className="clock-display me-3">
+              {" "}
+              {/* Added me-3 for margin */}
               {currentTimeString}
             </div>
             <Button
               variant="link"
               onClick={toggleTheme}
               className="theme-toggle-btn p-0 me-3" // p-0 to remove padding, me-3 for margin
-              title={theme === 'light' ? "Switch to Dark Mode" : "Switch to Light Mode"}
-              style={{ background: 'none', border: 'none' }} // Ensure button itself is transparent
+              title={
+                theme === "light"
+                  ? "Switch to Dark Mode"
+                  : "Switch to Light Mode"
+              }
+              style={{ background: "none", border: "none" }} // Ensure button itself is transparent
             >
               {theme === "light" ? (
                 <FaMoon size={24} className="theme-icon" /> // Class for specific styling
@@ -761,21 +871,27 @@ const Dashboard = () => {
               )}
             </Button>
             <Dropdown align="end" className="user-dropdown-modern">
-              <Dropdown.Toggle variant="link" id="dropdown-user-modern" className="p-0 profile-dropdown-toggle">
-                <FaUserCircle size={30} className="profile-icon"/> {/* Class for specific styling */}
+              <Dropdown.Toggle
+                variant="link"
+                id="dropdown-user-modern"
+                className="p-0 profile-dropdown-toggle"
+              >
+                <FaUserCircle size={30} className="profile-icon" />{" "}
+                {/* Class for specific styling */}
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item
-                onClick={() => console.log("Navigate to Profile page...")}
-              >
-                <FaUserCircle className="dropdown-icon" /> Profile
-              </Dropdown.Item>
-              <Dropdown.Item onClick={handleLogout}>
-                <FaSignOutAlt className="dropdown-icon" /> Log out
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-          </div> {/* Closing tag for header-actions */}
+                  onClick={() => console.log("Navigate to Profile page...")}
+                >
+                  <FaUserCircle className="dropdown-icon" /> Profile
+                </Dropdown.Item>
+                <Dropdown.Item onClick={handleLogout}>
+                  <FaSignOutAlt className="dropdown-icon" /> Log out
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>{" "}
+          {/* Closing tag for header-actions */}
         </header>
 
         {/* Dynamic Content */}

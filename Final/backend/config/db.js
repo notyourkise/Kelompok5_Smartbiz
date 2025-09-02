@@ -1,28 +1,53 @@
 // config/db.js
-const { Pool } = require('pg'); // Import the Pool class from the pg library
+const { Pool } = require("pg");
 
-// Create a connection pool to the PostgreSQL database
-const pool = new Pool({
-  user: 'postgres',     // Default PostgreSQL user (or replace if different)
-  host: 'localhost',    // Database host
-  database: 'smartbizadmin', // Database name
-  password: '1',        // Your PostgreSQL password
-  port: 5432,           // Default PostgreSQL port
-});
+// Create a singleton pool and read config from environment variables for Neon/Vercel
+// Supported envs:
+// - DATABASE_URL: full Postgres connection string (recommended)
+// - PGHOST, PGUSER, PGPASSWORD, PGDATABASE, PGPORT
+// Neon usually requires SSL in production.
 
-// Optional: Test the connection
-pool.connect((err, client, release) => {
-  if (err) {
-    return console.error('Error acquiring client', err.stack);
-  }
-  console.log('Connected to PostgreSQL database successfully!');
-  client.query('SELECT NOW()', (err, result) => {
-    release(); // Release the client back to the pool
-    if (err) {
-      return console.error('Error executing query', err.stack);
-    }
-    console.log('Current time from DB:', result.rows[0].now);
-  });
-});
+let pool; // singleton across serverless invocations
+
+function createPool() {
+  const {
+    DATABASE_URL,
+    PGHOST,
+    PGUSER,
+    PGPASSWORD,
+    PGDATABASE,
+    PGPORT,
+    NODE_ENV,
+  } = process.env;
+
+  const usingConnectionString = !!DATABASE_URL;
+
+  // Enable SSL automatically on production or when using Neon
+  const sslRequired =
+    NODE_ENV === "production" ||
+    (DATABASE_URL && /neon\.tech/.test(DATABASE_URL));
+
+  const config = usingConnectionString
+    ? {
+        connectionString: DATABASE_URL,
+        ssl: sslRequired ? { rejectUnauthorized: false } : false,
+      }
+    : {
+        host: PGHOST || "localhost",
+        user: PGUSER || "postgres",
+        password: PGPASSWORD || "1",
+        database: PGDATABASE || "smartbizadmin",
+        port: PGPORT ? Number(PGPORT) : 5432,
+        ssl: sslRequired ? { rejectUnauthorized: false } : false,
+      };
+
+  return new Pool(config);
+}
+
+if (!globalThis._smartbizPgPool) {
+  globalThis._smartbizPgPool = createPool();
+}
+
+pool = globalThis._smartbizPgPool;
 
 module.exports = pool;

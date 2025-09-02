@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock } from "react-icons/fa";
 // Removed import "./Login.css";
 // Removed import logo from "../assets/smartbizlogo.png";
 
-const Login = ({ onSwitchToRegister }) => { // Added onSwitchToRegister prop
+const Login = ({ onSwitchToRegister }) => {
+  // Added onSwitchToRegister prop
   const navigate = useNavigate();
   const [username, setUsername] = useState(""); // Menggunakan username
   const [password, setPassword] = useState("");
@@ -20,7 +22,7 @@ const Login = ({ onSwitchToRegister }) => { // Added onSwitchToRegister prop
     }
 
     try {
-      const response = await axios.post("http://localhost:3001/auth/login", {
+      const response = await axios.post(`${API_URL}/auth/login`, {
         username,
         password,
       });
@@ -29,7 +31,10 @@ const Login = ({ onSwitchToRegister }) => { // Added onSwitchToRegister prop
       localStorage.setItem("username", username);
       localStorage.setItem("role", response.data.role);
 
-      if (response.data.role === 'admin' || response.data.role === 'superadmin') {
+      if (
+        response.data.role === "admin" ||
+        response.data.role === "superadmin"
+      ) {
         navigate("/dashboard");
       }
     } catch (error) {
@@ -71,10 +76,10 @@ const Login = ({ onSwitchToRegister }) => { // Added onSwitchToRegister prop
 
         {errorMessage && <div className="error-message">{errorMessage}</div>}
 
-        <button type="submit" className="auth-button">Login</button>
+        <button type="submit" className="auth-button">
+          Login
+        </button>
       </form>
-
-      
     </>
   );
 };

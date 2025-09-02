@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_URL } from "../config";
 // Import Table component from react-bootstrap
 import { Button, Modal, Form, Table } from "react-bootstrap";
 import { FaTrashAlt, FaEdit, FaPlus, FaArrowLeft } from "react-icons/fa"; // Import necessary icons
@@ -27,7 +28,7 @@ const ManageUser = () => {
       return;
     }
     try {
-      const response = await axios.get("http://localhost:3001/api/users", {
+      const response = await axios.get(`${API_URL}/api/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsers(response.data);
@@ -68,7 +69,7 @@ const ManageUser = () => {
       return;
     }
     try {
-      await axios.post("http://localhost:3001/api/users", newUser, {
+      await axios.post(`${API_URL}/api/users`, newUser, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setShowCreateModal(false);
@@ -106,13 +107,9 @@ const ManageUser = () => {
         updateData.password = editingUser.password;
       }
 
-      await axios.put(
-        `http://localhost:3001/api/users/${editingUser.id}`,
-        updateData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await axios.put(`${API_URL}/api/users/${editingUser.id}`, updateData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       setShowEditModal(false);
       setEditingUser(null);
@@ -133,7 +130,7 @@ const ManageUser = () => {
       return;
     }
     try {
-      await axios.delete(`http://localhost:3001/api/users/${userId}`, {
+      await axios.delete(`${API_URL}/api/users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsers(users.filter((user) => user.id !== userId));
@@ -151,7 +148,6 @@ const ManageUser = () => {
       {/* Header with Back Button and Title */}
       <header className="manage-user-header">
         {/* Back Button with CSS class */}
-        
         <h2 className="manage-user-title">Manajemen Pengguna</h2>{" "}
         {/* Add title */}
         {/* Create User Button */}
