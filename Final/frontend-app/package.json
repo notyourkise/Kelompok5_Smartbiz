@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+  "dev": "vite",
   "build": "vite build",
   "vercel-build": "vite build",
     "lint": "eslint .",
@@ -28,8 +28,7 @@
     "react-router-dom": "^7.5.2",
     "react-toastify": "^11.0.5",
     "react-tsparticles": "^2.12.2",
-    "tsparticles": "^3.8.1",
-    "vite": "^x.y.z"
+  "tsparticles": "^3.8.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
