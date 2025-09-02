@@ -1,0 +1,9 @@
+{
+  "projectId": "",
+  "orgId": "",
+  "settings": {
+    "buildCommand": "npm run vercel-build --prefix frontend-app",
+    "outputDirectory": "frontend-app/dist",
+    "installCommand": "npm install --prefix frontend-app"
+  }
+}
