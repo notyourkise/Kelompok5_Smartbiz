@@ -40,7 +40,7 @@ const fileFilter = (req, file, cb) => {
     cb(null, true);
   } else {
     // Menyimpan error di req agar bisa diakses di middleware berikutnya
-    req.fileValidationError = 'Hanya file gambar yang diizinkan! (jpg, jpeg, png, gif)';
+    req.fileValidationError = 'Hanya file gambar yang diizinkan! (jpg, jpeg, png)';
     cb(null, false); // Tetap panggil cb(null, false) untuk menolak file
   }
 };

@@ -36,6 +36,11 @@ const ManageKos = () => {
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false); // For Add/Edit Room
   const [isEditing, setIsEditing] = useState(false);
+
+  // State untuk notifikasi sukses
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
   const [currentRoom, setCurrentRoom] = useState({
     id: null,
     room_name: "",
@@ -49,6 +54,9 @@ const ManageKos = () => {
     occupation: "",
     payment_status_current_month: "Belum Bayar",
   });
+
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [roomToDelete, setRoomToDelete] = useState(null);
 
   const [showPaymentHistoryModal, setShowPaymentHistoryModal] = useState(false);
   const [paymentHistoryData, setPaymentHistoryData] = useState([]);
@@ -111,7 +119,6 @@ const ManageKos = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
@@ -288,7 +295,6 @@ const ManageKos = () => {
     setUploadError("");
     setUploadSuccessMessage("");
   };
-
   const handleNewPaymentInputChange = (e) => {
     const { name, value } = e.target;
     setNewPaymentData((prev) => ({ ...prev, [name]: value }));
@@ -369,6 +375,7 @@ const ManageKos = () => {
 
       setTimeout(() => {
         handleCloseUploadPaymentModal();
+        setShowSuccessModal(false);
       }, 2000);
     } catch (err) {
       const errMsg =
@@ -513,6 +520,7 @@ const ManageKos = () => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="modal-body-custom">
+          <p style={{ color: "blue" }}>Kolom dengan tanda * wajib diisi</p>
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
               <Form.Label>Nama Kamar</Form.Label>
@@ -915,7 +923,49 @@ const ManageKos = () => {
           </Modal.Body>
         </Modal>
       )}
-      <Footer />
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        show={showDeleteConfirmModal}
+        onHide={() => setShowDeleteConfirmModal(false)}
+        centered
+      >
+        <Modal.Header closeButton className="modal-header-custom">
+          <Modal.Title className="modal-title-custom">
+            Konfirmasi Hapus Kamar
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="modal-body-custom">
+          Apakah Anda yakin ingin menghapus kamar "{roomToDelete?.room_name}"?
+        </Modal.Body>
+        <Modal.Footer className="modal-footer-custom">
+          <Button
+            variant="outline-secondary"
+            onClick={() => setShowDeleteConfirmModal(false)}
+          >
+            Batal
+          </Button>
+          <Button variant="danger" onClick={handleDeleteConfirm}>
+            Hapus
+          </Button>
+        </Modal.Footer>{" "}
+      </Modal>
+
+      {/* Success Modal */}
+      <Modal
+        show={showSuccessModal}
+        onHide={() => setShowSuccessModal(false)}
+        centered
+        className="success-modal"
+      >
+        <Modal.Body className="text-center p-4">
+          <div className="success-checkmark-container">
+            <FaCheckCircle className="success-checkmark-icon" />
+          </div>
+          <h4 className="mt-3">{successMessage}</h4>
+        </Modal.Body>
+      </Modal>
+      {/* Footer dihapus karena sudah dihandle oleh Dashboard */}
     </div>
   );
 };

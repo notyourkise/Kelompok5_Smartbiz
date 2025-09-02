@@ -160,7 +160,6 @@ const ManageInventaris = () => {
           <FaPlus /> Tambah Item
         </Button>
       </header>
-
       {/* Inventaris Card Layout */}
       <div className="inventaris-card-list">
         <Row xs={1} md={2} lg={3} className="g-4">
@@ -274,7 +273,6 @@ const ManageInventaris = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-
       {/* Modal Edit Item */}
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
         <Modal.Header closeButton>
@@ -321,11 +319,9 @@ const ManageInventaris = () => {
           <Button variant="primary" onClick={handleUpdateItem}>
             Simpan Perubahan
           </Button>
-        </Modal.Footer>
+        </Modal.Footer>{" "}
       </Modal>
-
-      {/* Include Footer */}
-      <Footer />
+      {/* Footer dihapus karena sudah dihandle oleh Dashboard */}
     </div>
   );
 };

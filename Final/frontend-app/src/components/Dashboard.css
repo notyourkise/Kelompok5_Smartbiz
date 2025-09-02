@@ -14,21 +14,100 @@
   position: fixed; /* Fixed position */
   height: 100%; /* Full height */
   overflow-y: auto; /* Scroll if content exceeds height */
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1); /* Subtle shadow */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
+/* Sidebar Header with Logo */
 .sidebar-header {
-  padding: 20px 15px; /* Consistent padding */
+  padding: 20px 15px;
   text-align: center;
-  border-bottom: 1px solid #00274e; /* Separator line */
-  margin-bottom: 10px; /* Space below header */
+  border-bottom: 1px solid #00274e;
+  margin-bottom: 10px;
+}
+
+/* Burger Menu Button */
+.burger-menu-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.2s ease;
+  display: none;
+}
+
+/* Hide burger menu on larger screens */
+@media (min-width: 769px) {
+  .burger-menu-btn {
+    display: none;
+  }
+}
+
+/* Show burger menu on smaller screens */
+@media (max-width: 768px) {
+  .burger-menu-btn {
+    display: block;
+  }
+}
+
+/* Light theme burger menu */
+.burger-menu-btn {
+  color: #333;
+}
+
+/* Dark theme burger menu */
+.dark-theme-body .burger-menu-btn {
+  color: #fff;
+}
+
+/* Hide sidebar on smaller screens and show burger menu */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .sidebar.open {
+    display: block;
+    transform: translateX(0);
+    z-index: 1002; /* Ensure it's on top of the burger menu */
+  }
+
+  .burger-menu-btn {
+    display: block;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1001;
+  }
+
+  .burger-menu-btn:hover {
+    transform: scale(1.1);
+  }
+
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+.content-area {
+  flex-grow: 1;
+  padding: 20px;
 }
 
 .sidebar-title {
-  margin: 0;
-  font-size: 1.8rem; /* Larger title */
+  font-size: 1.8rem;
   font-weight: bold;
-  color: #1890ff; /* Accent color for title */
+  color: #1890ff;
+  margin: 0;
 }
 
 .sidebar .nav-link {
@@ -58,13 +137,27 @@
 }
 
 /* Specific Icon Colors (Optional - for visual distinction) */
-.icon-dashboard { color: #ff6b6b; }
-.icon-finance { color: #4caf50; }
-.icon-kos { color: #2196f3; }
-.icon-coffee { color: #ff9800; }
-.icon-user { color: #9c27b0; }
-.icon-inventory { color: #795548; }
-.icon-about { color: #00bcd4; } /* Color for About icon */
+.icon-dashboard {
+  color: #ff6b6b;
+}
+.icon-finance {
+  color: #4caf50;
+}
+.icon-kos {
+  color: #2196f3;
+}
+.icon-coffee {
+  color: #ff9800;
+}
+.icon-user {
+  color: #9c27b0;
+}
+.icon-inventory {
+  color: #795548;
+}
+.icon-about {
+  color: #00bcd4;
+} /* Color for About icon */
 
 /* Main Content Area */
 .main-content {
@@ -86,7 +179,7 @@
   border-bottom: 1px solid #e8e8e8; /* Light separator */
   margin-bottom: 25px; /* Space below header */
   border-radius: 4px; /* Rounded corners */
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Subtle shadow */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle shadow */
 }
 
 .header-welcome .welcome-message {
@@ -117,7 +210,7 @@
 
 .user-dropdown-modern .dropdown-menu {
   border-radius: 4px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Softer shadow */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Softer shadow */
   border: none; /* Remove default border */
 }
 
@@ -195,7 +288,7 @@
 .widget-card {
   border: none;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
   margin-bottom: 20px;
   overflow: hidden; /* To contain the icon background */
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Added transition */
@@ -204,7 +297,7 @@
 
 .widget-card:hover {
   transform: translateY(-5px); /* Lift effect on hover */
-  box-shadow: 0 6px 16px rgba(0,0,0,0.12); /* Enhanced shadow on hover */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12); /* Enhanced shadow on hover */
 }
 
 .widget-card .card-body {
@@ -226,12 +319,21 @@
 }
 
 /* Icon background colors */
-.bg-primary { background-color: #007bff !important; }
-.bg-success { background-color: #28a745 !important; }
-.bg-danger { background-color: #dc3545 !important; } /* For expense */
-.bg-info { background-color: #17a2b8 !important; }
-.bg-warning { background-color: #ffc107 !important; }
-
+.bg-primary {
+  background-color: #007bff !important;
+}
+.bg-success {
+  background-color: #28a745 !important;
+}
+.bg-danger {
+  background-color: #dc3545 !important;
+} /* For expense */
+.bg-info {
+  background-color: #17a2b8 !important;
+}
+.bg-warning {
+  background-color: #ffc107 !important;
+}
 
 .widget-content .card-subtitle {
   font-size: 0.85rem;
@@ -303,7 +405,7 @@
 }
 
 .contact-info p svg.whatsapp-icon {
-  color: #25D366; /* Green for WhatsApp */
+  color: #25d366; /* Green for WhatsApp */
 }
 
 .contact-info p svg.instagram-icon {
@@ -311,7 +413,7 @@
 }
 
 .contact-info p svg.email-icon {
-  color: #D44638; /* Gmail-like red for Email */
+  color: #d44638; /* Gmail-like red for Email */
 }
 
 .contact-info a {
@@ -371,12 +473,13 @@
   border-right: 1px solid #00203f; /* Darker border */
 }
 
+/* Dark theme adjustments for logo area */
 .dark-theme-body .sidebar-header {
-  border-bottom: 1px solid #00203f; /* Darker separator */
+  border-bottom: 1px solid #003366;
 }
 
 .dark-theme-body .sidebar-title {
-  color: #107bc7; /* Adjusted accent color for title */
+  color: #107bc7;
 }
 
 .dark-theme-body .sidebar .nav-link {
@@ -402,7 +505,7 @@
 .dark-theme-body .main-header {
   background-color: #2a2a2a; /* Darker header background */
   border-bottom: 1px solid #3a3a3a; /* Darker separator */
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .dark-theme-body .header-welcome .welcome-message {
@@ -416,7 +519,7 @@
 .dark-theme-body .user-dropdown-modern .dropdown-menu {
   background-color: #2c2c2c; /* Dark dropdown menu */
   border: 1px solid #3a3a3a;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .dark-theme-body .user-dropdown-modern .dropdown-item {
@@ -460,10 +563,10 @@
 
 .dark-theme-body .widget-card {
   background-color: #282828; /* Darker widget card background */
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 .dark-theme-body .widget-card:hover {
-  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
 }
 
 /* Ensure general text within widget cards is light */
@@ -473,7 +576,8 @@
 }
 
 .dark-theme-body .widget-content .card-subtitle,
-.dark-theme-body .widget-content .card-subtitle.text-muted { /* Targeting .text-muted specifically */
+.dark-theme-body .widget-content .card-subtitle.text-muted {
+  /* Targeting .text-muted specifically */
   color: #e0e0e0 !important; /* Lighter color for subtitle and ensure it overrides Bootstrap */
 }
 
@@ -490,7 +594,8 @@
   background-color: #444;
 }
 
-.dark-theme-body .dropdown-menu { /* General dropdown menu for filter */
+.dark-theme-body .dropdown-menu {
+  /* General dropdown menu for filter */
   background-color: #2c2c2c;
   border: 1px solid #3a3a3a;
 }
@@ -501,7 +606,6 @@
   background-color: #383838;
   color: #f0f0f0;
 }
-
 
 .dark-theme-body .alert-danger {
   background-color: #521c22; /* Darker red for alerts */
@@ -546,16 +650,18 @@
 }
 
 /* Ensure Moon icon is visible in light mode if it was white */
-.theme-toggle-btn .theme-icon { /* Default for light mode */
+.theme-toggle-btn .theme-icon {
+  /* Default for light mode */
   color: #4a4a4a; /* Dark grey for Moon icon in light mode */
 }
 
 /* Ensure profile icon is visible */
 .dark-theme-body .profile-icon {
-    color: #e0e0e0; /* Light color for profile icon in dark mode */
+  color: #e0e0e0; /* Light color for profile icon in dark mode */
 }
-.profile-icon { /* Default for light mode */
-    color: #333; /* Dark color for profile icon in light mode */
+.profile-icon {
+  /* Default for light mode */
+  color: #333; /* Dark color for profile icon in light mode */
 }
 
 /* Clock Display Styling */
@@ -567,4 +673,143 @@
 
 .dark-theme-body .clock-display {
   color: #e0e0e0; /* Light color for dark theme */
+}
+
+/* Submenu icon transition */
+.inventory-toggle svg,
+.finance-toggle svg {
+  transition: transform 0.3s ease;
+}
+
+.inventory-toggle.open svg,
+.finance-toggle.open svg {
+  transform: rotate(180deg);
+}
+
+/* Active state highlight */
+.nav-link.active {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Dropdown menu transitions */
+.sub-menu {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.sub-menu.open {
+  max-height: 500px;
+  opacity: 1;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Light theme submenu styles */
+.light-theme-body .sub-menu {
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.light-theme-body .sub-menu .nav-link {
+  color: #666;
+  background-color: transparent;
+  border-left: 3px solid transparent;
+  padding: 0.75rem 1.5rem;
+  margin: 0.25rem 0;
+  border-radius: 0 4px 4px 0;
+  transition: all 0.3s ease;
+}
+
+.light-theme-body .sub-menu .nav-link:hover {
+  color: #333;
+  background-color: #e9ecef;
+  border-left-color: #1890ff;
+  transform: translateX(5px);
+}
+
+.light-theme-body .sub-menu .nav-link.active {
+  color: #1890ff;
+  background-color: #e6f7ff;
+  border-left-color: #1890ff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Dark theme submenu styles */
+.dark-theme-body .sub-menu .nav-link {
+  color: #b0b0b0;
+  background-color: transparent;
+  border-left: 3px solid transparent;
+  padding: 0.75rem 1.5rem;
+  margin: 0.25rem 0;
+  border-radius: 0 4px 4px 0;
+  transition: all 0.3s ease;
+}
+
+.dark-theme-body .sub-menu .nav-link:hover {
+  color: #e0e0e0;
+  background-color: #002952;
+  border-left-color: #107bc7;
+  transform: translateX(5px);
+}
+
+.dark-theme-body .sub-menu .nav-link.active {
+  color: #fff;
+  background-color: #003366;
+  border-left-color: #107bc7;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Dropdown indicators */
+.nav-link svg.toggle-icon {
+  transition: transform 0.3s ease;
+}
+
+.nav-link.open svg.toggle-icon {
+  transform: rotate(180deg);
+}
+
+/* Active state animations */
+.nav-link.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--active-color, #1890ff) 0%,
+    var(--active-color-light, #69c0ff) 50%,
+    var(--active-color, #1890ff) 100%
+  );
+  animation: activeGlow 2s linear infinite;
+}
+
+@keyframes activeGlow {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Dark theme color variables */
+.dark-theme-body {
+  --active-color: #107bc7;
+  --active-color-light: #1890ff;
+}
+
+/* Light theme color variables */
+.light-theme-body {
+  --active-color: #1890ff;
+  --active-color-light: #69c0ff;
 }

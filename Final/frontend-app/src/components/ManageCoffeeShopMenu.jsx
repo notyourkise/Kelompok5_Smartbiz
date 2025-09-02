@@ -13,6 +13,7 @@ import "./ManageCoffeeShopMenu.css";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { jwtDecode } from "jwt-decode"; // Import jwtDecode as a named import
 
 import { API_URL as BASE } from "../config";
 const API_URL = `${BASE}/coffee-shop`; // Backend URL
@@ -21,13 +22,41 @@ function ManageCoffeeShopMenu({ theme }) {
   // Added theme prop
   const navigate = useNavigate();
   const [menus, setMenus] = useState([]);
+  const [userRole, setUserRole] = useState(null); // State to store user role
   const [cart, setCart] = useState([]);
   const [showCartModal, setShowCartModal] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false); // State for description modal
   const [currentDescriptionItem, setCurrentDescriptionItem] = useState(null); // State for item in description modal
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
   const cartIconRef = useRef(null); // Ref for the cart icon
+
+  // Toast notification utility functions
+  const showSuccessToast = (message) => {
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: theme === "dark" ? "dark" : "light",
+    });
+  };
+
+  const showErrorToast = (message) => {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 4000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: theme === "dark" ? "dark" : "light",
+    });
+  };
 
   const increaseQuantity = (item) => {
     const updatedCart = cart.map((cartItem) =>
@@ -49,6 +78,12 @@ function ManageCoffeeShopMenu({ theme }) {
     localStorage.setItem("cart", JSON.stringify(updatedCart)); // Update local storage
   };
 
+  // Empty cart function
+  const emptyCart = () => {
+    setCart([]);
+    localStorage.removeItem("cart"); // Clear cart from localStorage
+  };
+
   const [formData, setFormData] = useState({
     name: "",
     price: "",
@@ -60,9 +95,35 @@ function ManageCoffeeShopMenu({ theme }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Fetch menus on component mount
+  // Fetch menus and decode token on component mount
   useEffect(() => {
     fetchMenus();
+    // Load cart from localStorage if exists
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) {
+      try {
+        setCart(JSON.parse(savedCart));
+      } catch (e) {
+        console.error("Error parsing saved cart", e);
+        localStorage.removeItem("cart");
+      }
+    }
+
+    const token = getToken();
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        setUserRole(decodedToken.role); // Assuming the role is stored in the 'role' claim
+        console.log("User Role:", decodedToken.role); // Log the user role
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        setUserRole(null); // Set role to null if decoding fails
+        console.log("User Role: null (decoding failed)"); // Log null role
+      }
+    } else {
+      setUserRole(null); // Set role to null if no token is found
+      console.log("User Role: null (no token)"); // Log null role
+    }
   }, []);
 
   const getToken = () => localStorage.getItem("token");
@@ -176,7 +237,25 @@ function ManageCoffeeShopMenu({ theme }) {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+
+    if (name === "price") {
+      // Remove non-digit characters for price, store raw numeric value
+      const rawValue = value.replace(/[^\d]/g, "");
+      setFormData({ ...formData, [name]: rawValue });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  // Format price for display
+  const formatRupiah = (number) => {
+    if (!number) return "";
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
+  // Function to get total quantity of items in cart
+  const getTotalCartQuantity = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
   const handleShowModal = (item = null) => {
@@ -203,7 +282,6 @@ function ManageCoffeeShopMenu({ theme }) {
     }
     setShowModal(true);
   };
-
   const handleCloseModal = () => {
     setShowModal(false);
     setCurrentItem(null);
@@ -221,9 +299,28 @@ function ManageCoffeeShopMenu({ theme }) {
     setIsLoading(true);
     setError("");
     setSuccess("");
+
+    // Validate form data
+    if (!formData.name || !formData.price || !formData.category) {
+      setError("Nama menu, harga, dan kategori harus diisi!");
+      showErrorToast("Nama menu, harga, dan kategori harus diisi!");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate price is a positive number
+    const priceValue = parseFloat(formData.price);
+    if (isNaN(priceValue) || priceValue <= 0) {
+      setError("Harga harus lebih dari 0!");
+      showErrorToast("Harga harus lebih dari 0!");
+      setIsLoading(false);
+      return;
+    }
+
     const token = getToken();
     if (!token) {
       setError("Authentication token not found.");
+      showErrorToast("Authentication token not found. Silahkan login kembali.");
       setIsLoading(false);
       return;
     }
@@ -243,49 +340,71 @@ function ManageCoffeeShopMenu({ theme }) {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        setSuccess("Menu item updated successfully!");
+        const successMsg = "Menu berhasil diperbarui!";
+        setSuccess(successMsg);
+        showSuccessToast(successMsg);
       } else {
         response = await axios.post(`${API_URL}/menus`, dataToSend, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setSuccess("Menu item created successfully!");
+        const successMsg = "Menu baru berhasil ditambahkan!";
+        setSuccess(successMsg);
+        showSuccessToast(successMsg);
       }
       fetchMenus(); // Refresh the list
-      handleCloseModal();
+      setTimeout(() => {
+        handleCloseModal(); // Close modal after showing toast notification
+      }, 500);
     } catch (err) {
       console.error("Error saving menu item:", err);
-      setError(err.response?.data?.message || "Failed to save menu item.");
+      const errorMsg =
+        err.response?.data?.message ||
+        "Gagal menyimpan menu. Silahkan coba lagi.";
+      setError(errorMsg);
+      showErrorToast(errorMsg);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this menu item?")) {
-      return;
-    }
+  // Handle showing delete confirmation modal
+  const handleDeleteClick = (item) => {
+    setItemToDelete(item);
+    setShowDeleteConfirmModal(true);
+  };
+  // Handle deleting item after confirmation
+  const handleDeleteConfirm = async () => {
     setIsLoading(true);
     setError("");
     setSuccess("");
     const token = getToken();
-    if (!token) {
-      setError("Authentication token not found.");
+    if (!token || !itemToDelete) {
+      const errorMsg = "Authentication token or item to delete not found.";
+      setError(errorMsg);
+      showErrorToast(errorMsg);
       setIsLoading(false);
       return;
     }
 
     try {
-      await axios.delete(`${API_URL}/menus/${id}`, {
+      await axios.delete(`${API_URL}/menus/${itemToDelete.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setSuccess("Menu item deleted successfully!");
+      const successMsg = `Menu ${itemToDelete.name} berhasil dihapus!`;
+      setSuccess(successMsg);
+      showSuccessToast(successMsg);
       fetchMenus(); // Refresh the list
+      setShowDeleteConfirmModal(false);
+      setItemToDelete(null);
     } catch (err) {
       console.error("Error deleting menu item:", err);
-      setError(
+      const errorMsg =
         err.response?.data?.message ||
-          "Failed to delete menu item. It might be used in existing orders."
-      );
+        "Gagal menghapus menu. Menu mungkin sedang digunakan dalam pesanan.";
+      setError(errorMsg);
+      showErrorToast(errorMsg);
+      setShowDeleteConfirmModal(false);
+      setItemToDelete(null);
     } finally {
       setIsLoading(false);
     }
@@ -298,7 +417,7 @@ function ManageCoffeeShopMenu({ theme }) {
       }`}
     >
       <div className="manage-coffee-menu-header">
-        <h2 className="manage-coffee-title">Manage Coffee Shop Menu</h2>
+        <h2 className="manage-coffee-title">Manajemen Menu Coffee Shop</h2>
         <div className="cart-container">
           <FontAwesomeIcon
             ref={cartIconRef}
@@ -306,15 +425,23 @@ function ManageCoffeeShopMenu({ theme }) {
             className="cart-icon"
             onClick={() => setShowCartModal(true)}
           />
-          {cart.length > 0 && <span className="cart-badge">{cart.length}</span>}
+          {cart.length > 0 && (
+            <span className="cart-badge">{getTotalCartQuantity()}</span>
+          )}
         </div>
       </div>
+
       {error && <Alert variant="danger">{error}</Alert>}
       {success && <Alert variant="success">{success}</Alert>}
 
-      <Button className="action-button mb-3" onClick={() => handleShowModal()}>
-        <FontAwesomeIcon icon={faPlus} /> Tambah Menu Baru
-      </Button>
+      {userRole === "superadmin" && ( // Conditionally render "Tambah Menu Baru" button
+        <Button
+          className="action-button mb-4"
+          onClick={() => handleShowModal()}
+        >
+          <FontAwesomeIcon icon={faPlus} /> Tambah Menu Baru
+        </Button>
+      )}
 
       {isLoading && !menus.length ? (
         <div className="text-center">
@@ -323,41 +450,144 @@ function ManageCoffeeShopMenu({ theme }) {
           </Spinner>
         </div>
       ) : (
-        <div className="menu-cards-container">
-          {menus.map((item, index) => (
-            <div className="menu-card" key={item.id}>
-              <FontAwesomeIcon
-                icon={faEdit}
-                className="edit-icon" // Class for styling
-                onClick={() => handleShowModal(item)} // Reuses existing modal for editing
-                title="Edit Menu Item"
-              />
-              <FontAwesomeIcon
-                icon={faInfoCircle}
-                className="info-icon"
-                onClick={() => handleShowDescriptionModal(item)}
-                title="View Description"
-              />
-              <h5>{item.name}</h5>
-              <p>Rp {parseFloat(item.price).toLocaleString("id-ID")}</p>
-              <div className="menu-card-actions">
-                {" "}
-                {/* Wrapper for buttons */}
-                <Button
-                  className="btn btn-add-to-cart"
-                  onClick={(e) => addToCart(item, e)}
-                >
-                  Tambah
-                </Button>
-                <Button
-                  className="btn btn-delete"
-                  onClick={() => handleDelete(item.id)}
-                >
-                  Hapus
-                </Button>
-              </div>
+        <div>
+          {/* Coffee Section */}
+          <div className="menu-section mb-5">
+            <h3 className="section-title">Coffee</h3>
+            <div className="menu-cards-container">
+              {menus
+                .filter((item) => item.category === "coffee")
+                .map((item) => (
+                  <div className="menu-card" key={item.id}>
+                    {userRole === "superadmin" && ( // Conditionally render edit icon
+                      <FontAwesomeIcon
+                        icon={faEdit}
+                        className="edit-icon"
+                        onClick={() => handleShowModal(item)}
+                        title="Edit Menu"
+                      />
+                    )}
+                    <FontAwesomeIcon
+                      icon={faInfoCircle}
+                      className="info-icon"
+                      onClick={() => handleShowDescriptionModal(item)}
+                      title="Lihat Deskripsi"
+                    />
+                    <h5>{item.name}</h5>
+                    <p>Rp {parseFloat(item.price).toLocaleString("id-ID")}</p>
+                    <div className="menu-card-actions">
+                      <Button
+                        className="btn btn-add-to-cart"
+                        onClick={(e) => addToCart(item, e)}
+                        disabled={item.availability === "unavailable"}
+                      >
+                        Tambah
+                      </Button>
+                      {userRole === "superadmin" && ( // Conditionally render delete button
+                        <Button
+                          className="btn btn-delete"
+                          onClick={() => handleDeleteClick(item)}
+                        >
+                          Hapus
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
             </div>
-          ))}
+          </div>
+
+          {/* Non-Coffee Section */}
+          <div className="menu-section mb-5">
+            <h3 className="section-title">Non-Coffee</h3>
+            <div className="menu-cards-container">
+              {menus
+                .filter((item) => item.category === "non-coffee")
+                .map((item) => (
+                  <div className="menu-card" key={item.id}>
+                    {userRole === "superadmin" && ( // Conditionally render edit icon
+                      <FontAwesomeIcon
+                        icon={faEdit}
+                        className="edit-icon"
+                        onClick={() => handleShowModal(item)}
+                        title="Edit Menu"
+                      />
+                    )}
+                    <FontAwesomeIcon
+                      icon={faInfoCircle}
+                      className="info-icon"
+                      onClick={() => handleShowDescriptionModal(item)}
+                      title="Lihat Deskripsi"
+                    />
+                    <h5>{item.name}</h5>
+                    <p>Rp {parseFloat(item.price).toLocaleString("id-ID")}</p>
+                    <div className="menu-card-actions">
+                      <Button
+                        className="btn btn-add-to-cart"
+                        onClick={(e) => addToCart(item, e)}
+                        disabled={item.availability === "unavailable"}
+                      >
+                        Tambah
+                      </Button>
+                      {userRole === "superadmin" && ( // Conditionally render delete button
+                        <Button
+                          className="btn btn-delete"
+                          onClick={() => handleDeleteClick(item)}
+                        >
+                          Hapus
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Snack Section */}
+          <div className="menu-section">
+            <h3 className="section-title">Snack</h3>
+            <div className="menu-cards-container">
+              {menus
+                .filter((item) => item.category === "snack")
+                .map((item) => (
+                  <div className="menu-card" key={item.id}>
+                    {userRole === "superadmin" && ( // Conditionally render edit icon
+                      <FontAwesomeIcon
+                        icon={faEdit}
+                        className="edit-icon"
+                        onClick={() => handleShowModal(item)}
+                        title="Edit Menu"
+                      />
+                    )}
+                    <FontAwesomeIcon
+                      icon={faInfoCircle}
+                      className="info-icon"
+                      onClick={() => handleShowDescriptionModal(item)}
+                      title="Lihat Deskripsi"
+                    />
+                    <h5>{item.name}</h5>
+                    <p>Rp {parseFloat(item.price).toLocaleString("id-ID")}</p>
+                    <div className="menu-card-actions">
+                      <Button
+                        className="btn btn-add-to-cart"
+                        onClick={(e) => addToCart(item, e)}
+                        disabled={item.availability === "unavailable"}
+                      >
+                        Tambah
+                      </Button>
+                      {userRole === "superadmin" && ( // Conditionally render delete button
+                        <Button
+                          className="btn btn-delete"
+                          onClick={() => handleDeleteClick(item)}
+                        >
+                          Hapus
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
         </div>
       )}
 
@@ -449,21 +679,13 @@ function ManageCoffeeShopMenu({ theme }) {
           </Table>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={() => setCart([])} className="action-button">
+          <Button onClick={emptyCart} className="action-button">
             Kosongkan Keranjang
-          </Button>
+          </Button>{" "}
           <Button
             onClick={() => {
               if (cart.length === 0) {
-                toast.warn("Keranjang masih kosong. Silahkan pilih menu!", {
-                  position: "top-right",
-                  autoClose: 3000,
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: true,
-                  progress: undefined,
-                });
+                showErrorToast("Keranjang masih kosong. Silahkan pilih menu!");
                 return;
               }
               localStorage.setItem("cart", JSON.stringify(cart));
@@ -475,23 +697,37 @@ function ManageCoffeeShopMenu({ theme }) {
           </Button>
         </Modal.Footer>
       </Modal>
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme={theme === "dark" ? "dark" : "light"}
+      />
 
       {/* Add/Edit Modal */}
       <Modal show={showModal} onHide={handleCloseModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>
-            {currentItem ? "Edit Menu Item" : "Tambah Menu Baru"}
-          </Modal.Title>
+            {currentItem ? "Edit Menu" : "Tambah Menu Baru"}
+          </Modal.Title>{" "}
         </Modal.Header>
         <Modal.Body>
           {error && <Alert variant="danger">{error}</Alert>}
+          {success && <Alert variant="success">{success}</Alert>}{" "}
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formMenuName">
-              <Form.Label>Name</Form.Label>
+              <Form.Label>
+                Nama Menu <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter menu item name"
+                placeholder="Masukkan nama menu"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
@@ -499,45 +735,56 @@ function ManageCoffeeShopMenu({ theme }) {
               />
             </Form.Group>
 
-            <Form.Group controlId="formMenuPrice">
-              <Form.Label>Price (Rp)</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Enter price"
-                name="price"
-                value={formData.price}
-                onChange={handleInputChange}
-                required
-                min="0"
-                step="0.01"
-              />
-            </Form.Group>
-
-            <Form.Group controlId="formMenuCategory">
-              <Form.Label>Category</Form.Label>
+            <Form.Group className="mb-3">
+              <Form.Label>
+                Harga (Rp) <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
-                placeholder="e.g., Coffee, Non-Coffee, Snack"
+                name="price"
+                value={formatRupiah(formData.price)}
+                onChange={handleInputChange}
+                placeholder="Masukkan harga"
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formMenuCategory">
+              <Form.Label>
+                Kategori <span className="text-danger">*</span>
+              </Form.Label>
+              <Form.Control
+                as="select"
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
-              />
+                required
+              >
+                <option value="">Pilih Kategori</option>
+                <option value="coffee">Coffee</option>
+                <option value="non-coffee">Non-Coffee</option>
+                <option value="snack">Snack</option>
+              </Form.Control>
             </Form.Group>
 
             <Form.Group controlId="formMenuDescription">
-              <Form.Label>Description</Form.Label>
+              <Form.Label>
+                Deskripsi <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 as="textarea"
-                rows={3}
-                placeholder="Optional description"
+                placeholder="Masukkan deskripsi menu"
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
+                rows={3}
+                required
               />
             </Form.Group>
 
             <Form.Group controlId="formMenuAvailability">
-              <Form.Label>Availability</Form.Label>
+              <Form.Label>
+                Status <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 as="select"
                 name="availability"
@@ -545,13 +792,13 @@ function ManageCoffeeShopMenu({ theme }) {
                 onChange={handleInputChange}
                 required
               >
-                <option value="available">Available</option>
-                <option value="unavailable">Unavailable</option>
+                <option value="available">Tersedia</option>
+                <option value="unavailable">Tidak Tersedia</option>
               </Form.Control>
             </Form.Group>
 
             <Button onClick={handleCloseModal} className="action-button mr-2">
-              Cancel
+              Batal
             </Button>
             <Button
               type="submit"
@@ -567,13 +814,38 @@ function ManageCoffeeShopMenu({ theme }) {
                   aria-hidden="true"
                 />
               ) : currentItem ? (
-                "Update Item"
+                "Simpan Perubahan"
               ) : (
-                "Add Item"
+                "Tambah Menu"
               )}
             </Button>
           </Form>
         </Modal.Body>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        show={showDeleteConfirmModal}
+        onHide={() => setShowDeleteConfirmModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Konfirmasi Hapus Menu</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Apakah Anda yakin ingin menghapus menu "{itemToDelete?.name}"?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowDeleteConfirmModal(false)}
+          >
+            Batal
+          </Button>
+          <Button variant="danger" onClick={handleDeleteConfirm}>
+            Hapus
+          </Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );

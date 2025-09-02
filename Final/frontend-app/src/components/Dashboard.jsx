@@ -45,11 +45,16 @@ import "./Dashboard.css"; // Pastikan CSS diimpor
 const Dashboard = () => {
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState("dashboard");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar visibility
   const [isInventoryOpen, setIsInventoryOpen] = useState(false); // State for inventory dropdown
   const [isFinanceOpen, setIsFinanceOpen] = useState(false); // State for finance dropdown
   const [theme, setTheme] = useState("dark"); // 'light' or 'dark'
   const [timeFilter, setTimeFilter] = useState("thisMonth"); // Default filter
   const [currentTimeString, setCurrentTimeString] = useState("");
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   // Helper function to apply date filtering on the frontend
   const getFilteredTransactionsByDate = (transactions, filterType) => {
@@ -142,16 +147,24 @@ const Dashboard = () => {
 
   // useEffect to apply theme class to body
   useEffect(() => {
-    if (theme === "dark") {
-      document.body.classList.add("dark-theme-body");
-    } else {
-      document.body.classList.remove("dark-theme-body");
-    }
-    // Cleanup function to remove the class when the component unmounts or theme changes to light
-    return () => {
-      document.body.classList.remove("dark-theme-body");
+    const bodyClasses =
+      theme === "dark" ? ["dark-theme-body"] : ["light-theme-body"];
+    document.body.classList.remove("dark-theme-body", "light-theme-body");
+    document.body.classList.add(...bodyClasses);
+
+    // Close sidebar when screen size changes
+    const handleResize = () => {
+      if (window.innerWidth > 768 && isSidebarOpen) {
+        setIsSidebarOpen(false);
+      }
     };
-  }, [theme]);
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      document.body.classList.remove(...bodyClasses);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [theme, isSidebarOpen]);
 
   // Toggle inventory dropdown
   const toggleInventoryDropdown = () => {
@@ -160,7 +173,7 @@ const Dashboard = () => {
 
   // Toggle finance dropdown
   const toggleFinanceDropdown = () => {
-    setIsFinanceOpen(!isFinanceOpen);
+    setIsFinanceOpen((prev) => !prev);
   };
 
   useEffect(() => {
@@ -695,10 +708,53 @@ const Dashboard = () => {
                     </div>
                     <div className="widget-content">
                       <Card.Subtitle className="text-muted">
-                        Item Menu Kopi
+                        Item Menu Coffe Shop
                       </Card.Subtitle>
                       <Card.Title className="widget-value">
                         {renderStatValue("menuItems")}
+                      </Card.Title>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col>
+                <Card className="widget-card">
+                  <Card.Body>
+                    <div className="widget-icon bg-secondary">
+                      <FaDollarSign />
+                    </div>
+                    <div className="widget-content">
+                      <Card.Subtitle className="text-muted">
+                        Selisih
+                      </Card.Subtitle>
+                      <Card.Title className="widget-value">
+                        {stats.loading ? (
+                          <Spinner animation="border" size="sm" />
+                        ) : stats.monthlyIncome === "Error" ||
+                          stats.monthlyExpense === "Error" ? (
+                          <FaExclamationCircle
+                            className="text-danger"
+                            title="Gagal menghitung selisih"
+                          />
+                        ) : (
+                          new Intl.NumberFormat("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                          }).format(
+                            (parseFloat(
+                              stats.monthlyIncome
+                                .replace(/[^\d,-]/g, "")
+                                .replace(",", ".")
+                            ) || 0) -
+                              (parseFloat(
+                                stats.monthlyExpense
+                                  .replace(/[^\d,-]/g, "")
+                                  .replace(",", ".")
+                              ) || 0)
+                          )
+                        )}
                       </Card.Title>
                     </div>
                   </Card.Body>
@@ -714,9 +770,18 @@ const Dashboard = () => {
   return (
     <div className="dashboard-layout">
       {/* Sidebar */}
-      <Nav className="flex-column sidebar">
+      <Nav className={`flex-column sidebar ${isSidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header">
-          <h2 className="sidebar-title">Smartbiz</h2>
+          <div className="d-flex align-items-center justify-content-center">
+            <img
+              src="/src/assets/smartbizlogo.png"
+              alt="SmartBiz Logo"
+              className="sidebar-logo"
+              width="70"
+              height="70"
+            />
+            <h2 className="sidebar-title mb-0 ms-2">SmartBiz</h2>
+          </div>
         </div>
         {/* Dashboard Link */}
         <Nav.Link

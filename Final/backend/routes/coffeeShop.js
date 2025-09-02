@@ -3,24 +3,10 @@ const express = require('express');
 const router = express.Router();
 const coffeeShopController = require('../controllers/coffeeShopController');
 const { protect: authenticateToken } = require('../middleware/authMiddleware'); // Changed this line
-// const checkRole = require('../middleware/roleMiddleware'); // Placeholder for role checking middleware
+const checkRole = require('../middleware/roleMiddleware'); // Import role checking middleware
 
 // Middleware to apply authentication to all coffee shop routes
 router.use(authenticateToken); // This will now correctly use the 'protect' function
-
-// Middleware for role checking (Admin and Superadmin) - Placeholder
-const checkAdminOrSuperAdmin = (req, res, next) => {
-    // In a real implementation, you'd check req.user.role
-    // For now, we'll just proceed. Replace with actual role check later.
-    // if (req.user.role !== 'admin' && req.user.role !== 'superadmin') {
-    //     return res.status(403).json({ message: 'Forbidden: Insufficient privileges' });
-    // }
-    console.log('Role check bypassed for now. User:', req.user); // Log user info if available
-    next();
-};
-
-// Apply role check middleware to all subsequent routes in this file
-router.use(checkAdminOrSuperAdmin);
 
 // --- Menu Routes ---
 // GET all menus
@@ -30,13 +16,13 @@ router.get('/menus', coffeeShopController.getAllMenus);
 router.get('/menus/:id', coffeeShopController.getMenuById);
 
 // POST (create) a new menu item
-router.post('/menus', coffeeShopController.createMenu);
+router.post('/menus', checkRole('superadmin'), coffeeShopController.createMenu);
 
 // PUT (update) a menu item by ID
-router.put('/menus/:id', coffeeShopController.updateMenu);
+router.put('/menus/:id', checkRole('superadmin'), coffeeShopController.updateMenu);
 
 // DELETE a menu item by ID
-router.delete('/menus/:id', coffeeShopController.deleteMenu);
+router.delete('/menus/:id', checkRole('superadmin'), coffeeShopController.deleteMenu);
 
 // --- Order Routes ---
 // POST (create) a new order

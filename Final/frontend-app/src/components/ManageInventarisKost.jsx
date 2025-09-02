@@ -9,20 +9,28 @@ import {
   FaPlus,
   FaArrowLeft,
   FaInfoCircle,
-} from "react-icons/fa"; // Added FaInfoCircle
+  FaCheckCircle,
+} from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Footer from "./Footer";
-import "./ManageInventarisKost.css"; // Import CSS khusus untuk Kost
+import "./ManageInventarisKost.css";
+import "./SuccessModal.css";
 
 const ManageInventarisKost = () => {
   const navigate = useNavigate();
   const [inventaris, setInventaris] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [deleteItemId, setDeleteItemId] = useState(null);
+  const [validationError, setValidationError] = useState("");
   const [newItem, setNewItem] = useState({
     item_name: "",
     stock: 0,
     minimum_stock: 0,
+    image: null,
   });
   const [editingItem, setEditingItem] = useState(null);
 
@@ -50,29 +58,109 @@ const ManageInventarisKost = () => {
   }, []);
 
   const handleBack = () => navigate("/dashboard");
-
-  const handleDelete = async (itemId) => {
+  const handleDelete = async (id) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      console.error("Authentication token not found. Cannot delete item.");
+      console.error(
+        "Token autentikasi tidak ditemukan. Tidak dapat menghapus item."
+      );
       return;
     }
     try {
       await axios.delete(`${API_URL}/api/inventaris/${itemId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setInventaris(inventaris.filter((item) => item.id !== itemId));
+      setInventaris(inventaris.filter((item) => item.id !== id));
+      setShowDeleteModal(false);
+      setDeleteItemId(null);
+
+      // Show success message
+      setSuccessMessage("Item inventaris berhasil dihapus!");
+      setShowSuccessModal(true);
+
+      // Auto close success modal after 2 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+      }, 2000);
     } catch (error) {
-      console.error("Error deleting item:", error);
+      console.error("Error saat menghapus item:", error);
+      // Optionally show an error modal or message here
     }
   };
 
-  const handleCreateModal = () => setShowCreateModal(true);
-  const handleNewItemInputChange = (e) =>
-    setNewItem({ ...newItem, [e.target.name]: e.target.value });
-  const handleEditingItemInputChange = (e) =>
-    setEditingItem({ ...editingItem, [e.target.name]: e.target.value });
+  const handleDeleteClick = (id) => {
+    setDeleteItemId(id);
+    setShowDeleteModal(true);
+  };
 
+  // Function to validate image file format
+  const validateImageFormat = (file) => {
+    // List of allowed image formats
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+    ];
+
+    if (file && !allowedTypes.includes(file.type)) {
+      setValidationError(
+        `Format file tidak valid. Format yang diizinkan: JPG, JPEG, PNG, WEBP.`
+      );
+      return false;
+    }
+    setValidationError(""); // Clear error if format is valid
+    return true;
+  };
+
+  const handleCreateModal = () => {
+    setValidationError("");
+    setShowCreateModal(true);
+  };
+  const handleNewItemInputChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === "image") {
+      if (files[0] && validateImageFormat(files[0])) {
+        setNewItem({ ...newItem, [name]: files[0] });
+      } else if (files[0]) {
+        // If validation failed, reset the file input
+        e.target.value = null;
+      }
+    } else {
+      setNewItem({ ...newItem, [name]: value });
+    }
+  };
+
+  const handleEditingItemInputChange = (e) => {
+    const { name, value, files } = e.target; // files is a FileList
+    if (name === "image") {
+      const file = files && files.length > 0 ? files[0] : null;
+
+      if (file) {
+        // Berkas dipilih dari dialog
+        if (validateImageFormat(file)) {
+          // Berkas baru yang valid dipilih, siapkan untuk diunggah
+          setEditingItem((prev) => ({ ...prev, image: file }));
+        } else {
+          // Berkas yang dipilih tidak valid.
+          // validateImageFormat sudah mengatur pesan kesalahan.
+          // Kosongkan input dan pastikan tidak ada berkas baru (yang tidak valid) yang disiapkan.
+          setEditingItem((prev) => ({ ...prev, image: null })); // Atur secara eksplisit ke null
+          if (e.target) e.target.value = null; // Reset input file secara visual
+        }
+      } else {
+        // Tidak ada berkas yang dipilih (misalnya, dialog dibatalkan, atau input dikosongkan)
+        // Ini berarti pengguna ingin kembali ke \"tidak ada gambar baru\" atau belum memilih.
+        // Pastikan tidak ada berkas baru yang disiapkan.
+        setEditingItem((prev) => ({ ...prev, image: null })); // Atur secara eksplisit ke null
+        // Coba kosongkan input secara visual jika perlu, meskipun `files` yang kosong sering berarti sudah kosong secara visual.
+        if (e.target) e.target.value = null;
+      }
+    } else {
+      // Tangani jenis input lainnya
+      setEditingItem((prev) => ({ ...prev, [name]: value }));
+    }
+  };
   const handleCreateItem = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -91,18 +179,54 @@ const ManageInventarisKost = () => {
       });
 
       setShowCreateModal(false);
-      setNewItem({ item_name: "", stock: 0, minimum_stock: 0 });
-      fetchInventaris();
+      setSuccessMessage("Item inventaris berhasil ditambahkan!");
+      setShowSuccessModal(true);
+
+      // Reset form
+      setNewItem({
+        item_name: "",
+        stock: 0,
+        minimum_stock: 0,
+        image: null,
+      });
+
+      // Auto close success modal after 2 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        fetchInventaris();
+      }, 2000);
     } catch (error) {
       console.error("Error creating item:", error);
+      // Optionally show an error modal or message here
     }
   };
-
   const handleEditClick = (item) => {
-    setEditingItem(item);
+    setValidationError("");
+    let formattedExpirationDate = "";
+    if (item.expiration_date) {
+      try {
+        const date = new Date(item.expiration_date);
+        if (!isNaN(date.getTime())) {
+          formattedExpirationDate = date.toISOString().split("T")[0];
+        } else {
+          console.warn(
+            "Invalid expiration_date from backend:",
+            item.expiration_date
+          );
+          formattedExpirationDate = ""; // Or handle as per backend expectation
+        }
+      } catch (e) {
+        console.error("Error formatting expiration date:", e);
+        formattedExpirationDate = item.expiration_date; // Fallback
+      }
+    }
+
+    setEditingItem({
+      ...item, // Includes id, item_name, stock, minimum_stock, image_url, category
+      image: null, // This field will hold the new File object if a new image is selected
+    });
     setShowEditModal(true);
   };
-
   const handleUpdateItem = async () => {
     const token = localStorage.getItem("token");
     if (!token || !editingItem) {
@@ -111,19 +235,73 @@ const ManageInventarisKost = () => {
       );
       return;
     }
+
+    // Validasi semua field required telah diisi
+    if (
+      !editingItem.item_name ||
+      !editingItem.stock ||
+      !editingItem.minimum_stock
+    ) {
+      setValidationError(
+        "Mohon isi semua kolom yang ditandai dengan tanda bintang (*) untuk memperbarui item."
+      );
+      return;
+    }
+
+    // Validate stock and minimum_stock
+    if (parseInt(editingItem.stock, 10) < 1) {
+      setValidationError("Stok tidak boleh kurang dari 1.");
+      return;
+    }
+    if (parseInt(editingItem.minimum_stock, 10) < 1) {
+      setValidationError("Minimum Stok tidak boleh kurang dari 1.");
+      return;
+    }
+
+    // Reset error message if validation passes
+    setValidationError("");
+
+    // Validate image format
+    if (
+      editingItem.image instanceof File &&
+      !validateImageFormat(editingItem.image)
+    ) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("item_name", editingItem.item_name);
+    formData.append("stock", editingItem.stock);
+    formData.append("minimum_stock", editingItem.minimum_stock);
+    formData.append("category", "kost");
+    if (editingItem.image instanceof File) {
+      formData.append("image", editingItem.image);
+    }
+
     try {
       await axios.put(
         `${API_URL}/api/inventaris/${editingItem.id}`,
         editingItem,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
       setShowEditModal(false);
+      setSuccessMessage("Item inventaris berhasil diperbarui!");
+      setShowSuccessModal(true);
       setEditingItem(null);
-      fetchInventaris();
+
+      // Auto close success modal after 2 seconds
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        fetchInventaris();
+      }, 2000);
     } catch (error) {
       console.error("Error updating item:", error);
+      // Optionally show an error modal or message here
     }
   };
 
@@ -139,179 +317,260 @@ const ManageInventarisKost = () => {
           <FaPlus /> Tambah Item
         </Button>
       </header>
-
-      {/* Card Layout for Inventaris */}
       <div className="inventaris-card-list">
-        <Row xs={1} md={2} lg={3} className="g-4">
-          {" "}
-          {/* Responsive Grid */}
-          {inventaris.length > 0 ? (
-            inventaris.map((item) => (
-              <Col key={item.id}>
-                <Card className="inventaris-card">
-                  {" "}
-                  {/* Removed h-100, height will be intrinsic to content + image placeholder */}
-                  <div className="card-image-placeholder">
-                    {/* Placeholder for image */}
-                    <FaInfoCircle
-                      className="info-icon"
-                      onClick={() => alert(`Info for ${item.item_name}`)}
-                    />{" "}
-                    {/* Basic info click handler */}
-                  </div>
-                  <Card.Body>
-                    <Card.Title className="item-name">
-                      {item.item_name}
-                    </Card.Title>
-                    <div className="item-details">
-                      <p className="item-stock">
-                        Stok Barang: {item.stock}
-                        {item.stock <= item.minimum_stock && (
-                          <span className="stock-warning-text">
-                            {" "}
-                            (Minimum!)
-                          </span>
-                        )}
-                      </p>
-                      <p className="item-min-stock">
-                        Minimum Stok: {item.minimum_stock}
-                      </p>
-                    </div>
-                  </Card.Body>
-                  <Card.Footer>
-                    <Button
-                      variant="outline-info"
-                      size="sm"
-                      className="edit-button"
-                      onClick={() => handleEditClick(item)}
-                      style={{
-                        borderColor: "#00bcd4 !important",
-                        color: "#00bcd4",
-                        backgroundColor: "transparent",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "0.4rem",
-                        fontWeight: 500,
-                      }}
-                    >
-                      <FaEdit style={{ marginRight: "4px" }} />
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline-danger"
-                      size="sm"
-                      className="delete-button"
-                      onClick={() => handleDelete(item.id)}
-                      style={{
-                        borderColor: "#e53935 !important",
-                        color: "#e53935",
-                        backgroundColor: "transparent",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "0.4rem",
-                        fontWeight: 500,
-                        marginLeft: "0.7rem",
-                      }}
-                    >
-                      <FaTrashAlt style={{ marginRight: "4px" }} />
-                      Hapus
-                    </Button>
-                  </Card.Footer>
-                </Card>
-              </Col>
-            ))
-          ) : (
-            <Col>
-              <p className="text-center w-100">Tidak ada data inventaris.</p>{" "}
-              {/* Message if no data */}
-            </Col>
-          )}
-        </Row>
-      </div>
-
-      {/* Modals remain the same */}
-      <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)}>
+        {inventaris.length > 0 ? (
+          inventaris.map((item) => (
+            <div className="menu-card" key={item.id}>
+              {" "}
+              {/* Changed to div with menu-card class */}
+              {item.image_url && ( // Conditionally render image
+                <img
+                  src={`http://localhost:3001/${item.image_url}`}
+                  alt={item.item_name}
+                  className="card-image" // Use card-image class
+                />
+              )}
+              <FaInfoCircle
+                className="info-icon"
+                onClick={() => alert(`Info for ${item.item_name}`)}
+              />{" "}
+              {/* Basic info click handler */}
+              <h5>{item.item_name}</h5> {/* Changed to h5 */}
+              <div className="item-details">
+                <p className="item-stock">
+                  Stok Barang: {item.stock}
+                  {item.stock <= item.minimum_stock && (
+                    <span className="stock-warning-text"> (Minimum!)</span>
+                  )}
+                </p>
+                <p className="item-min-stock">
+                  Minimum Stok: {item.minimum_stock}
+                </p>
+              </div>
+              <div className="menu-card-actions">
+                {" "}
+                {/* Added actions div */}
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="edit-button"
+                  onClick={() => handleEditClick(item)}
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="delete-button"
+                  onClick={() => handleDeleteClick(item.id)}
+                >
+                  Delete
+                </Button>
+              </div>{" "}
+              {/* End actions div */}
+            </div> // End menu-card div
+          ))
+        ) : (
+          <p className="text-center w-100">Tidak ada data inventaris.</p>
+        )}
+      </div>{" "}
+      {/* End inventaris-card-list */}{" "}
+      <Modal
+        show={showCreateModal}
+        onHide={() => {
+          setShowCreateModal(false);
+          setValidationError("");
+        }}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Tambah Item Inventaris</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {validationError && (
+            <Alert
+              variant="danger"
+              onClose={() => setValidationError("")}
+              dismissible
+            >
+              {validationError}
+            </Alert>
+          )}
+          <p style={{ color: "white" }}>Kolom dengan tanda * wajib diisi</p>
           <Form>
             <Form.Group className="mb-3">
-              <Form.Label>Nama Item</Form.Label>
+              <Form.Label>
+                Nama Item <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
                 name="item_name"
                 value={newItem.item_name}
                 onChange={handleNewItemInputChange}
+                required
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Stok</Form.Label>
+              <Form.Label>
+                Stok <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="number"
                 name="stock"
                 value={newItem.stock}
                 onChange={handleNewItemInputChange}
+                min="1"
+                required
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Minimum Stock</Form.Label>
+              <Form.Label>
+                Minimum Stock <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="number"
                 name="minimum_stock"
                 value={newItem.minimum_stock}
                 onChange={handleNewItemInputChange}
+                min="1"
+                required
               />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>
+                Gambar Produk <span className="text-danger">*</span>
+              </Form.Label>
+              <Form.Control
+                type="file"
+                name="image"
+                accept="image/jpeg, image/jpg, image/png, image/webp"
+                onChange={handleNewItemInputChange}
+                required
+              />
+              <Form.Text className="text-muted">
+                Format yang diizinkan: JPG, JPEG, PNG, dan WEBP. Ukuran
+                maksimal 2MB.
+              </Form.Text>
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowCreateModal(false)}>
+          {" "}
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setShowCreateModal(false);
+              setValidationError("");
+            }}
+          >
             Batal
           </Button>
           <Button variant="primary" onClick={handleCreateItem}>
             Simpan
           </Button>
         </Modal.Footer>
-      </Modal>
-
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+      </Modal>{" "}
+      <Modal
+        show={showEditModal}
+        onHide={() => {
+          setShowEditModal(false);
+          setValidationError("");
+        }}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Edit Item Inventaris</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {validationError && (
+            <Alert
+              variant="danger"
+              onClose={() => setValidationError("")}
+              dismissible
+            >
+              {validationError}
+            </Alert>
+          )}
+          <p style={{ color: "white" }}>Kolom dengan tanda * wajib diisi</p>
           <Form>
             <Form.Group className="mb-3">
-              <Form.Label>Nama Item</Form.Label>
+              <Form.Label>
+                Nama Item <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
                 name="item_name"
                 value={editingItem?.item_name || ""}
                 onChange={handleEditingItemInputChange}
+                required
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Stok</Form.Label>
+              <Form.Label>
+                Stok <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="number"
                 name="stock"
                 value={editingItem?.stock || ""}
                 onChange={handleEditingItemInputChange}
+                min="1"
+                required
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Minimum Stock</Form.Label>
+              <Form.Label>
+                Minimum Stock <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="number"
                 name="minimum_stock"
                 value={editingItem?.minimum_stock || ""}
                 onChange={handleEditingItemInputChange}
+                min="1"
+                required
               />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Gambar Produk</Form.Label>
+              {editingItem && editingItem.image_url && (
+                <div className="mb-2">
+                  <img
+                    src={`http://localhost:3001/${editingItem.image_url}`}
+                    alt="Current item"
+                    style={{
+                      maxWidth: "100px",
+                      maxHeight: "100px",
+                      display: "block",
+                      marginBottom: "10px",
+                    }}
+                  />
+                  <small className="text-muted d-block mb-1">
+                    Gambar saat ini. Unggah gambar baru di bawah untuk
+                    menggantinya.
+                  </small>
+                </div>
+              )}
+              <Form.Control
+                type="file"
+                name="image"
+                accept="image/jpeg, image/jpg, image/png, image/webp"
+                onChange={handleEditingItemInputChange}
+              />
+              <Form.Text className="text-muted">
+                Format yang diterima: JPG, JPEG, PNG, WEBP. Ukuran maksimal
+                2MB.
+              </Form.Text>
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+          {" "}
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setShowEditModal(false);
+              setValidationError("");
+            }}
+          >
             Batal
           </Button>
           <Button variant="primary" onClick={handleUpdateItem}>
@@ -319,8 +578,36 @@ const ManageInventarisKost = () => {
           </Button>
         </Modal.Footer>
       </Modal>
-
-      <Footer />
+      {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Konfirmasi Hapus</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Apakah Anda yakin ingin menghapus item ini?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+            Batal
+          </Button>
+          <Button variant="danger" onClick={() => handleDelete(deleteItemId)}>
+            Hapus
+          </Button>{" "}
+        </Modal.Footer>
+      </Modal>
+      {/* Success Modal with Checkmark Animation */}
+      <Modal
+        show={showSuccessModal}
+        onHide={() => setShowSuccessModal(false)}
+        centered
+        className="success-modal"
+      >
+        <Modal.Body className="text-center p-4">
+          <div className="success-checkmark-container">
+            <FaCheckCircle className="success-checkmark-icon" />
+          </div>
+          <h4 className="mt-3">{successMessage}</h4>{" "}
+        </Modal.Body>
+      </Modal>
+      {/* Footer dihapus karena sudah dihandle oleh Dashboard */}
     </div>
   );
 };
