@@ -1,5 +1,5 @@
 // Default Vercel function entry that wraps the Express app
-// This allows Vercel to auto-detect the API without custom builds.
+// Export a handler to ensure compatibility with Vercel's Node runtime
 const app = require("../backend/index");
 
-module.exports = app;
+module.exports = (req, res) => app(req, res);
