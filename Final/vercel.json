@@ -9,6 +9,10 @@
     }
   ],
   "routes": [
+  { "src": "/auth/(.*)", "dest": "/api/auth/$1" },
+  { "src": "/keuangan/(.*)", "dest": "/api/keuangan/$1" },
+  { "src": "/coffee-shop/(.*)", "dest": "/api/coffee-shop/$1" },
+  { "src": "/uploads/(.*)", "dest": "/api/uploads/$1" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
