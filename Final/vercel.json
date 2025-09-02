@@ -15,6 +15,6 @@
     { "src": "/coffee-shop/(.*)", "dest": "backend/api/index.js" },
     { "src": "/uploads/(.*)", "dest": "backend/api/index.js" },
     { "handle": "filesystem" },
-  { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "/(.*)", "dest": "frontend-app/dist/index.html" }
   ]
 }
